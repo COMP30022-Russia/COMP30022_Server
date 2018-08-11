@@ -1,0 +1,13 @@
+*   text=auto
+
+# Git/Config
+.git*   text    eol=lf
+
+# Code
+*.js    text    eol=lf
+*.ts    text    eol=lf
+*.json  text    eol=lf
+
+# Text
+*.md    text    eol=lf
+

@@ -1,0 +1,47 @@
+{
+  "name": "russia_server",
+  "version": "1.0.0",
+  "description": "Server for Team Russia",
+  "main": "server.ts",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "tsc --watch & nodemon dist/server.js",
+    "build": "tsc && cp package.json dist/package.json",
+    "test": "cross-env PORT=5000 nyc --reporter=text-summary mocha --reporter=list dist/tests/index.js",
+    "prettify": "prettier --single-quote --tab-width 4 --write \"**/*.ts\"",
+    "linter": "tslint -c tslint.json -p tsconfig.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/COMP30022-18/Russia_Server.git"
+  },
+  "author": "Team Russia",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/COMP30022-18/Russia_Server/issues"
+  },
+  "homepage": "https://github.com/COMP30022-18/Russia_Server#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "helmet": "^3.13.0"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.1.4",
+    "@types/chai-http": "^3.0.5",
+    "@types/dotenv": "^4.0.3",
+    "@types/express": "^4.16.0",
+    "@types/helmet": "0.0.38",
+    "@types/mocha": "^5.2.5",
+    "chai": "^4.1.2",
+    "chai-http": "^4.0.0",
+    "cross-env": "^5.2.0",
+    "dotenv": "^6.0.0",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.18.3",
+    "nyc": "^12.0.2",
+    "prettier": "^1.14.2",
+    "tslint": "^5.11.0",
+    "typescript": "^3.0.1"
+  }
+}
