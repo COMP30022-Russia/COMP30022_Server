@@ -37,6 +37,7 @@ TBD
 
 ## Configuration
 Here are a list of environment variables which will need to be configured.
+
 | Name        | Default value | Description |
 | ----------- | ------------- | ----------- |
 | Port        | 3000          | Port that server runs on |
