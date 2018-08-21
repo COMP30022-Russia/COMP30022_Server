@@ -47,7 +47,6 @@
     "typescript": "^3.0.1"
   },
   "pre-commit": [
-    "prettify",
     "linter",
     "test"
   ]
