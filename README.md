@@ -1,6 +1,10 @@
 # Russia Server
 ## Installation
 - Install `Node.JS` and `npm`
+- Install `postgresql`
+  - Initialise database and start database server
+  - Create a user with the same name as your username
+  - Create a database named `russia`
 
 ## Development
 - Clone repository
@@ -27,18 +31,21 @@ This command will watch the files and restart the server when changes are made.
     npm run test
     ````
 
-## Builds
+## Deployment
 ### The quick way
 Run `npm run build`, which will build the project to the `dist/` folder.
-The server can then be started using `npm start` from within the `dist/` folder.
+The server can then be started using `npm start` from within the `dist/` folder, given that the required environment variables have been provided.
 
 ### Docker
-TBD
+- Install `docker` and `docker-compose`
+- Copy `.env.sample` to `.env` and fill with required keys and secrets
+- Run `docker compose up`
 
 ## Configuration
 Here are a list of environment variables which will need to be configured.
 
 | Name        | Default value | Description |
 | ----------- | ------------- | ----------- |
-| Port        | 3000          | Port that server runs on |
+| PORT        | 3000          | Port that server runs on |
 | NODE_ENV    | undefined     | Environment of server (`development` for local development, `production` for deployed builds, etc.) |
+| JWT_SECRET  | 'default'     | Secret that is used to sign JWT tokens |

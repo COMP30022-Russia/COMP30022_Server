@@ -1,8 +1,9 @@
-// Server configuration
-// Adapted from https://github.com/YC/Workflow/blob/dist/src/app.ts
 import express, { Request, Response, NextFunction } from 'express';
 import bodyParser from 'body-parser';
 import helmet from 'helmet';
+
+// Import router
+import router from './routes';
 
 // Init express
 const app = express();
@@ -15,7 +16,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(helmet());
 
 // Init routes
-import router from './routes';
 app.use('/', router);
 
 // Catch 404 and forward to error handler

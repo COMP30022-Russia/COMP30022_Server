@@ -1,12 +1,13 @@
 // Starts server
 // Adapated from: https://github.com/YC/Workflow/blob/dist/src/bin/www.ts
 import http, { Server } from 'http';
+
+// Set environment variables and initialise app
+import './server_load_env';
 import app from './app';
 
-// Configure dotenv for development environment
-if (app.get('env') === 'development') {
-    require('dotenv').config();
-}
+// Initialise database
+import models from './models';
 
 // Get port from Node environment and set provided port
 const port: string = process.env.PORT || '3000';
@@ -15,8 +16,29 @@ app.set('port', port);
 // Create HTTP server
 const server: Server = http.createServer(app);
 
-// Listen for HTTP requests on provided port
-server.listen(port);
+// Connect to database, sync tables and start server
+export default (async () => {
+    try {
+        // Get database information
+        const db_port = models.sequelize.config.port;
+        const db_host = models.sequelize.config.host;
+
+        // Test connection by trying to authenticate
+        await models.sequelize.authenticate();
+        console.log(`Database running on port ${db_port} of host ${db_host}`);
+
+        // Sync all defined models
+        await models.sequelize.sync();
+
+        // Create listener on port
+        await server.listen(port);
+    } catch (err) {
+        console.error(err);
+        process.exit(1);
+    }
+})();
+
+// Event listener for HTTP server "listening" event
 server.on('listening', function() {
     const addr = server.address();
     const bind =
@@ -45,4 +67,6 @@ server.on('error', function(err: any) {
             throw err;
     }
 });
-export default app;
+
+export const sequelize = models.sequelize;
+export { app };
