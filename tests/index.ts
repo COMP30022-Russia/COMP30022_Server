@@ -11,7 +11,7 @@ before(async () => {
     // Wait for server to start
     await server;
     // Drop and resync tables
-    await sequelize.drop();
+    await sequelize.drop({ cascade: true });
     await sequelize.sync();
 });
 

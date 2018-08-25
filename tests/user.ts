@@ -9,7 +9,7 @@ describe('User', () => {
             name: 'Person 1',
             username: 'p1',
             password: 'p1',
-            age: 30,
+            DOB: '1997-08-25',
             mobileNumber: '0',
             type: 'Carer'
         });
@@ -20,13 +20,13 @@ describe('User', () => {
         expect(res.body).to.have.property('name');
         expect(res.body).to.have.property('username');
         expect(res.body).to.not.have.property('password');
-        expect(res.body).to.have.property('age');
+        expect(res.body).to.have.property('DOB');
         expect(res.body).to.have.property('mobileNumber');
         expect(res.body).to.have.property('type');
 
         expect(res.body.name).to.equal('Person 1');
         expect(res.body.username).to.equal('p1');
-        expect(res.body.age).to.equal(30);
+        expect(res.body.DOB).to.equal('1997-08-25');
         expect(res.body.mobileNumber).to.equal('0');
         expect(res.body.type).to.equal('Carer');
     });
@@ -36,7 +36,7 @@ describe('User', () => {
             name: 'AP 1',
             username: 'a1',
             password: 'a1',
-            age: 70,
+            DOB: '1950-08-25',
             mobileNumber: '0',
             type: 'AP',
             emergencyContactName: 'Person 1',
@@ -49,7 +49,7 @@ describe('User', () => {
         expect(res.body).to.have.property('name');
         expect(res.body).to.have.property('username');
         expect(res.body).to.not.have.property('password');
-        expect(res.body).to.have.property('age');
+        expect(res.body).to.have.property('DOB');
         expect(res.body).to.have.property('mobileNumber');
         expect(res.body).to.have.property('type');
         expect(res.body).to.have.property('emergencyContactName');
@@ -57,7 +57,7 @@ describe('User', () => {
 
         expect(res.body.name).to.equal('AP 1');
         expect(res.body.username).to.equal('a1');
-        expect(res.body.age).to.equal(70);
+        expect(res.body.DOB).to.equal('1950-08-25');
         expect(res.body.mobileNumber).to.equal('0');
         expect(res.body.type).to.equal('AP');
         expect(res.body.emergencyContactName).to.equal('Person 1');
@@ -130,13 +130,13 @@ describe('User', () => {
         expect(res.body).to.have.property('name');
         expect(res.body).to.have.property('username');
         expect(res.body).to.not.have.property('password');
-        expect(res.body).to.have.property('age');
+        expect(res.body).to.have.property('DOB');
         expect(res.body).to.have.property('mobileNumber');
         expect(res.body).to.have.property('type');
 
         expect(res.body.name).to.equal('Person 1');
         expect(res.body.username).to.equal('p1');
-        expect(res.body.age).to.equal(30);
+        expect(res.body.DOB).to.equal('1997-08-25');
         expect(res.body.mobileNumber).to.equal('0');
         expect(res.body.type).to.equal('Carer');
     });

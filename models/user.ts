@@ -15,7 +15,7 @@ const userSchema = {
     type: { type: Sequelize.ENUM('Carer', 'AP') },
     name: { type: Sequelize.STRING, allowNull: false },
     mobileNumber: { type: Sequelize.STRING, allowNull: false },
-    age: { type: Sequelize.INTEGER },
+    DOB: { type: Sequelize.DATEONLY },
     emergencyContactName: { type: Sequelize.STRING },
     emergencyContactNumber: { type: Sequelize.STRING }
 };
