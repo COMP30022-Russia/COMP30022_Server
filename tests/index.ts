@@ -7,7 +7,8 @@ chai.use(chaiHttp);
 import server, { app, sequelize } from '../server';
 export default app;
 
-before(async () => {
+before(async function() {
+    this.timeout(10000);
     // Wait for server to start
     await server;
     // Drop and resync tables
@@ -18,6 +19,7 @@ before(async () => {
 // Import (and run) tests
 import './home';
 import './user';
+import './association';
 
 // Stop server
 after(done => {

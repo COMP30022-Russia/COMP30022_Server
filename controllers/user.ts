@@ -47,7 +47,7 @@ export const login = async (
 
     try {
         // Get user with given username
-        const user = await models.User.find({
+        const user = await models.User.scope('withPassword').find({
             where: {
                 username
             }

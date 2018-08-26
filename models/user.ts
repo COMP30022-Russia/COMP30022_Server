@@ -43,6 +43,20 @@ export default class User extends Sequelize.Model {
                         return sequelize.Promise.reject(err);
                     }
                 }
+            },
+            // Exclude password by default
+            defaultScope: {
+                attributes: { exclude: ['password'] }
+            },
+            scopes: {
+                // Only retrieve type of user
+                type: {
+                    attributes: ['type']
+                },
+                // Retrieve every attribute (which includes 'password')
+                withPassword: {
+                    attributes: {}
+                }
             }
         });
     }

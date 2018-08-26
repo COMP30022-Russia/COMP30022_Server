@@ -36,7 +36,7 @@ app.use(function(err: Error, req: Request, res: Response, next: NextFunction) {
     }
 
     // If internal server error has occurred, print error and set status code
-    if (!res.statusCode) {
+    if (res.statusCode === 200) {
         console.error(err.stack);
         res.status(500);
     }

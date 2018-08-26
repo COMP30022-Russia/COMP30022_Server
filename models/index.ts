@@ -53,6 +53,8 @@ User.belongsToMany(User, {
     as: 'AP',
     foreignKey: 'APId'
 });
+Association.belongsTo(User, { as: 'AP', foreignKey: 'APId' });
+Association.belongsTo(User, { as: 'Carer', foreignKey: 'carerId' });
 
 // User is associated with multiple locations
 User.hasMany(Location, { as: 'location', foreignKey: 'userId' });
