@@ -18,6 +18,11 @@ export const register = async (
             res.status(422);
             return next(err);
         }
+        if (!user.address) {
+            const err = new Error('Missing address.');
+            res.status(422);
+            return next(err);
+        }
     }
 
     // Create user and return created user

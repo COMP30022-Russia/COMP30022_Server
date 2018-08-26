@@ -17,7 +17,8 @@ const userSchema = {
     mobileNumber: { type: Sequelize.STRING, allowNull: false },
     DOB: { type: Sequelize.DATEONLY },
     emergencyContactName: { type: Sequelize.STRING },
-    emergencyContactNumber: { type: Sequelize.STRING }
+    emergencyContactNumber: { type: Sequelize.STRING },
+    address: { type: Sequelize.STRING }
 };
 
 /**
