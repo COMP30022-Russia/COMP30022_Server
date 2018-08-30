@@ -1,0 +1,33 @@
+# Base image
+image: node:latest
+
+# Environment variables
+variables:
+  POSTGRES_DB: russia
+  POSTGRES_USER: russia
+  POSTGRES_PASSWORD: ""
+  DB_HOST: postgres
+  PORT: 3000
+  JWT_SECRET: random_secret
+
+# Add mongo
+services:
+  - postgres:latest
+
+# Specify cache
+cache:
+  paths:
+    - node_modules/
+
+# Install dependencies and build app before running tests
+before_script:
+  - npm install
+  - npm run build
+
+stages:
+  - test
+
+test:
+  stage: test
+  script:
+   - NODE_ENV=production npm test
