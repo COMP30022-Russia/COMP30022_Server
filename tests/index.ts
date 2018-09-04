@@ -20,6 +20,7 @@ before(async function() {
 import './home';
 import './user';
 import './association';
+import './location';
 
 // Stop server
 after(done => {

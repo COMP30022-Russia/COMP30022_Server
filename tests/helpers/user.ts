@@ -53,3 +53,21 @@ export const createAP = async (username: string): Promise<string> => {
         .send({ username: username, password: username });
     return res.body.token;
 };
+
+/**
+ * Creates an association between an AP and a carer.
+ * @param {string} token1 Auth token of first user.
+ * @param {string} token2 Auth token of second user.
+ */
+export const createAssociation = async (
+    token1: string,
+    token2: string
+): Promise<any> => {
+    const token = await agent
+        .get('/me/association_token')
+        .set('Authorization', 'Bearer ' + token1);
+    return await agent
+        .post('/me/associate')
+        .set('Authorization', 'Bearer ' + token2)
+        .send({ token: token.body.token });
+};

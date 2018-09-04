@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { Op } from 'sequelize';
 import { jwt_verify } from '../helpers/jwt';
 import models from '../models';
 
@@ -56,6 +57,43 @@ export let getAuthedUser = async (
         req.user = user;
     } catch (err) {
         res.status(401);
+        next(err);
+    }
+};
+
+// Ensure that the requested user is associated with the user who is requested
+export let ensureAssociated = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    // Extract userID
+    const targetID = req.params.userID;
+    const requesterID = req.userID;
+
+    try {
+        // Try to find an association between the requester and the target user
+        const association = await models.Association.findOne({
+            where: {
+                active: true,
+                [Op.or]: [
+                    {
+                        [Op.and]: [{ APId: requesterID }, { carerId: targetID }]
+                    },
+                    { [Op.and]: [{ APId: targetID }, { carerId: requesterID }] }
+                ]
+            },
+            attributes: ['id']
+        });
+
+        // Ensure that association exists
+        if (!association) {
+            throw new Error('Cannot access details of requested user');
+        }
+
+        next();
+    } catch (err) {
+        res.status(403);
         next(err);
     }
 };

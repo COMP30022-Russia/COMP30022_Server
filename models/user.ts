@@ -53,6 +53,10 @@ export default class User extends Sequelize.Model {
                 type: {
                     attributes: ['type']
                 },
+                // Location scope - retrieve id, type and location of user
+                location: {
+                    attributes: ['id', 'type', 'currentLocationId']
+                },
                 // Retrieve every attribute (which includes 'password')
                 withPassword: {
                     attributes: {}

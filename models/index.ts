@@ -41,6 +41,7 @@ db.Message = Message;
 db.Destination = Destination;
 db.Session = Session;
 db.Emergency = Emergency;
+db.Location = Location;
 
 // User-user through Association table
 User.belongsToMany(User, {
@@ -58,6 +59,11 @@ Association.belongsTo(User, { as: 'Carer', foreignKey: 'carerId' });
 
 // User is associated with multiple locations
 User.hasMany(Location, { as: 'location', foreignKey: 'userId' });
+User.belongsTo(Location, {
+    as: 'CurrentLocation',
+    foreignKey: 'currentLocationId',
+    constraints: false
+});
 
 // Message is associated with an author (a user) and an association
 Message.belongsTo(User, { as: 'author' });
