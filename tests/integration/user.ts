@@ -1,5 +1,5 @@
 import { expect, request } from 'chai';
-import app from './';
+import app from '../';
 
 describe('User', () => {
     const agent = request.agent(app);

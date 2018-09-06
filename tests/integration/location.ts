@@ -1,8 +1,8 @@
 import { expect, request } from 'chai';
-import app from './';
-import { createAP, createCarer, createAssociation } from './helpers/user';
+import app from '../';
+import { createAP, createCarer, createAssociation } from '../helpers/user';
 
-describe('Association', () => {
+describe('Location', () => {
     const agent = request.agent(app);
 
     // Tokens
@@ -121,8 +121,6 @@ describe('Association', () => {
             .set('Authorization', 'Bearer ' + maliciousCarerToken);
         expect(res).to.be.json;
         expect(res).to.have.status(403);
-        expect(res.body.message).to.equal(
-            'Cannot access details of requested user'
-        );
+        expect(res.body.message).to.equal('User is not party of association');
     });
 });

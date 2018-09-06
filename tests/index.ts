@@ -16,11 +16,8 @@ before(async function() {
     await sequelize.sync();
 });
 
-// Import (and run) tests
-import './home';
-import './user';
-import './association';
-import './location';
+// Import tests
+import './integration';
 
 // Stop server
 after(done => {

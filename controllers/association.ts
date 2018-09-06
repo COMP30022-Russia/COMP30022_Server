@@ -163,7 +163,7 @@ export const getAssociation = async (
         // carer/AP for the association and populate the other user
         const association = await models.Association.findOne({
             where: {
-                id: req.params.id,
+                id: req.params.associationID,
                 active: true,
                 [Op.or]: [{ APId: req.userID }, { carerId: req.userID }]
             },

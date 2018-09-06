@@ -62,7 +62,7 @@ export let getAuthedUser = async (
 };
 
 // Ensure that the requested user is associated with the user who is requested
-export let ensureAssociated = async (
+export let ensureRequestedUserIsAssociated = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -88,7 +88,7 @@ export let ensureAssociated = async (
 
         // Ensure that association exists
         if (!association) {
-            throw new Error('Cannot access details of requested user');
+            throw new Error('User is not party of association');
         }
 
         next();
