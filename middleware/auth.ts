@@ -41,26 +41,6 @@ export let authenticate = async (
     }
 };
 
-// Retrieves the details of the user who made the request
-export let getAuthedUser = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
-        // Get user
-        const user = await models.User.findById(req.userID);
-        if (!user) {
-            console.error('Token signed with invalid user ID');
-            throw new Error('User cannot be found');
-        }
-        req.user = user;
-    } catch (err) {
-        res.status(401);
-        next(err);
-    }
-};
-
 // Ensure that the requested user is associated with the user who is requested
 export let ensureRequestedUserIsAssociated = async (
     req: Request,
@@ -94,6 +74,6 @@ export let ensureRequestedUserIsAssociated = async (
         next();
     } catch (err) {
         res.status(403);
-        next(err);
+        return next(err);
     }
 };

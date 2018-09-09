@@ -10,7 +10,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'default';
  * @return {Promise} Promise object representing the JWT token.
  */
 export const jwt_sign = (payload: any, expiresIn?: string): Promise<string> => {
-    //
+    // If applicable, define expiry option
     const options: any = {};
     if (expiresIn) {
         options.expiresIn = expiresIn;

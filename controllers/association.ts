@@ -18,7 +18,7 @@ export const getAssociationToken = async (
         const token = await jwt_sign(payload, '1h');
 
         // Return signed token
-        res.json({ token });
+        return res.json({ token });
     } catch (err) {
         next(new Error('Association token could not be generated'));
     }
@@ -97,7 +97,7 @@ export const createAssociation = async (
         return res.json({ status: 'success' });
     } catch (err) {
         res.status(400);
-        next(err);
+        return next(err);
     }
 };
 
@@ -182,8 +182,8 @@ export const getAssociation = async (
 
         // Rename 'AP'/'Carer' key to 'user'
         const { [oppositeType]: user, ...other } = association.toJSON();
-        res.json({ ...other, user });
+        return res.json({ ...other, user });
     } catch (err) {
-        next(err);
+        return next(err);
     }
 };

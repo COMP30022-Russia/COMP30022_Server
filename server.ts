@@ -47,6 +47,7 @@ server.on('listening', function() {
 });
 
 // Event listener for HTTP server "error" event
+// istanbul ignore next
 server.on('error', function(err: any) {
     if (err.syscall !== 'listen') {
         throw err;

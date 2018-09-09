@@ -14,12 +14,12 @@ export const register = async (
     // If the user is an AP
     if (user.type === 'AP') {
         if (!user.emergencyContactName || !user.emergencyContactNumber) {
-            const err = new Error('Missing emergency contact details.');
+            const err = new Error('Missing emergency contact details');
             res.status(422);
             return next(err);
         }
         if (!user.address) {
-            const err = new Error('Missing address.');
+            const err = new Error('Missing address');
             res.status(422);
             return next(err);
         }
@@ -31,7 +31,7 @@ export const register = async (
         return res.json(created.toJSON());
     } catch (err) {
         res.status(422);
-        next(err);
+        return next(err);
     }
 };
 
@@ -59,7 +59,7 @@ export const login = async (
 
         // Verify the password and return the user and a token
         if (await user.verifyPassword(password)) {
-            res.json({
+            return res.json({
                 ...user.toJSON(),
                 token: await jwt_sign({ id: user.id })
             });

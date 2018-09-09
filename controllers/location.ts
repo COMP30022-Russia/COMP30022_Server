@@ -1,6 +1,22 @@
 import { Request, Response, NextFunction } from 'express';
 import models from '../models';
 
+/**
+ * Retrieves the most recent location of the specified user
+ * @param {number} id ID of user.
+ * @return {Promise} Promise for the location of the user.
+ */
+const getLocation = async (id: number): Promise<any> => {
+    // Get specified user
+    const user = await models.User.scope('location').findById(id);
+    // Ensure that only APs' locations are accessed
+    if (user.type !== 'AP') {
+        throw new Error("Only APs' locations can be accessed");
+    }
+    // Get and return location
+    return await user.getCurrentLocation();
+};
+
 // Get the authenticated user's location
 export const getSelfLocation = async (
     req: Request,
@@ -8,19 +24,12 @@ export const getSelfLocation = async (
     next: NextFunction
 ) => {
     try {
-        // Get authenticated user
-        const user = await models.User.scope('location').findById(req.userID);
-        // Ensure that only APs are accessing their own location
-        if (user.type !== 'AP') {
-            throw new Error('Only APs are allowed to view their own location');
-        }
-
-        // Get and return location
-        const location = await user.getCurrentLocation();
+        // Get and return location of currently authenticated user
+        const location = await getLocation(req.userID);
         return res.json({ location });
     } catch (err) {
         res.status(400);
-        next(err);
+        return next(err);
     }
 };
 
@@ -31,21 +40,12 @@ export const getUserLocation = async (
     next: NextFunction
 ) => {
     try {
-        // Get requested user
-        const user = await models.User.scope('location').findById(
-            req.params.userID
-        );
-        // Ensure that only APs' locations can be accessed
-        if (user.type !== 'AP') {
-            throw new Error("Can only view APs' locations");
-        }
-
-        // Get and return location
-        const location = await user.getCurrentLocation();
+        // Get and return location of specified user
+        const location = await getLocation(req.params.userID);
         return res.json({ location });
     } catch (err) {
         res.status(400);
-        next(err);
+        return next(err);
     }
 };
 

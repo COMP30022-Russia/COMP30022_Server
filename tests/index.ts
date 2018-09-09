@@ -1,7 +1,9 @@
 import 'mocha';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
+import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiHttp);
+chai.use(chaiAsPromised);
 
 // Start app
 import server, { app, sequelize } from '../server';
@@ -17,13 +19,11 @@ before(async function() {
 });
 
 // Import tests
+import './unit';
 import './integration';
 
 // Stop server
 after(done => {
     app.listen(process.env.PORT || 5000).close();
-    sequelize.close().then(() => {
-        console.log('Server ended');
-    });
     done();
 });

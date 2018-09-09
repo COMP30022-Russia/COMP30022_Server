@@ -11,6 +11,6 @@ export const verifyIDParam = function(name: string) {
             res.status(400);
             return next(new Error(`Invalid param ${name}`));
         }
-        next();
+        return next();
     };
 };
