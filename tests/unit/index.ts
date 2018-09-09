@@ -7,6 +7,7 @@ import './middleware';
 import './accounts';
 import './association';
 import './location';
+import './chat';
 
 // Define res.json stub to return first argument
 const resJSONStub: SinonStub = sinon.stub().returnsArg(0);

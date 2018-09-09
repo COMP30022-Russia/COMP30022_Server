@@ -47,11 +47,15 @@ describe('Unit - Association - Create association', () => {
         sandbox.replace(models.Association, 'find', sinon.fake());
 
         // Replace association creation function
-        sandbox.replace(models.Association, 'create', sinon.fake());
+        sandbox.replace(
+            models.Association,
+            'create',
+            sinon.stub().returns({ id: 1 })
+        );
 
         const result = await association.createAssociation(req, res, next);
-        expect(result).to.have.property('status');
-        expect(result.status).to.equal('success');
+        expect(result).to.have.property('id');
+        expect(result.id).to.equal(1);
     });
 
     it('Create association as Carer', async () => {
@@ -75,11 +79,15 @@ describe('Unit - Association - Create association', () => {
         sandbox.replace(models.Association, 'find', sinon.fake());
 
         // Replace association creation function
-        sandbox.replace(models.Association, 'create', sinon.fake());
+        sandbox.replace(
+            models.Association,
+            'create',
+            sinon.stub().returns({ id: 1 })
+        );
 
         const result = await association.createAssociation(req, res, next);
-        expect(result).to.have.property('status');
-        expect(result.status).to.equal('success');
+        expect(result).to.have.property('id');
+        expect(result.id).to.equal(1);
     });
 
     it('Bad token', async () => {

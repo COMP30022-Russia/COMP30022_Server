@@ -93,8 +93,8 @@ export const createAssociation = async (
         }
 
         // If association does not exist, create it
-        await models.Association.create({ carerId, APId });
-        return res.json({ status: 'success' });
+        const created = await models.Association.create({ carerId, APId });
+        return res.json(created);
     } catch (err) {
         res.status(400);
         return next(err);

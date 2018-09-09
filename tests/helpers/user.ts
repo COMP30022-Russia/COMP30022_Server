@@ -58,16 +58,18 @@ export const createAP = async (username: string): Promise<string> => {
  * Creates an association between an AP and a carer.
  * @param {string} token1 Auth token of first user.
  * @param {string} token2 Auth token of second user.
+ * @returns {number} The ID of the association.
  */
 export const createAssociation = async (
     token1: string,
     token2: string
-): Promise<any> => {
+): Promise<number> => {
     const token = await agent
         .get('/me/association_token')
         .set('Authorization', 'Bearer ' + token1);
-    return await agent
+    const association = await agent
         .post('/me/associate')
         .set('Authorization', 'Bearer ' + token2)
         .send({ token: token.body.token });
+    return association.body.id;
 };

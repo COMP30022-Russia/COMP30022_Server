@@ -90,7 +90,7 @@ describe('Association', () => {
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res).to.have.property('status');
-        expect(res.body.status).to.equal('success');
+        expect(res.body).to.have.property('id');
 
         // Get carer2 to initiate association request
         const res2 = await agent
@@ -100,7 +100,7 @@ describe('Association', () => {
         expect(res2).to.be.json;
         expect(res2).to.have.status(200);
         expect(res2).to.have.property('status');
-        expect(res2.body.status).to.equal('success');
+        expect(res2.body).to.have.property('id');
     });
 
     it('Create association - Carer -> AP', async () => {
@@ -117,7 +117,7 @@ describe('Association', () => {
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res).to.have.property('status');
-        expect(res.body.status).to.equal('success');
+        expect(res.body).to.have.property('id');
     });
 
     it('Create association - Invalid duplicate association', async () => {
