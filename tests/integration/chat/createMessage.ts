@@ -8,10 +8,13 @@ describe('Chat - Create Message', () => {
     let associationID: number;
 
     before(async () => {
-        // Create AP, carer and association
+        // Create AP, carer
         APToken = await createAP('ca1');
         carerToken = await createCarer('cc1');
-        associationID = await createAssociation(APToken, carerToken);
+
+        // Create association
+        const association = await createAssociation(APToken, carerToken);
+        associationID = association.id;
     });
 
     it('AP creates message', async () => {

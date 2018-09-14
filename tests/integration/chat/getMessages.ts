@@ -31,10 +31,13 @@ describe('Chat - Create Message', () => {
     const messages: any = [];
 
     before(async () => {
-        // Create AP, carer and association
+        // Create AP, carer
         APToken = await createAP('ca2');
         carerToken = await createCarer('cc2');
-        associationID = await createAssociation(APToken, carerToken);
+
+        // Create association
+        const association = await createAssociation(APToken, carerToken);
+        associationID = association.id;
 
         // Create 5 messages
         for (const i in [...Array(15)]) {

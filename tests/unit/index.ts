@@ -4,10 +4,12 @@ import sinon, { SinonStub, SinonSpy, SinonFake } from 'sinon';
 import './models/user';
 import './helpers';
 import './middleware';
+
 import './accounts';
 import './association';
-import './location';
 import './chat';
+import './location';
+import './user';
 
 // Define res.json stub to return first argument
 const resJSONStub: SinonStub = sinon.stub().returnsArg(0);

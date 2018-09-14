@@ -57,6 +57,10 @@ export default class User extends Sequelize.Model {
                 location: {
                     attributes: ['id', 'type', 'currentLocationId']
                 },
+                // Retrieve with location
+                withLocation: {
+                    attributes: { include: ['currentLocationId'] }
+                },
                 // Retrieve every attribute (which includes 'password')
                 withPassword: {
                     attributes: {}
