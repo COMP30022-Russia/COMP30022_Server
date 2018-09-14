@@ -65,13 +65,13 @@ describe('Unit - Association - Get associations', () => {
         const result = await getAssociations(req, res, next);
         expect(result).to.be.an('array');
 
-        expect(result[0].id).to.equal(500);
-        expect(result[0].user.id).to.equal(2);
-        expect(result[0].user.foo).to.equal('bar');
+        expect(result[0].id).to.equal(association1.id);
+        expect(result[0].user.id).to.equal(association1.Carer.id);
+        expect(result[0].user.foo).to.equal(association1.Carer.foo);
 
-        expect(result[1].id).to.equal(400);
-        expect(result[1].user.id).to.equal(5);
-        expect(result[1].user.foo).to.equal('bar2');
+        expect(result[1].id).to.equal(association2.id);
+        expect(result[1].user.id).to.equal(association2.Carer.id);
+        expect(result[1].user.foo).to.equal(association2.Carer.foo);
     });
 
     it('Retrieve as Carer', async () => {
@@ -120,13 +120,13 @@ describe('Unit - Association - Get associations', () => {
         const result = await getAssociations(req, res, next);
         expect(result).to.be.an('array');
 
-        expect(result[0].id).to.equal(600);
-        expect(result[0].user.id).to.equal(8);
-        expect(result[0].user.foo).to.equal('bar');
+        expect(result[0].id).to.equal(association1.id);
+        expect(result[0].user.id).to.equal(association1.AP.id);
+        expect(result[0].user.foo).to.equal(association1.AP.foo);
 
-        expect(result[1].id).to.equal(700);
-        expect(result[1].user.id).to.equal(9);
-        expect(result[1].user.foo).to.equal('bar2');
+        expect(result[1].id).to.equal(association2.id);
+        expect(result[1].user.id).to.equal(association2.AP.id);
+        expect(result[1].user.foo).to.equal(association2.AP.foo);
     });
 
     it('Retrieve as Carer with no associations', async () => {

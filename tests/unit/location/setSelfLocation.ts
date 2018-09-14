@@ -47,7 +47,7 @@ describe('Unit - Location - Set Location', () => {
         expect(result).to.deep.equal({ status: 'success' });
         // Expect setLocation to receive given location and userId as object
         expect(setLocationSpy.getCall(0).args[0]).to.deep.equal(
-            Object.assign(req.body, { userId: 1 })
+            Object.assign(req.body, { userId: req.userID })
         );
     });
 

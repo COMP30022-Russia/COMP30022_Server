@@ -50,10 +50,10 @@ describe('Unit - Association - Get specific association', () => {
         // @ts-ignore
         const result = await getAssociation(req, res, next);
         // Association ID
-        expect(result.id).to.equal(500);
+        expect(result.id).to.equal(associationValue.id);
         // Associated user data (the associated carer's data)
-        expect(result.user.id).to.equal(2);
-        expect(result.user.foo).to.equal('bar');
+        expect(result.user.id).to.equal(associationValue.Carer.id);
+        expect(result.user.foo).to.equal(associationValue.Carer.foo);
     });
 
     it('Retrieve as Carer', async () => {
@@ -87,10 +87,10 @@ describe('Unit - Association - Get specific association', () => {
         // @ts-ignore
         const result = await getAssociation(req, res, next);
         // Association ID
-        expect(result.id).to.equal(500);
+        expect(result.id).to.equal(associationValue.id);
         // Associated user data (the associated AP's data)
-        expect(result.user.id).to.equal(1);
-        expect(result.user.foo).to.equal('bar');
+        expect(result.user.id).to.equal(associationValue.AP.id);
+        expect(result.user.foo).to.equal(associationValue.AP.foo);
     });
 
     it('Retrieve as Carer without being member of association', async () => {

@@ -31,8 +31,8 @@ describe('Unit - Chat - Get messages', () => {
         // @ts-ignore
         const result = await getMessages(req, res, next);
         const dbQuery = result.messages;
-        expect(dbQuery.limit).to.equal(2);
-        expect(dbQuery.where.associationId).to.equal(1);
+        expect(dbQuery.limit).to.equal(req.query.limit);
+        expect(dbQuery.where.associationId).to.equal(req.params.associationID);
     });
 
     it('No limit', async () => {
@@ -49,7 +49,7 @@ describe('Unit - Chat - Get messages', () => {
         const result = await getMessages(req, res, next);
         const dbQuery = result.messages;
         expect(dbQuery.limit).to.equal(10);
-        expect(dbQuery.where.associationId).to.equal(1);
+        expect(dbQuery.where.associationId).to.equal(req.params.associationID);
     });
 
     it('No messages', async () => {

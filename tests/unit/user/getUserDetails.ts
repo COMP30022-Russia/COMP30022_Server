@@ -2,7 +2,7 @@ import { expect, request } from 'chai';
 import sinon from 'sinon';
 import { res, next } from '../index';
 
-import { getUserDetails } from '../../../controllers/user_details';
+import { getUserDetails } from '../../../controllers/user';
 import models from '../../../models';
 
 describe('Unit - User Details', () => {

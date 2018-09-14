@@ -2,7 +2,7 @@ import { expect, request } from 'chai';
 import sinon from 'sinon';
 import { res, next } from '../index';
 
-import { register } from '../../../controllers/user';
+import { register } from '../../../controllers/auth';
 import models from '../../../models';
 
 describe('Unit - User - Register', () => {

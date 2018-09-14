@@ -33,7 +33,7 @@ describe('Unit - Middleware - Authenticate', () => {
         // Call middleware, with a valid authorization header
         // @ts-ignore
         await auth.authenticate(req, res, nextSpy);
-        expect(nextSpy.getCall(0).args).to.have.lengthOf(0);
+        expect(nextSpy.calledWithExactly()).to.equal(true);
     });
 
     it('Header missing', async () => {

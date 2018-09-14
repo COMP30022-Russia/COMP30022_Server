@@ -13,7 +13,7 @@ describe('Unit - User - Login', () => {
         // Stub JWT sign function to return '1234'
         const JWTSignStub = sandbox.stub().returns('1234');
         // Import the user controllers with the jwt_sign function stubbed
-        user = proxyquire('../../../controllers/user', {
+        user = proxyquire('../../../controllers/auth', {
             '../helpers/jwt': { jwt_sign: JWTSignStub }
         });
     });

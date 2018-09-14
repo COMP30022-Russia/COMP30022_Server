@@ -1,73 +1,31 @@
 import { Request, Response, NextFunction } from 'express';
-import { jwt_sign } from '../helpers/jwt';
 import models from '../models';
 
-// User registration
-export const register = async (
+// Retrieves user information
+export const getUserDetails = async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    // Extract body
-    const user: any = { ...req.body };
+    // Extract ID from params
+    const id = req.params.userID;
 
-    // If the user is an AP
-    if (user.type === 'AP') {
-        if (!user.emergencyContactName || !user.emergencyContactNumber) {
-            const err = new Error('Missing emergency contact details');
-            res.status(422);
-            return next(err);
-        }
-        if (!user.address) {
-            const err = new Error('Missing address');
-            res.status(422);
-            return next(err);
-        }
-    }
-
-    // Create user and return created user
+    // Perform query
     try {
-        const created = await models.User.create(user);
-        return res.json(created.toJSON());
-    } catch (err) {
-        res.status(422);
-        return next(err);
-    }
-};
+        // Get user info
+        const user = await models.User.scope('withLocation').findById(id);
 
-// Login
-export const login = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    // Get username/password from request
-    const username = req.body.username;
-    const password = req.body.password;
-
-    try {
-        // Get user with given username
-        const user = await models.User.scope('withPassword').find({
-            where: {
-                username
-            }
-        });
-        // If user cannot be found
-        if (!user) {
-            throw new Error('Username/password incorrect');
-        }
-
-        // Verify the password and return the user and a token
-        if (await user.verifyPassword(password)) {
+        // Get location if user is AP
+        if (user.type === 'AP') {
             return res.json({
                 ...user.toJSON(),
-                token: await jwt_sign({ id: user.id })
+                location: await user.getCurrentLocation()
             });
-        } else {
-            throw new Error('Username/password incorrect');
         }
+        // If not, just return user
+        return res.json(user.toJSON());
     } catch (err) {
-        res.status(401);
+        res.status(400);
         return next(err);
     }
 };

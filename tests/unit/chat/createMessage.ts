@@ -19,19 +19,21 @@ describe('Unit - Chat - Create message', () => {
                 associationID: 3
             }
         };
+        // ID of created message
+        const createdMessageID: number = 1;
 
         // Replace create function by getting it to return its argument
         // but with an ID field
         sandbox.replace(models.Message, 'create', (input: any) => {
-            return Object.assign(input, { id: 1 });
+            return Object.assign(input, { id: createdMessageID });
         });
 
         // Should get message with ID back
         // @ts-ignore
         const result = await createMessage(req, res, next);
-        expect(result.id).to.equal(1);
-        expect(result.authorId).to.equal(2);
-        expect(result.associationId).to.equal(3);
+        expect(result.id).to.equal(createdMessageID);
+        expect(result.authorId).to.equal(req.userID);
+        expect(result.associationId).to.equal(req.params.associationID);
     });
 
     it('Create message without message', async () => {

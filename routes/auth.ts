@@ -2,7 +2,7 @@ import express, { Router } from 'express';
 const router: Router = express.Router();
 
 // Import controllers
-import { register, login } from '../controllers/user';
+import { register, login } from '../controllers/auth';
 
 // User registration
 router.post('/register', register);

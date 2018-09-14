@@ -1,7 +1,7 @@
 // Import tests
 import './home';
-import './user';
+import './auth';
 import './association';
 import './location';
 import './chat';
-import './user_details';
+import './user';

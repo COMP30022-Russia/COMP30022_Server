@@ -7,8 +7,7 @@ import { verifyIDParam } from '../../../middleware/params';
 describe('Unit - Middleware - Params', () => {
     it('Correct', async () => {
         // Define next
-        const next = sinon.stub();
-        next.returns(0);
+        const next = sinon.spy();
 
         // Request with valid param
         const req = {
@@ -17,13 +16,14 @@ describe('Unit - Middleware - Params', () => {
             }
         };
 
+        // Expect next() to be called with no arguments
         // @ts-ignore
         const result = await verifyIDParam('id')(req, res, next);
-        expect(result).to.equal(0);
+        expect(next.calledWithExactly()).to.equal(true);
     });
 
     it('Null', async () => {
-        // Define next
+        // Define next to return first argument
         const next = sinon.stub();
         next.returnsArg(0);
 
@@ -39,7 +39,7 @@ describe('Unit - Middleware - Params', () => {
     });
 
     it('Invalid', async () => {
-        // Define next
+        // Define next to return first argument
         const next = sinon.stub();
         next.returnsArg(0);
 

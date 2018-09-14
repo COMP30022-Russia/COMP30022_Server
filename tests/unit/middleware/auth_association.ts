@@ -28,7 +28,7 @@ describe('Unit - Middleware - Ensure Requested User is Associated', () => {
         // Call middleware, expect next() to be called with 0 arguments
         // @ts-ignore
         await ensureRequestedUserIsAssociated(req, res, nextSpy);
-        expect(nextSpy.getCall(0).args).to.have.lengthOf(0);
+        expect(nextSpy.calledWithExactly()).to.equal(true);
     });
 
     it('Is not associated', async () => {

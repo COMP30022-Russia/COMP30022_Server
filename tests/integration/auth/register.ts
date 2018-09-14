@@ -1,18 +1,20 @@
 import { expect, request } from 'chai';
-import app from '../';
+import app from '../../';
 
-describe('User', () => {
+describe('User register', () => {
     const agent = request.agent(app);
 
     it('Register as Carer', async () => {
-        const res = await agent.post('/users/register').send({
+        const user = {
             name: 'Person 1',
             username: 'p1',
             password: 'p1',
             DOB: '1997-08-25',
             mobileNumber: '0',
             type: 'Carer'
-        });
+        };
+
+        const res = await agent.post('/users/register').send(user);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
 
@@ -24,15 +26,15 @@ describe('User', () => {
         expect(res.body).to.have.property('mobileNumber');
         expect(res.body).to.have.property('type');
 
-        expect(res.body.name).to.equal('Person 1');
-        expect(res.body.username).to.equal('p1');
-        expect(res.body.DOB).to.equal('1997-08-25');
-        expect(res.body.mobileNumber).to.equal('0');
-        expect(res.body.type).to.equal('Carer');
+        expect(res.body.name).to.equal(user.name);
+        expect(res.body.username).to.equal(user.username);
+        expect(res.body.DOB).to.equal(user.DOB);
+        expect(res.body.mobileNumber).to.equal(user.mobileNumber);
+        expect(res.body.type).to.equal(user.type);
     });
 
     it('Register as AP', async () => {
-        const res = await agent.post('/users/register').send({
+        const user = {
             name: 'AP 1',
             username: 'a1',
             password: 'a1',
@@ -42,7 +44,9 @@ describe('User', () => {
             emergencyContactName: 'Person 1',
             emergencyContactNumber: '1',
             address: '1 Flinders Street, East Melbourne'
-        });
+        };
+
+        const res = await agent.post('/users/register').send(user);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
 
@@ -57,14 +61,18 @@ describe('User', () => {
         expect(res.body).to.have.property('emergencyContactNumber');
         expect(res.body).to.have.property('address');
 
-        expect(res.body.name).to.equal('AP 1');
-        expect(res.body.username).to.equal('a1');
-        expect(res.body.DOB).to.equal('1950-08-25');
-        expect(res.body.mobileNumber).to.equal('0');
-        expect(res.body.type).to.equal('AP');
-        expect(res.body.emergencyContactName).to.equal('Person 1');
-        expect(res.body.emergencyContactNumber).to.equal('1');
-        expect(res.body.address).to.equal('1 Flinders Street, East Melbourne');
+        expect(res.body.name).to.equal(user.name);
+        expect(res.body.username).to.equal(user.username);
+        expect(res.body.DOB).to.equal(user.DOB);
+        expect(res.body.mobileNumber).to.equal(user.mobileNumber);
+        expect(res.body.type).to.equal(user.type);
+        expect(res.body.emergencyContactName).to.equal(
+            user.emergencyContactName
+        );
+        expect(res.body.emergencyContactNumber).to.equal(
+            user.emergencyContactNumber
+        );
+        expect(res.body.address).to.equal(user.address);
     });
 
     it('Register as AP without emergency details', async () => {
@@ -133,62 +141,5 @@ describe('User', () => {
         });
         expect(res).to.be.json;
         expect(res).to.have.status(422);
-    });
-
-    it('User login', async () => {
-        const res = await agent.post('/users/login').send({
-            username: 'p1',
-            password: 'p1'
-        });
-        expect(res).to.be.json;
-        expect(res).to.have.status(200);
-
-        expect(res.body).to.have.property('token');
-        expect(res.body).to.have.property('id');
-        expect(res.body).to.have.property('name');
-        expect(res.body).to.have.property('username');
-        expect(res.body).to.not.have.property('password');
-        expect(res.body).to.have.property('DOB');
-        expect(res.body).to.have.property('mobileNumber');
-        expect(res.body).to.have.property('type');
-
-        expect(res.body.name).to.equal('Person 1');
-        expect(res.body.username).to.equal('p1');
-        expect(res.body.DOB).to.equal('1997-08-25');
-        expect(res.body.mobileNumber).to.equal('0');
-        expect(res.body.type).to.equal('Carer');
-    });
-
-    it('Unsuccessful user login - wrong password', async () => {
-        const res = await agent.post('/users/login').send({
-            username: 'p1',
-            password: 'p2'
-        });
-        expect(res).to.be.json;
-        expect(res).to.have.status(401);
-    });
-
-    it('Unsuccessful user login - missing username', async () => {
-        const res1 = await agent.post('/users/login').send({
-            username: '',
-            password: 'p1'
-        });
-        expect(res1).to.be.json;
-        expect(res1).to.have.status(401);
-
-        const res2 = await agent.post('/users/login').send({
-            password: 'p1'
-        });
-        expect(res2).to.be.json;
-        expect(res2).to.have.status(401);
-    });
-
-    it('Unsuccessful user login - non existant user', async () => {
-        const res = await agent.post('/users/login').send({
-            username: 'p0',
-            password: 'p1'
-        });
-        expect(res).to.be.json;
-        expect(res).to.have.status(401);
     });
 });

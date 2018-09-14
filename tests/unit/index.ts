@@ -5,7 +5,7 @@ import './models/user';
 import './helpers';
 import './middleware';
 
-import './accounts';
+import './auth';
 import './association';
 import './chat';
 import './location';

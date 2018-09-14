@@ -6,20 +6,26 @@ import proxyquire from 'proxyquire';
 import models from '../../../models';
 
 describe('Unit - Association - Create association', () => {
-    const sandbox = sinon.createSandbox();
     let association: any;
+    const sandbox = sinon.createSandbox();
+
+    // Fake association tokens
+    const GOOD_TOKEN = '42';
+    const NON_ASSOC_TOKEN = 'non_assoc_token';
+    const BAD_TOKEN = 'bad_token';
+    const REQUEST_USER_ID: number = 1;
 
     before(async () => {
         // Stub JWT sign function to return '1234'
         const JWTVerifyStub = sandbox.stub();
-        JWTVerifyStub.withArgs('42').returns({
+        JWTVerifyStub.withArgs(GOOD_TOKEN).returns({
             type: 'Association',
-            userID: 1
+            userID: REQUEST_USER_ID
         });
-        JWTVerifyStub.withArgs('non_assoc_token').returns({
-            userID: 1
+        JWTVerifyStub.withArgs(NON_ASSOC_TOKEN).returns({
+            userID: REQUEST_USER_ID
         });
-        JWTVerifyStub.withArgs('bad_token').throws('Invalid token error');
+        JWTVerifyStub.withArgs(BAD_TOKEN).throws('Invalid token error');
         // Import the association controllers with the jwt_sign function stubbed
         association = proxyquire('../../../controllers/association', {
             '../helpers/jwt': { jwt_verify: JWTVerifyStub }
@@ -30,9 +36,9 @@ describe('Unit - Association - Create association', () => {
         // Association requests have association tokens
         const req = {
             body: {
-                token: '42'
+                token: GOOD_TOKEN
             },
-            userID: 1
+            userID: 2
         };
 
         // Fake find type queries
@@ -47,22 +53,23 @@ describe('Unit - Association - Create association', () => {
         sandbox.replace(models.Association, 'find', sinon.fake());
 
         // Replace association creation function
+        const associationID = 1;
         sandbox.replace(
             models.Association,
             'create',
-            sinon.stub().returns({ id: 1 })
+            sinon.stub().returns({ id: associationID })
         );
 
         const result = await association.createAssociation(req, res, next);
         expect(result).to.have.property('id');
-        expect(result.id).to.equal(1);
+        expect(result.id).to.equal(associationID);
     });
 
     it('Create association as Carer', async () => {
         // Association requests have association tokens
         const req = {
             body: {
-                token: '42'
+                token: GOOD_TOKEN
             },
             userID: 2
         };
@@ -79,15 +86,16 @@ describe('Unit - Association - Create association', () => {
         sandbox.replace(models.Association, 'find', sinon.fake());
 
         // Replace association creation function
+        const associationID = 1;
         sandbox.replace(
             models.Association,
             'create',
-            sinon.stub().returns({ id: 1 })
+            sinon.stub().returns({ id: associationID })
         );
 
         const result = await association.createAssociation(req, res, next);
         expect(result).to.have.property('id');
-        expect(result.id).to.equal(1);
+        expect(result.id).to.equal(associationID);
     });
 
     it('Bad token', async () => {
