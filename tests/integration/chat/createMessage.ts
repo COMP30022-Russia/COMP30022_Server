@@ -17,7 +17,7 @@ describe('Chat - Create Message', () => {
         associationID = association.id;
     });
 
-    it('AP creates message', async () => {
+    it('Carer creates message', async () => {
         const payload = { content: 'Hello world' };
         const res = await agent
             .post('/associations/' + associationID + '/chat')
@@ -29,7 +29,7 @@ describe('Chat - Create Message', () => {
         expect(res.body.content).to.equal(payload.content);
     });
 
-    it('Carer creates message', async () => {
+    it('AP creates message', async () => {
         const payload = { content: 'Hello world back' };
         const res = await agent
             .post('/associations/' + associationID + '/chat')

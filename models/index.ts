@@ -45,6 +45,7 @@ db.Session = Session;
 db.Emergency = Emergency;
 db.Location = Location;
 db.FirebaseToken = FirebaseToken;
+db.Picture = Picture;
 
 // User-user through Association table
 User.belongsToMany(User, {
@@ -76,7 +77,7 @@ Message.belongsTo(User, { as: 'author' });
 Message.belongsTo(Association, { as: 'association' });
 
 // Message can have picture
-Picture.belongsTo(Message, { foreignKey: 'messageId' });
+Message.hasMany(Picture, { foreignKey: 'messageId', as: 'pictures' });
 
 // Session is associated with AP and Carer
 Session.belongsTo(User, { as: 'Carer', foreignKey: 'carerId' });

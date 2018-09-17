@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Op } from 'sequelize';
 import models from '../models';
-import sendMessage from './notification/chat';
+import { sendChatMessage } from './notification/chat';
 
 // Default limit for message queries
 const DEFAULT_LIMIT = 10;
@@ -40,7 +40,11 @@ export const getMessages = async (
         const messages = await models.Message.findAll({
             limit: !limit ? DEFAULT_LIMIT : limit,
             where: before || after ? Object.assign(idQuery, seq) : idQuery,
-            order: [['createdAt', 'DESC']]
+            order: [['createdAt', 'DESC']],
+            include: {
+                model: models.Picture,
+                as: 'pictures'
+            }
         });
 
         // Return empty array if there are no messages
@@ -80,14 +84,11 @@ export const createMessage = async (
         });
 
         // Get ID of target user
-        const targetID =
-            req.association.APId === req.userID
-                ? req.association.carerId
-                : req.association.APId;
+        const targetID = await req.association.getPartnerID(req.userID);
         const sender = await models.User.scope('name').findById(req.userID);
 
         // Send notification
-        await sendMessage(sender.name, targetID, associationID, content);
+        await sendChatMessage(sender.name, targetID, associationID, content);
 
         return res.json(message);
     } catch (err) {

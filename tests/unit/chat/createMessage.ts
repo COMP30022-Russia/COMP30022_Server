@@ -17,12 +17,13 @@ describe('Unit - Chat - Create message', () => {
     before(async () => {
         // Import the chat controller with a spy on the notification function
         chat = proxyquire('../../../controllers/chat', {
-            './notification/chat': { default: sendSpy }
+            './notification/chat': { sendChatMessage: sendSpy }
         });
     });
 
     it('Create message', async () => {
         // Create message
+        const partnerID = 5;
         const req: any = {
             userID: 2,
             body: {
@@ -31,7 +32,7 @@ describe('Unit - Chat - Create message', () => {
             params: {
                 associationID: 3
             },
-            association: { APId: 1, carerId: 2 }
+            association: { getPartnerID: (_: number) => partnerID }
         };
         // ID of created message
         const createdMessageID: number = 1;
@@ -67,7 +68,7 @@ describe('Unit - Chat - Create message', () => {
         expect(
             sendSpy.alwaysCalledWith(
                 'Example',
-                req.association.APId,
+                partnerID,
                 req.params.associationID,
                 req.body.content
             )

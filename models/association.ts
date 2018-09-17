@@ -28,4 +28,26 @@ export default class Association extends Sequelize.Model {
             sequelize
         });
     }
+
+    /**
+     * Retrieves the ID of the opposite party (partner).
+     * @param {number} myID The current user's ID.
+     * @return {Promise} Promise object for ID of opposite party.
+     */
+    getPartnerID = function(myID: number): Promise<number> {
+        return new Promise((resolve, reject) => {
+            if (!this.APId || !this.carerId) {
+                reject(new Error('APId or carerId is not in object'));
+            }
+            if (!myID) {
+                reject(new Error('myID is invalid'));
+            }
+
+            if (this.APId === myID) {
+                resolve(this.carerId);
+            } else {
+                resolve(this.APId);
+            }
+        });
+    };
 }

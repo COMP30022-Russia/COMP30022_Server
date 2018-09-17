@@ -7,12 +7,22 @@ const pictureSchema = {
         primaryKey: true,
         autoIncrement: true
     },
-    uploadState: {
-        type: Sequelize.ENUM('Uploading', 'Uploaded', 'Failed')
+    associationId: {
+        type: Sequelize.INTEGER,
+        allowNull: false
     },
-    url: {
+    filename: {
         type: Sequelize.STRING,
         allowNull: true
+    },
+    mime: {
+        type: Sequelize.STRING,
+        allowNull: true
+    },
+    status: {
+        type: Sequelize.ENUM('Sending', 'Received'),
+        defaultValue: 'Sending',
+        allowNull: false
     }
 };
 

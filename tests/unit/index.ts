@@ -8,11 +8,12 @@ import './middleware';
 
 import './auth';
 import './association';
-import './chat';
 import './location';
 import './user';
 import './navigation';
 import './navigation_session';
+import './chat';
+import './chat_picture';
 
 // Define res.json stub to return first argument
 const resJSONStub: SinonStub = sinon.stub().returnsArg(0);

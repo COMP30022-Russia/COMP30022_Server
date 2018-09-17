@@ -15,3 +15,6 @@ dist/
 
 # Postgres
 data/
+
+# Generated
+uploads/
