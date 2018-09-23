@@ -12,6 +12,7 @@ import {
     updateFirebaseToken,
     getFirebaseTokens
 } from '../controllers/notification';
+import { getSelfNavigationSession } from '../controllers/navigation';
 
 // Get association token
 router.get('/association_token', getAssociationToken);
@@ -31,5 +32,8 @@ router.get('/location', getSelfLocation);
 // Get/update token
 router.post('/token', updateFirebaseToken);
 router.get('/token', getFirebaseTokens);
+
+// Get active navigation session
+router.get('/navigation', getSelfNavigationSession);
 
 export default router;

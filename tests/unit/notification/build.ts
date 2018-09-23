@@ -3,6 +3,7 @@ import {
     buildDataMessage,
     buildAndroidNotificationMessage
 } from '../../../controllers/notification';
+import { appendToken } from '../../../notifications';
 
 describe('Unit - Build Firebase Message', () => {
     it('Build data message', async () => {
@@ -28,5 +29,13 @@ describe('Unit - Build Firebase Message', () => {
         expect(result.android.priority).to.equal('normal');
         expect(result.android.notification.title).to.equal(title);
         expect(result.android.notification.body).to.equal(body);
+    });
+
+    it('Append token', async () => {
+        const orig = { foo: 'bar' };
+        const token = 'cool';
+
+        const result = appendToken(orig, token);
+        expect(result).to.deep.equal({ ...orig, token });
     });
 });

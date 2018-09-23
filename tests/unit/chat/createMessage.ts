@@ -1,12 +1,25 @@
 import { expect, request } from 'chai';
 import sinon from 'sinon';
+import proxyquire from 'proxyquire';
 import { res, next } from '../index';
 
 import models from '../../../models';
-import { createMessage } from '../../../controllers/chat';
 
 describe('Unit - Chat - Create message', () => {
     const sandbox = sinon.createSandbox();
+
+    // Chat controller
+    let chat: any;
+
+    // Spy for Firebase send message call
+    const sendSpy = sinon.spy();
+
+    before(async () => {
+        // Import the chat controller with a spy on the notification function
+        chat = proxyquire('../../../controllers/chat', {
+            './notification/chat': { default: sendSpy }
+        });
+    });
 
     it('Create message', async () => {
         // Create message
@@ -40,10 +53,25 @@ describe('Unit - Chat - Create message', () => {
 
         // Should get message with ID back
         // @ts-ignore
-        const result = await createMessage(req, res, next);
+        const result = await chat.createMessage(req, res, next);
         expect(result.id).to.equal(createdMessageID);
         expect(result.authorId).to.equal(req.userID);
         expect(result.associationId).to.equal(req.params.associationID);
+
+        // Verify the send message call
+        // First argument: Name of self
+        // Second argument: ID of opposite party
+        // Third argument: ID of association
+        // Fourth argument: Message content
+        expect(sendSpy.calledOnce).to.equal(true);
+        expect(
+            sendSpy.alwaysCalledWith(
+                'Example',
+                req.association.APId,
+                req.params.associationID,
+                req.body.content
+            )
+        ).to.equal(true);
     });
 
     it('Create message without message', async () => {
@@ -62,7 +90,7 @@ describe('Unit - Chat - Create message', () => {
 
         // Should get validation error
         // @ts-ignore
-        const result = await createMessage(req, res, next);
+        const result = await chat.createMessage(req, res, next);
         expect(result).to.be.an('error');
         expect(result.message).to.equal('No message given');
     });

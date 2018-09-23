@@ -1,7 +1,7 @@
 import { expect, request } from 'chai';
 import sinon from 'sinon';
-import { res, next } from '../index';
 import proxyquire from 'proxyquire';
+import { res, next } from '../index';
 
 import models from '../../../models';
 
@@ -15,6 +15,9 @@ describe('Unit - Association - Create association', () => {
     const BAD_TOKEN = 'bad_token';
     const REQUEST_USER_ID: number = 1;
 
+    // Spy for Firebase send message call
+    const sendSpy = sinon.spy();
+
     before(async () => {
         // Stub JWT sign function to return '1234'
         const JWTVerifyStub = sandbox.stub();
@@ -26,9 +29,12 @@ describe('Unit - Association - Create association', () => {
             userID: REQUEST_USER_ID
         });
         JWTVerifyStub.withArgs(BAD_TOKEN).throws('Invalid token error');
+
         // Import the association controllers with the jwt_sign function stubbed
+        // and a spy on the notification sending function
         association = proxyquire('../../../controllers/association', {
-            '../helpers/jwt': { jwt_verify: JWTVerifyStub }
+            '../helpers/jwt': { jwt_verify: JWTVerifyStub },
+            './notification/association': { default: sendSpy }
         });
     });
 
@@ -63,6 +69,10 @@ describe('Unit - Association - Create association', () => {
         const result = await association.createAssociation(req, res, next);
         expect(result).to.have.property('id');
         expect(result.id).to.equal(associationID);
+
+        // Expect the send message spy to be called with REQUEST_USER_ID
+        expect(sendSpy.calledOnce).to.equal(true);
+        expect(sendSpy.alwaysCalledWith(REQUEST_USER_ID)).to.equal(true);
     });
 
     it('Create association as Carer', async () => {

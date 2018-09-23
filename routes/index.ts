@@ -5,7 +5,8 @@ const router: Router = express.Router();
 import {
     authenticate,
     ensureRequestedUserIsAssociated,
-    ensureRequestedUserIsInRequestedAssociation
+    ensureRequestedUserIsInRequestedAssociation,
+    ensureUserIsInNavigationSession
 } from '../middleware/auth';
 // Import param verification middleware
 import { verifyIDParam } from '../middleware/params';
@@ -15,6 +16,7 @@ import authRouter from './auth';
 import userRouter from './user';
 import meRouter from './me';
 import associationRouter from './association';
+import navigationRouter from './navigation';
 
 // Handle index route
 import { homeRoute } from '../controllers/home';
@@ -36,6 +38,13 @@ router.use(
     verifyIDParam('associationID'),
     ensureRequestedUserIsInRequestedAssociation,
     associationRouter
+);
+router.use(
+    '/navigation/:sessionID',
+    authenticate,
+    verifyIDParam('sessionID'),
+    ensureUserIsInNavigationSession,
+    navigationRouter
 );
 
 export default router;

@@ -6,3 +6,4 @@ import './association';
 import './location';
 import './chat';
 import './user';
+import './navigation';

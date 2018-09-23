@@ -88,7 +88,7 @@ Destination.belongsTo(User, { as: 'user' });
 
 // Emergency has initator and handler
 Emergency.belongsTo(User, { as: 'AP', foreignKey: 'APId' });
-Emergency.belongsTo(User, { as: 'Carer', foreignKey: 'handlerId' });
+Emergency.belongsTo(User, { as: 'Carer', foreignKey: 'carerId' });
 
 db.sequelize = sequelize;
 db.Sequelize = sequelize;

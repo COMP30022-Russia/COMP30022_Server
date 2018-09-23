@@ -87,13 +87,7 @@ export const createMessage = async (
         const sender = await models.User.scope('name').findById(req.userID);
 
         // Send notification
-        await sendMessage(
-            req.userID,
-            sender.name,
-            targetID,
-            associationID,
-            content
-        );
+        await sendMessage(sender.name, targetID, associationID, content);
 
         return res.json(message);
     } catch (err) {

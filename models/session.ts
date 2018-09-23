@@ -12,9 +12,18 @@ const sessionSchema = {
         defaultValue: true,
         allowNull: false
     },
+    carerHasControl: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false
+    },
+    state: {
+        type: Sequelize.ENUM('Searching', 'Started'),
+        defaultValue: 'Searching',
+        allowNull: false
+    },
     transportMode: {
-        type: Sequelize.ENUM('walking', 'PT'),
-        defaultValue: 'walking',
+        type: Sequelize.ENUM('Walking', 'PT'),
+        defaultValue: 'Walking',
         allowNull: false
     },
     route: {
