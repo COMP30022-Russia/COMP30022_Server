@@ -49,3 +49,4 @@ Here are a list of environment variables which will need to be configured.
 | PORT        | 3000          | Port that server runs on |
 | NODE_ENV    | undefined     | Environment of server (`development` for local development, `production` for deployed builds, etc.) |
 | JWT_SECRET  | 'default'     | Secret that is used to sign JWT tokens |
+| FIREBASE_PRIVATE_KEY | -    | Private key of Firebase Admin SDK |

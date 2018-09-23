@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { jwt_sign, jwt_verify } from '../helpers/jwt';
 import { Op } from 'sequelize';
 import models from '../models';
+import sendMessage from './notification/association';
 
 // Get association token of authenticated user
 export const getAssociationToken = async (
@@ -94,6 +95,10 @@ export const createAssociation = async (
 
         // If association does not exist, create it
         const created = await models.Association.create({ carerId, APId });
+
+        // Also send data message
+        await sendMessage(targetID);
+
         return res.json(created);
     } catch (err) {
         res.status(400);

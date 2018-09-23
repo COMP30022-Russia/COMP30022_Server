@@ -49,6 +49,14 @@ export default class User extends Sequelize.Model {
                 attributes: { exclude: ['password'] }
             },
             scopes: {
+                // Retrieve ID of user only
+                id: {
+                    attributes: ['id']
+                },
+                // Retrieve name of user only
+                name: {
+                    attributes: ['name']
+                },
                 // Only retrieve type of user
                 type: {
                     attributes: ['type']

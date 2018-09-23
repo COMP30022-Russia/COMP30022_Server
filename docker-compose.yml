@@ -12,6 +12,7 @@ services:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
       - POSTGRES_DB
+      - FIREBASE_PRIVATE_KEY
     links:
       - postgresql
     depends_on:

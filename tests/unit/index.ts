@@ -3,6 +3,7 @@ import sinon, { SinonStub, SinonSpy, SinonFake } from 'sinon';
 // Import tests
 import './models/user';
 import './helpers';
+import './notification';
 import './middleware';
 
 import './auth';

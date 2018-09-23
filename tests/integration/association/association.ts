@@ -186,7 +186,7 @@ describe('Association', () => {
             .get('/associations/1')
             .set('Authorization', 'Bearer ' + AP2Token);
         expect(res).to.be.json;
-        expect(res).to.have.status(400);
+        expect(res).to.have.status(403);
 
         const res2 = await agent
             .get('/associations/a')

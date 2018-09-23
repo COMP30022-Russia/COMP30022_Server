@@ -11,3 +11,6 @@ coverage/
 
 # Build
 dist/
+
+# Postgres
+data/

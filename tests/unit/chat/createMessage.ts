@@ -17,7 +17,8 @@ describe('Unit - Chat - Create message', () => {
             },
             params: {
                 associationID: 3
-            }
+            },
+            association: { APId: 1, carerId: 2 }
         };
         // ID of created message
         const createdMessageID: number = 1;
@@ -26,6 +27,15 @@ describe('Unit - Chat - Create message', () => {
         // but with an ID field
         sandbox.replace(models.Message, 'create', (input: any) => {
             return Object.assign(input, { id: createdMessageID });
+        });
+
+        // Replace findById function also (as it's used to get user name)
+        sandbox.replace(models.User, 'scope', (scopeName: string) => {
+            return {
+                findById: () => {
+                    return { id: 2, name: 'Example' };
+                }
+            };
         });
 
         // Should get message with ID back

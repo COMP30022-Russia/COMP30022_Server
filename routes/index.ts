@@ -4,7 +4,8 @@ const router: Router = express.Router();
 // Import auth middleware
 import {
     authenticate,
-    ensureRequestedUserIsAssociated
+    ensureRequestedUserIsAssociated,
+    ensureRequestedUserIsInRequestedAssociation
 } from '../middleware/auth';
 // Import param verification middleware
 import { verifyIDParam } from '../middleware/params';
@@ -33,6 +34,7 @@ router.use(
     '/associations/:associationID',
     authenticate,
     verifyIDParam('associationID'),
+    ensureRequestedUserIsInRequestedAssociation,
     associationRouter
 );
 

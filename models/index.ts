@@ -9,6 +9,7 @@ import destinationModel from './destination';
 import emergencyModel from './emergency';
 import locationModel from './location';
 import pictureModel from './picture';
+import firebaseTokenModel from './firebase_token';
 
 // Define database connection
 const sequelize: Sequelize.Sequelize = new Sequelize(
@@ -34,6 +35,7 @@ const Session = sessionModel.init(sequelize);
 const Emergency = emergencyModel.init(sequelize);
 const Location = locationModel.init(sequelize);
 const Picture = pictureModel.init(sequelize);
+const FirebaseToken = firebaseTokenModel.init(sequelize);
 
 db.User = User;
 db.Association = Association;
@@ -42,6 +44,7 @@ db.Destination = Destination;
 db.Session = Session;
 db.Emergency = Emergency;
 db.Location = Location;
+db.FirebaseToken = FirebaseToken;
 
 // User-user through Association table
 User.belongsToMany(User, {
@@ -64,6 +67,9 @@ User.belongsTo(Location, {
     foreignKey: 'currentLocationId',
     constraints: false
 });
+
+// User has many Firebase tokens
+User.hasMany(FirebaseToken, { as: 'firebaseTokens' });
 
 // Message is associated with an author (a user) and an association
 Message.belongsTo(User, { as: 'author' });

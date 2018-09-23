@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Op } from 'sequelize';
 import models from '../models';
+import sendMessage from './notification/chat';
 
 // Default limit for message queries
 const DEFAULT_LIMIT = 10;
@@ -77,6 +78,23 @@ export const createMessage = async (
             authorId: req.userID,
             associationId: associationID
         });
+
+        // Get ID of target user
+        const targetID =
+            req.association.APId === req.userID
+                ? req.association.carerId
+                : req.association.APId;
+        const sender = await models.User.scope('name').findById(req.userID);
+
+        // Send notification
+        await sendMessage(
+            req.userID,
+            sender.name,
+            targetID,
+            associationID,
+            content
+        );
+
         return res.json(message);
     } catch (err) {
         res.status(400);
