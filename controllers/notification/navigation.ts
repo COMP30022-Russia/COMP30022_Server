@@ -31,7 +31,7 @@ export const sendNavigationStartMessage = async (
 
 /**
  * Builds and sends a navigation ended message.
- * @param {string} targetID ID of target.
+ * @param {number} targetID ID of target.
  * @param {number} sessionID ID of session.
  */
 export const sendNavigationEndMessage = async (
@@ -39,7 +39,7 @@ export const sendNavigationEndMessage = async (
     sessionID: number
 ) => {
     const data_payload = {
-        sessionID: sessionID
+        sessionID
     };
     const notificationMessage = buildAndroidNotificationMessage(
         `Navigation session ended`,
@@ -47,4 +47,55 @@ export const sendNavigationEndMessage = async (
     );
     const dataMessage = buildDataMessage('nav_end', data_payload);
     await sendMessage({ ...dataMessage, ...notificationMessage }, targetID);
+};
+
+/**
+ * Builds and sends a control switched message.
+ * @param {number} targetID ID of target.
+ * @param {number} sessionID ID of session.
+ * @param {boolean} carerHasControl Whether carer has control.
+ */
+export const sendNavigationControlSwitchedMessage = async (
+    targetID: number,
+    sessionID: number,
+    carerHasControl: boolean
+) => {
+    const data_payload = {
+        sessionID,
+        carerHasControl
+    };
+    const dataMessage = buildDataMessage('nav_control_switch', data_payload);
+    await sendMessage(dataMessage, targetID);
+};
+
+/**
+ * Builds and sends a location update message.
+ * @param {number} targetID ID of target.
+ * @param {number} sessionID ID of session.
+ * @param {number} lat Latitude of AP.
+ * @param {number} lon Longitude of AP.
+ */
+export const sendNavigationLocationMessage = async (
+    targetID: number,
+    sessionID: number,
+    lat: number,
+    lon: number
+) => {
+    const data_payload = {
+        lat,
+        lon
+    };
+    const dataMessage = buildDataMessage('nav_location_update', data_payload);
+    await sendMessage(dataMessage, targetID);
+};
+
+/**
+ * Builds and sends a route update message.
+ * @param {number} apID ID of AP.
+ * @param {number} carerID ID of carer.
+ */
+export const sendRouteUpdateMessage = async (apID: number, carerID: number) => {
+    const dataMessage = buildDataMessage('route_update', {});
+    await sendMessage(dataMessage, apID);
+    await sendMessage(dataMessage, carerID);
 };

@@ -7,12 +7,8 @@ const destinationSchema = {
         primaryKey: true,
         autoIncrement: true
     },
-    lat: {
-        type: Sequelize.NUMERIC,
-        allowNull: false
-    },
-    lon: {
-        type: Sequelize.NUMERIC,
+    placeID: {
+        type: Sequelize.STRING,
         allowNull: false
     },
     name: {

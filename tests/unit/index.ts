@@ -12,6 +12,7 @@ import './chat';
 import './location';
 import './user';
 import './navigation';
+import './navigation_session';
 
 // Define res.json stub to return first argument
 const resJSONStub: SinonStub = sinon.stub().returnsArg(0);

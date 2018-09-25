@@ -7,11 +7,9 @@ import {
     ensureRequestedUserIsAssociated,
     ensureRequestedUserIsInRequestedAssociation
 } from './auth_association';
-import { ensureUserIsInNavigationSession } from './auth_navigation';
 export {
     ensureRequestedUserIsAssociated,
-    ensureRequestedUserIsInRequestedAssociation,
-    ensureUserIsInNavigationSession
+    ensureRequestedUserIsInRequestedAssociation
 };
 
 // Extend express Request type
@@ -22,6 +20,7 @@ declare module 'express' {
         user: string;
         userID: number;
         association: any;
+        session: any;
     }
 }
 

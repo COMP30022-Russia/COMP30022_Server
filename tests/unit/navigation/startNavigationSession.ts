@@ -3,7 +3,6 @@ import sinon from 'sinon';
 import proxyquire from 'proxyquire';
 import { res, next } from '../index';
 
-import { startNavigationSession } from '../../../controllers/navigation';
 import models from '../../../models';
 
 describe('Unit - Navigation - Start navigation session', () => {
@@ -102,7 +101,7 @@ describe('Unit - Navigation - Start navigation session', () => {
 
         // Expect success message to be returned
         // @ts-ignore
-        const result = await startNavigationSession(req, res, next);
+        const result = await navigation.startNavigationSession(req, res, next);
         expect(result).to.have.property('carerId');
         expect(result).to.have.property('APId');
         expect(result).to.have.property('carerHasControl');
@@ -130,7 +129,7 @@ describe('Unit - Navigation - Start navigation session', () => {
 
         // Expect result to be error
         // @ts-ignore
-        const result = await startNavigationSession(req, res, next);
+        const result = await navigation.startNavigationSession(req, res, next);
         expect(result).to.be.an('error');
         expect(result.message).to.equal(
             'Cannot start navigation session, user(s) are in session'
@@ -156,7 +155,7 @@ describe('Unit - Navigation - Start navigation session', () => {
 
         // Expect result to be error
         // @ts-ignore
-        const result = await startNavigationSession(req, res, next);
+        const result = await navigation.startNavigationSession(req, res, next);
         expect(result).to.be.an('error');
         expect(result.message).to.equal(
             'Cannot start navigation session, user(s) are in session'

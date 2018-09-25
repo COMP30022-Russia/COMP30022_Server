@@ -7,3 +7,4 @@ import './location';
 import './chat';
 import './user';
 import './navigation';
+import './navigation_session';

@@ -8,6 +8,7 @@ yarn.lock
 .nyc_output/
 report/
 coverage/
+uploads/
 
 # Build
 dist/

@@ -5,8 +5,7 @@ const router: Router = express.Router();
 import {
     authenticate,
     ensureRequestedUserIsAssociated,
-    ensureRequestedUserIsInRequestedAssociation,
-    ensureUserIsInNavigationSession
+    ensureRequestedUserIsInRequestedAssociation
 } from '../middleware/auth';
 // Import param verification middleware
 import { verifyIDParam } from '../middleware/params';
@@ -43,7 +42,6 @@ router.use(
     '/navigation/:sessionID',
     authenticate,
     verifyIDParam('sessionID'),
-    ensureUserIsInNavigationSession,
     navigationRouter
 );
 

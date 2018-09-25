@@ -2,7 +2,7 @@ import { expect, request } from 'chai';
 import sinon from 'sinon';
 import { res, next } from '../index';
 import models from '../../../models';
-import { ensureUserIsInNavigationSession } from '../../../middleware/auth';
+import { retrieveNavigationSession } from '../../../middleware/navigation';
 
 describe('Unit - Middleware - Ensure Requested User is in Session', () => {
     const sandbox = sinon.createSandbox();
@@ -27,7 +27,7 @@ describe('Unit - Middleware - Ensure Requested User is in Session', () => {
 
         // Call middleware, expect next() to be called with 0 arguments
         // @ts-ignore
-        await ensureUserIsInNavigationSession(req, res, nextSpy);
+        await retrieveNavigationSession([])(req, res, nextSpy);
         expect(nextSpy.calledWithExactly()).to.equal(true);
     });
 
@@ -37,7 +37,7 @@ describe('Unit - Middleware - Ensure Requested User is in Session', () => {
 
         // Call middleware, expect next(err) to be returned
         // @ts-ignore
-        const result = await ensureUserIsInNavigationSession(req, res, next);
+        const result = await retrieveNavigationSession([])(req, res, next);
         expect(result).to.be.an('error');
         expect(result.message).to.equal(
             'User is not party of navigation session or session does not exist'

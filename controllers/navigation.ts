@@ -5,6 +5,7 @@ import {
     sendNavigationStartMessage,
     sendNavigationEndMessage
 } from './notification/navigation';
+import { locationCache } from './navigation_session';
 
 /**
  * Returns value indicating whether indicated user is in an active
@@ -100,10 +101,7 @@ export const getNavigationSession = async (
     next: NextFunction
 ) => {
     try {
-        const session = await models.Session.findOne({
-            where: { id: req.params.sessionID }
-        });
-        return res.json(session);
+        return res.json(req.session);
     } catch (err) {
         return next(err);
     }
@@ -117,12 +115,7 @@ export const endNavigationSession = async (
 ) => {
     try {
         // Make session inactive
-        const session = await models.Session.findOne({
-            where: {
-                id: req.params.sessionID
-            },
-            attributes: ['id', 'active']
-        });
+        const session = req.session;
 
         // Ensure that session is not already ended
         if (!session.active) {
@@ -135,6 +128,9 @@ export const endNavigationSession = async (
             session.APId === req.userID ? session.carerId : session.APId,
             session.id
         );
+
+        // Remove AP location from cache
+        locationCache.deleteItem(String(session.APId));
 
         await session.updateAttributes({ active: false });
         return res.json({ status: 'success' });

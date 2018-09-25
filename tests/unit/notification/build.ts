@@ -3,7 +3,7 @@ import {
     buildDataMessage,
     buildAndroidNotificationMessage
 } from '../../../controllers/notification';
-import { appendToken } from '../../../notifications';
+import { appendToken } from '../../../helpers/notifications';
 
 describe('Unit - Build Firebase Message', () => {
     it('Build data message', async () => {

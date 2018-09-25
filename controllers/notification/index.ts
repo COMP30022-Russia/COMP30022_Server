@@ -1,5 +1,5 @@
 import models from '../../models';
-import send, { appendToken } from '../../notifications';
+import send, { appendToken } from '../../helpers/notifications';
 import { getFirebaseTokensHelper, removeFirebaseTokenHelper } from './actions';
 import { updateFirebaseToken, getFirebaseTokens } from './actions';
 export { updateFirebaseToken, getFirebaseTokens };

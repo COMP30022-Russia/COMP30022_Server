@@ -83,7 +83,7 @@ Session.belongsTo(User, { as: 'Carer', foreignKey: 'carerId' });
 Session.belongsTo(User, { as: 'AP', foreignKey: 'APId' });
 
 // Session has destination
-Destination.hasOne(Session, { as: 'destination' });
+Session.belongsTo(Destination, { as: 'destination' });
 Destination.belongsTo(User, { as: 'user' });
 
 // Emergency has initator and handler
