@@ -25,13 +25,13 @@ describe('Notification - Get Token', () => {
 
     it('Get tokens', async () => {
         // First, add a token
-        const payload = { new: 'i' };
+        const payload = { token: 'tok', instanceID: '1' };
         await agent
             .post('/me/token')
             .set('Authorization', 'Bearer ' + userToken)
             .send(payload);
 
-        // Then, get tokens
+        // Get first token
         const res = await agent
             .get('/me/token')
             .set('Authorization', 'Bearer ' + userToken);
@@ -40,6 +40,23 @@ describe('Notification - Get Token', () => {
         expect(res.body).to.have.property('id');
         expect(res.body).to.have.property('tokens');
         expect(res.body.tokens).to.have.lengthOf(1);
-        expect(res.body.tokens[0]).to.equal(payload.new);
+        expect(res.body.tokens[0]).to.equal(payload.token);
+
+        // Then, add another token with different instance ID
+        const payload2 = { token: 't', instanceID: '2' };
+        await agent
+            .post('/me/token')
+            .set('Authorization', 'Bearer ' + userToken)
+            .send(payload2);
+
+        // Finally, get tokens
+        const res2 = await agent
+            .get('/me/token')
+            .set('Authorization', 'Bearer ' + userToken);
+        expect(res2).to.be.json;
+        expect(res2).to.have.status(200);
+        expect(res2.body).to.have.property('id');
+        expect(res2.body).to.have.property('tokens');
+        expect(res2.body.tokens).to.have.lengthOf(2);
     });
 });

@@ -10,6 +10,10 @@ const firebaseTokenSchema = {
     token: {
         type: Sequelize.STRING,
         allowNull: false
+    },
+    instanceID: {
+        type: Sequelize.STRING,
+        allowNull: false
     }
 };
 

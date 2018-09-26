@@ -12,7 +12,10 @@ describe('Notification - Update Token', () => {
     });
 
     it('Add token', async () => {
-        const payload = { new: 'i_am_a_totally_legitimate_token' };
+        const payload = {
+            token: 'i_am_a_totally_legitimate_token',
+            instanceID: '1'
+        };
         const res = await agent
             .post('/me/token')
             .set('Authorization', 'Bearer ' + userToken)
@@ -24,20 +27,14 @@ describe('Notification - Update Token', () => {
     });
 
     it('Replace token', async () => {
-        const payload = { new: 'i_am_a_totally_legitimate_token' };
+        const payload = { token: 'new_token', instanceID: '1' };
         const res = await agent
             .post('/me/token')
             .set('Authorization', 'Bearer ' + userToken)
             .send(payload);
-
-        const payload2 = { old: 'i_am_a_totally_legitimate_token', new: 'a' };
-        const res2 = await agent
-            .post('/me/token')
-            .set('Authorization', 'Bearer ' + userToken)
-            .send(payload2);
-        expect(res2).to.be.json;
-        expect(res2).to.have.status(200);
-        expect(res2.body).to.have.property('status');
-        expect(res2.body.status).to.equal('success');
+        expect(res).to.be.json;
+        expect(res).to.have.status(200);
+        expect(res.body).to.have.property('status');
+        expect(res.body.status).to.equal('success');
     });
 });
