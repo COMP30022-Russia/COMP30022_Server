@@ -80,7 +80,7 @@ describe('User register', () => {
             name: 'AP 1',
             username: 'ap_no_emergency',
             password: 'a1',
-            age: 70,
+            DOB: '1950-08-25',
             mobileNumber: '0',
             type: 'AP',
             emergencyContactNumber: '1'
@@ -94,7 +94,7 @@ describe('User register', () => {
             name: 'AP 1',
             username: 'ap_no_address',
             password: 'a1',
-            age: 70,
+            DOB: '1950-08-25',
             mobileNumber: '0',
             type: 'AP',
             emergencyContactName: 'Person 1',
@@ -109,7 +109,7 @@ describe('User register', () => {
             name: 'Carer 1',
             username: 'c1',
             password: 'c1',
-            age: 25,
+            DOB: '1950-08-25',
             type: 'Carer'
         });
         expect(res).to.be.json;
@@ -121,7 +121,7 @@ describe('User register', () => {
             name: 'Carer 1',
             username: 'c1',
             password: 'c1',
-            age: 25,
+            DOB: '1950-08-25',
             type: 'Carer',
             mobileNumber: '0',
             foo: 'bar'
@@ -135,7 +135,7 @@ describe('User register', () => {
         const res = await agent.post('/users/register').send({
             name: 'Carer 1',
             username: 'c2',
-            age: 25,
+            DOB: '1950-08-25',
             type: 'Carer',
             mobileNumber: '0'
         });

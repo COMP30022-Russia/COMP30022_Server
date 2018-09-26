@@ -12,10 +12,10 @@ const SALT_FACTOR = 10;
 const userSchema = {
     username: { type: Sequelize.STRING, allowNull: false, unique: true },
     password: { type: Sequelize.STRING, allowNull: false },
-    type: { type: Sequelize.ENUM('Carer', 'AP') },
+    type: { type: Sequelize.ENUM('Carer', 'AP'), allowNull: false },
     name: { type: Sequelize.STRING, allowNull: false },
     mobileNumber: { type: Sequelize.STRING, allowNull: false },
-    DOB: { type: Sequelize.DATEONLY },
+    DOB: { type: Sequelize.DATEONLY, allowNull: false },
     emergencyContactName: { type: Sequelize.STRING },
     emergencyContactNumber: { type: Sequelize.STRING },
     address: { type: Sequelize.STRING }
