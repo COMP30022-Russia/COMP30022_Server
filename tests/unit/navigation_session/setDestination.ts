@@ -31,8 +31,8 @@ describe('Unit - Navigation', () => {
         navigation.__set__('locationCache', { getItem: getStub });
         navigation.__set__(
             'getMapRoute',
-            (mode: boolean, placeID: string, lat: number, lon: number) => {
-                return { mode, placeID, lat, lon };
+            (isWalking: boolean, placeID: string, lat: number, lon: number) => {
+                return { isWalking, placeID, lat, lon };
             }
         );
         navigation.__set__('sendRouteMessage', sendSpy);
@@ -89,11 +89,12 @@ describe('Unit - Navigation', () => {
         expect(result.message).to.equal('AP location has not been set');
     });
 
-    it('Set destination', async () => {
+    it('Set destination - first time, walking', async () => {
         // Update attribute spy
         const updateSpy = sinon.spy();
         const setDestinationSpy = sinon.spy();
 
+        // tslint:disable:no-null-keyword / DB will return null here
         const req = {
             userID: 1,
             params: {
@@ -103,7 +104,8 @@ describe('Unit - Navigation', () => {
                 APId: 1,
                 carerId: 2,
                 updateAttributes: updateSpy,
-                setDestination: setDestinationSpy
+                setDestination: setDestinationSpy,
+                getDestination: sinon.stub().returns(null)
             },
             body: { ...location, name: 'Hi', placeID: '1234' }
         };
@@ -124,9 +126,10 @@ describe('Unit - Navigation', () => {
         // First check the update route call
         expect(updateSpy.calledOnce).to.equal(true);
         expect(updateSpy.lastCall.args[0]).to.deep.equal({
-            mode: 'Walking',
+            state: 'Started',
+            transportMode: 'Walking',
             route: {
-                mode: true,
+                isWalking: true,
                 placeID: req.body.placeID,
                 lat: location.lat,
                 lon: location.lon
@@ -144,6 +147,68 @@ describe('Unit - Navigation', () => {
         // Check the Firebase send message
         expect(sendSpy.calledOnce).to.equal(true);
         expect(sendSpy.alwaysCalledWith(req.session.APId, req.session.carerId));
+    });
+
+    it('Set destination - subsequent times, public transport', async () => {
+        // Attribute update spies
+        const updateSessionSpy = sinon.spy();
+        const updateDestinationSpy = sinon.spy();
+
+        // tslint:disable:no-null-keyword / DB will return null here
+        const req = {
+            userID: 1,
+            params: {
+                sessionID: 5
+            },
+            session: {
+                APId: 1,
+                carerId: 2,
+                updateAttributes: updateSessionSpy,
+                getDestination: () => {
+                    return {
+                        updateAttributes: updateDestinationSpy
+                    };
+                }
+            },
+            body: { ...location, name: 'Hi', placeID: '1234', mode: 'PT' }
+        };
+
+        // Stub destination creation function
+        sandbox.replace(
+            models.Destination,
+            'create',
+            sinon.stub().returnsArg(0)
+        );
+
+        // Expect error
+        // @ts-ignore
+        const result = await navigation.setDestination(req, res, next);
+        expect(result).to.have.property('status');
+        expect(result.status).to.equal('success');
+
+        // First check the update route call
+        expect(updateSessionSpy.calledOnce).to.equal(true);
+        expect(updateSessionSpy.lastCall.args[0]).to.deep.equal({
+            state: 'Started',
+            transportMode: 'PT',
+            route: {
+                isWalking: false,
+                placeID: req.body.placeID,
+                lat: location.lat,
+                lon: location.lon
+            }
+        });
+
+        // First check the update route call
+        expect(updateDestinationSpy.calledOnce).to.equal(true);
+        expect(updateDestinationSpy.lastCall.args[0]).to.deep.equal({
+            name: req.body.name,
+            placeID: req.body.placeID
+        });
+
+        // Check the Firebase send message
+        expect(sendSpy.lastCall.args[0]).to.equal(req.session.APId);
+        expect(sendSpy.lastCall.args[1]).to.equal(req.session.carerId);
     });
 
     afterEach(async () => {

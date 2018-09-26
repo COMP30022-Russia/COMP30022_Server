@@ -117,12 +117,6 @@ export const endNavigationSession = async (
         // Make session inactive
         const session = req.session;
 
-        // Ensure that session is not already ended
-        if (!session.active) {
-            res.status(400);
-            return next(new Error('Session has already been ended'));
-        }
-
         // Send notification
         await sendNavigationEndMessage(
             session.APId === req.userID ? session.carerId : session.APId,

@@ -180,15 +180,26 @@ export const setDestination = async (
 
     try {
         // Update route
-        await session.updateAttributes({ route, mode });
-
-        // Set destination
-        const destination = await models.Destination.create({
-            placeID,
-            name,
-            userId: session.APId
+        await session.updateAttributes({
+            route,
+            transportMode: mode,
+            state: 'Started'
         });
-        await session.setDestination(destination);
+
+        // Get destination
+        let destination = await session.getDestination();
+        if (destination) {
+            // If destination for session already exists, update it
+            await destination.updateAttributes({ name, placeID });
+        } else {
+            // If not, create and set it
+            destination = await models.Destination.create({
+                placeID,
+                name,
+                userId: session.APId
+            });
+            await session.setDestination(destination);
+        }
     } catch (err) {
         next(err);
     }

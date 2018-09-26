@@ -62,5 +62,49 @@ describe('Navigation session', () => {
         expect(res).to.have.status(200);
         expect(res.body).to.have.property('status');
         expect(res.body.status).to.equal('success');
+
+        // Check session
+        const session = await agent
+            .get(`/navigation/${navSessionID}`)
+            .set('Authorization', 'Bearer ' + carerToken);
+        expect(session).to.be.json;
+        expect(session).to.have.status(200);
+        expect(session.body).to.have.property('route');
+        expect(session.body).to.have.property('transportMode');
+        expect(session.body).to.have.property('state');
+        expect(session.body).to.have.property('destinationId');
+        expect(session.body.route).to.be.an('object');
+        expect(session.body.transportMode).to.equal('Walking');
+        expect(session.body.state).to.equal('Started');
+    });
+
+    it('Set destination again (Public Transport)', async () => {
+        // Set destination
+        const res = await agent
+            .post(`/navigation/${navSessionID}/destination`)
+            .send({
+                name: 'A',
+                placeID: 'ChIJSyUHXNRC1moRbf8lt-Jjy-o',
+                mode: 'PT'
+            })
+            .set('Authorization', 'Bearer ' + APToken);
+        expect(res).to.be.json;
+        expect(res).to.have.status(200);
+        expect(res.body).to.have.property('status');
+        expect(res.body.status).to.equal('success');
+
+        // Check session
+        const session = await agent
+            .get(`/navigation/${navSessionID}`)
+            .set('Authorization', 'Bearer ' + carerToken);
+        expect(session).to.be.json;
+        expect(session).to.have.status(200);
+        expect(session.body).to.have.property('route');
+        expect(session.body).to.have.property('transportMode');
+        expect(session.body).to.have.property('state');
+        expect(session.body).to.have.property('destinationId');
+        expect(session.body.route).to.be.an('object');
+        expect(session.body.transportMode).to.equal('PT');
+        expect(session.body.state).to.equal('Started');
     });
 });

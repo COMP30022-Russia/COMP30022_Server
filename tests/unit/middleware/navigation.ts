@@ -15,10 +15,11 @@ describe('Unit - Middleware - Ensure Requested User is in Session', () => {
         }
     };
 
-    it('Is in session', async () => {
+    it('Is in active session', async () => {
         // Fake DB find
         const dbFake = sinon.fake.returns({
-            id: 3
+            id: 3,
+            active: true
         });
         sandbox.replace(models.Session, 'findOne', dbFake);
 
@@ -42,6 +43,24 @@ describe('Unit - Middleware - Ensure Requested User is in Session', () => {
         expect(result.message).to.equal(
             'User is not party of navigation session or session does not exist'
         );
+    });
+
+    it('Is in inactive session', async () => {
+        // Fake DB find
+        const dbFake = sinon.fake.returns({
+            id: 3,
+            active: false
+        });
+        sandbox.replace(models.Session, 'findOne', dbFake);
+
+        // Define spy for next()
+        const nextSpy = sinon.spy();
+
+        // Call middleware, expect next() to be called with 0 arguments
+        // @ts-ignore
+        const result = await retrieveNavigationSession([])(req, res, next);
+        expect(result).to.be.an('error');
+        expect(result.message).to.equal('Session has already ended');
     });
 
     afterEach(async () => {

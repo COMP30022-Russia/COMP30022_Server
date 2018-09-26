@@ -62,10 +62,7 @@ describe('Unit - Chat - Upload message picture', () => {
         // Check send message spy
         expect(sendSpy.calledOnce).to.equal(true);
         expect(
-            sendSpy.alwaysCalledWith(
-                partnerID,
-                req.params.associationID
-            )
+            sendSpy.alwaysCalledWith(partnerID, req.params.associationID)
         ).to.equal(true);
     });
 

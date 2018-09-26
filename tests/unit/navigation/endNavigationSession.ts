@@ -61,28 +61,6 @@ describe('Unit - Navigation - End navigation session', () => {
         expect(deleteSpy.alwaysCalledWith(String(session.APId))).to.equal(true);
     });
 
-    it('End ended session', async () => {
-        const session = {
-            id: 1,
-            APId: 2,
-            carerId: 3,
-            active: false
-        };
-        const req = {
-            userID: 2,
-            params: {
-                sessionID: 1
-            },
-            session
-        };
-
-        // Expect error
-        // @ts-ignore
-        const result = await navigation.endNavigationSession(req, res, next);
-        expect(result).to.be.an('error');
-        expect(result.message).to.equal('Session has already been ended');
-    });
-
     afterEach(async () => {
         sandbox.restore();
     });

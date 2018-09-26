@@ -19,7 +19,7 @@ import {
 // Get requested navigation session
 router.get(
     '/',
-    retrieveNavigationSession(models.Session.rawAttributes),
+    retrieveNavigationSession(models.Session.rawAttributes, true),
     getNavigationSession
 );
 
