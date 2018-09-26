@@ -34,7 +34,7 @@ export default (
     return new Promise((resolve, reject) => {
         https
             .get(
-                `https://maps.googleapis.com/maps/api/directions/json?origin=${lat},${lon}&destination=${placeID}&mode=${mode}&key=${KEY}`,
+                `https://maps.googleapis.com/maps/api/directions/json?origin=${lat},${lon}&destination=place_id:${placeID}&mode=${mode}&key=${KEY}`,
                 res => {
                     let data = '';
 
