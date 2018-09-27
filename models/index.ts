@@ -2,14 +2,15 @@ import Sequelize, { Op } from 'sequelize';
 
 // Import defined schemas
 import userModel from './user';
+import profilePictureModel from './profile_picture';
+import firebaseTokenModel from './firebase_token';
 import associationModel from './association';
-import messageModel from './message';
+import locationModel from './location';
 import sessionModel from './session';
 import destinationModel from './destination';
+import messageModel from './message';
+import chatPictureModel from './chat_picture';
 import emergencyModel from './emergency';
-import locationModel from './location';
-import pictureModel from './picture';
-import firebaseTokenModel from './firebase_token';
 
 // Define database connection
 const sequelize: Sequelize.Sequelize = new Sequelize(
@@ -24,8 +25,6 @@ const sequelize: Sequelize.Sequelize = new Sequelize(
     }
 );
 
-const db: any = {};
-
 // Import/associate models
 const User = userModel.init(sequelize);
 const Association = associationModel.init(sequelize);
@@ -34,18 +33,9 @@ const Destination = destinationModel.init(sequelize);
 const Session = sessionModel.init(sequelize);
 const Emergency = emergencyModel.init(sequelize);
 const Location = locationModel.init(sequelize);
-const Picture = pictureModel.init(sequelize);
+const ChatPicture = chatPictureModel.init(sequelize);
 const FirebaseToken = firebaseTokenModel.init(sequelize);
-
-db.User = User;
-db.Association = Association;
-db.Message = Message;
-db.Destination = Destination;
-db.Session = Session;
-db.Emergency = Emergency;
-db.Location = Location;
-db.FirebaseToken = FirebaseToken;
-db.Picture = Picture;
+const ProfilePicture = profilePictureModel.init(sequelize);
 
 // User-user through Association table
 User.belongsToMany(User, {
@@ -72,12 +62,16 @@ User.belongsTo(Location, {
 // User has many Firebase tokens
 User.hasMany(FirebaseToken, { as: 'firebaseTokens' });
 
+// User can have 1 profile picture
+User.hasOne(ProfilePicture, { foreignKey: 'userId' });
+
 // Message is associated with an author (a user) and an association
 Message.belongsTo(User, { as: 'author' });
 Message.belongsTo(Association, { as: 'association' });
 
 // Message can have picture
-Message.hasMany(Picture, { foreignKey: 'messageId', as: 'pictures' });
+Message.hasMany(ChatPicture, { foreignKey: 'messageId', as: 'pictures' });
+Association.hasMany(ChatPicture, { foreignKey: 'associationId' });
 
 // Session is associated with AP and Carer
 Session.belongsTo(User, { as: 'Carer', foreignKey: 'carerId' });
@@ -91,8 +85,17 @@ Destination.belongsTo(User, { as: 'user' });
 Emergency.belongsTo(User, { as: 'AP', foreignKey: 'APId' });
 Emergency.belongsTo(User, { as: 'Carer', foreignKey: 'carerId' });
 
-db.sequelize = sequelize;
-db.Sequelize = sequelize;
-
+const db: any = {
+    sequelize,
+    User,
+    Association,
+    Message,
+    Destination,
+    Session,
+    Emergency,
+    Location,
+    FirebaseToken,
+    ChatPicture,
+    ProfilePicture
+};
 export default db;
-export { sequelize };

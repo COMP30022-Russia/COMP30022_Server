@@ -3,12 +3,16 @@ const router: Router = express.Router({ mergeParams: true });
 
 // Import controllers
 import { getUserLocation } from '../controllers/location';
-import { getUserDetails } from '../controllers/user';
+import { getAssociatedUserDetails } from '../controllers/user';
+import { getProfilePicture } from '../controllers/user_picture';
 
 // Get user location
 router.get('/location', getUserLocation);
 
-// Get user details
-router.get('/', getUserDetails);
+// Get associated user details
+router.get('/', getAssociatedUserDetails);
+
+// Get associated user's profile picture
+router.get('/picture', getProfilePicture);
 
 export default router;

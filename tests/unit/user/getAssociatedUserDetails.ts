@@ -2,7 +2,7 @@ import { expect, request } from 'chai';
 import sinon from 'sinon';
 import { res, next } from '../index';
 
-import { getUserDetails } from '../../../controllers/user';
+import { getAssociatedUserDetails } from '../../../controllers/user';
 import models from '../../../models';
 
 describe('Unit - User Details', () => {
@@ -42,7 +42,7 @@ describe('Unit - User Details', () => {
         });
 
         // @ts-ignore
-        const result = await getUserDetails(req, res, next);
+        const result = await getAssociatedUserDetails(req, res, next);
         expect(result).to.have.property('id');
         expect(result).to.have.property('type');
         expect(result).to.have.property('location');
@@ -76,7 +76,7 @@ describe('Unit - User Details', () => {
         });
 
         // @ts-ignore
-        const result = await getUserDetails(req, res, next);
+        const result = await getAssociatedUserDetails(req, res, next);
         expect(result).to.have.property('id');
         expect(result).to.have.property('type');
         expect(result.id).to.equal(req.params.userID);

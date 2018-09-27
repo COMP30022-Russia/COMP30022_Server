@@ -42,7 +42,7 @@ export const getMessages = async (
             where: before || after ? Object.assign(idQuery, seq) : idQuery,
             order: [['createdAt', 'DESC']],
             include: {
-                model: models.Picture,
+                model: models.ChatPicture,
                 as: 'pictures'
             }
         });

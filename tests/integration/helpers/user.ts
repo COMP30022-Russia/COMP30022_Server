@@ -1,5 +1,5 @@
 import { request } from 'chai';
-import app from '../';
+import app from '../../';
 
 let carer_count = 0,
     AP_count = 0;

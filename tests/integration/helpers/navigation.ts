@@ -1,5 +1,5 @@
 import { request } from 'chai';
-import app from '../';
+import app from '../../';
 const agent = request.agent(app);
 
 /**

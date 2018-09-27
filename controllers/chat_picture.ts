@@ -28,7 +28,7 @@ export const createPictureMessage = async (
         const picture_array = [];
         for (const n of Array(count).keys()) {
             picture_array.push(
-                await models.Picture.create({
+                await models.ChatPicture.create({
                     associationId: req.params.associationID
                 })
             );
@@ -78,7 +78,7 @@ export const uploadPicture = async (
 
     try {
         // Retrieve picture
-        const picture = await models.Picture.findOne({
+        const picture = await models.ChatPicture.findOne({
             where: { id: pictureID, associationId: req.params.associationID }
         });
 
@@ -119,7 +119,7 @@ export const getMessagePicture = async (
 
     try {
         // Retrieve picture
-        const picture = await models.Picture.findOne({
+        const picture = await models.ChatPicture.findOne({
             where: { id: pictureID, associationId: req.params.associationID }
         });
 

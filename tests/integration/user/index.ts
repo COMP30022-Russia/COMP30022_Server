@@ -1,1 +1,3 @@
-import './getUserDetails';
+import './getSelfDetails';
+import './getAssociatedUserDetails';
+import './updateUserDetails';

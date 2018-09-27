@@ -1,7 +1,7 @@
 import { expect, request } from 'chai';
 import { readFileSync } from 'fs';
 import app from '../../';
-import { createAP, createCarer, createAssociation } from '../../helpers/user';
+import { createAP, createCarer, createAssociation } from '../helpers/user';
 
 describe('Chat - Get Picture Message', () => {
     const agent = request.agent(app);
@@ -32,7 +32,11 @@ describe('Chat - Get Picture Message', () => {
             )
             .set('Content-Type', 'multipart/formdata')
             .set('Authorization', 'Bearer ' + carerToken)
-            .attach('picture', readFileSync(__dirname + '/yc.png'), '1.png');
+            .attach(
+                'picture',
+                readFileSync(__dirname + '/../helpers/yc.png'),
+                '1.png'
+            );
         const r2 = await agent
             .post(
                 '/associations/' +
@@ -42,7 +46,11 @@ describe('Chat - Get Picture Message', () => {
             )
             .set('Content-Type', 'multipart/formdata')
             .set('Authorization', 'Bearer ' + carerToken)
-            .attach('picture', readFileSync(__dirname + '/yc.png'), '2.png');
+            .attach(
+                'picture',
+                readFileSync(__dirname + '/../helpers/yc.png'),
+                '2.png'
+            );
 
         expect(r).to.have.status(200);
         expect(r1).to.have.status(200);

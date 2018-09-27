@@ -8,8 +8,27 @@ export const register = async (
     res: Response,
     next: NextFunction
 ) => {
-    // Extract body
-    const user: any = { ...req.body };
+    // Filter to allowed keys
+    // From https://stackoverflow.com/questions/38750705
+    const allowed = [
+        'username',
+        'password',
+        'type',
+        'name',
+        'mobileNumber',
+        'DOB',
+        'emergencyContactName',
+        'emergencyContactNumber',
+        'address'
+    ];
+    const user = Object.keys(req.body)
+        // Filter to allowed keys
+        .filter(key => allowed.includes(key))
+        // Build output
+        .reduce(
+            (obj: any, key: string) => ({ ...obj, [key]: req.body[key] }),
+            {}
+        );
 
     // If the user is an AP
     if (user.type === 'AP') {

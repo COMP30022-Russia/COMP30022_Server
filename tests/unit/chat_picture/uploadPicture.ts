@@ -42,7 +42,7 @@ describe('Unit - Chat - Upload message picture', () => {
             save: sinon.fake()
         };
         sandbox.replace(
-            models.Picture,
+            models.ChatPicture,
             'findOne',
             sinon.stub().returns(picture)
         );
@@ -76,7 +76,7 @@ describe('Unit - Chat - Upload message picture', () => {
         };
 
         // Fake retrieval function to return a null object
-        sandbox.replace(models.Picture, 'findOne', sinon.fake());
+        sandbox.replace(models.ChatPicture, 'findOne', sinon.fake());
 
         // @ts-ignore
         const result = await chat_picture.uploadPicture(req, res, next);
@@ -100,7 +100,7 @@ describe('Unit - Chat - Upload message picture', () => {
             save: sinon.fake()
         };
         sandbox.replace(
-            models.Picture,
+            models.ChatPicture,
             'findOne',
             sinon.stub().returns(picture)
         );

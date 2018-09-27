@@ -2,6 +2,7 @@
 // https://github.com/sequelize/express-example/blob/master/models/index.js
 // https://gist.github.com/JesusMurF/9d206738aa54131a6e7ac88ab2d9084e
 // https://github.com/sequelize/sequelize/issues/6524
+// https://github.com/sequelize/sequelize/issues/6253
 import Sequelize from 'sequelize';
 import bcrypt from 'bcryptjs';
 
@@ -42,6 +43,18 @@ export default class User extends Sequelize.Model {
                     } catch (err) {
                         return sequelize.Promise.reject(err);
                     }
+                },
+                // Hash password before update
+                beforeUpdate: async (user: any) => {
+                    // If password is not changed
+                    if (!user.password) return;
+
+                    try {
+                        const hash = await hashPassword(user.password);
+                        user.password = hash;
+                    } catch (err) {
+                        return sequelize.Promise.reject(err);
+                    }
                 }
             },
             // Exclude password by default
@@ -59,7 +72,7 @@ export default class User extends Sequelize.Model {
                 },
                 // Only retrieve type of user
                 type: {
-                    attributes: ['type']
+                    attributes: ['id', 'type']
                 },
                 // Location scope - retrieve id, type and location of user
                 location: {

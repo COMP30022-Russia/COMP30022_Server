@@ -1,5 +1,10 @@
-import express, { Router } from 'express';
+import express, { Router, Request, Response, NextFunction } from 'express';
 const router: Router = express.Router();
+import multer from 'multer';
+
+// Configure multer for profile picture uploads
+export const PROFILE_PICTURE_DEST = 'uploads/profile';
+const upload = multer({ dest: PROFILE_PICTURE_DEST }).single('picture');
 
 // Import controllers
 import {
@@ -13,19 +18,47 @@ import {
     getFirebaseTokens
 } from '../controllers/notification';
 import { getSelfNavigationSession } from '../controllers/navigation';
+import { getSelfDetails, updateUserDetails } from '../controllers/user';
+import {
+    setProfilePicture,
+    getProfilePicture
+} from '../controllers/user_picture';
+
+// Edit/update user information
+router.patch('/profile', updateUserDetails);
+// Get profile information
+router.get('/profile', getSelfDetails);
+
+// Add/update profile picture
+router.post(
+    '/profile/picture',
+    (req: Request, res: Response, next: NextFunction) => {
+        upload(req, res, (err: Error) => {
+            if (err) {
+                res.status(400);
+                next(err);
+            }
+            if (!req.file) {
+                res.status(400);
+                next(new Error('No file given'));
+            }
+            next();
+        });
+    },
+    setProfilePicture
+);
+// Get profile picture
+router.get('/profile/picture', getProfilePicture);
 
 // Get association token
 router.get('/association_token', getAssociationToken);
-
 // Create association
 router.post('/associate', createAssociation);
-
 // Get associations
 router.get('/associations', getAssociations);
 
 // Set location
 router.post('/location', setSelfLocation);
-
 // Get location
 router.get('/location', getSelfLocation);
 

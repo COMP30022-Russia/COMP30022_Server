@@ -27,6 +27,10 @@ router.post(
                 res.status(400);
                 next(err);
             }
+            if (!req.file) {
+                res.status(400);
+                next(new Error('No file given'));
+            }
             next();
         });
     },

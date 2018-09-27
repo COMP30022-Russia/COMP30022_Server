@@ -1,7 +1,7 @@
 import { expect, request } from 'chai';
 import app from '../../';
-import { createAP, createCarer, createAssociation } from '../../helpers/user';
-import { createNavigationSession } from '../../helpers/navigation';
+import { createAP, createCarer, createAssociation } from '../helpers/user';
+import { createNavigationSession } from '../helpers/navigation';
 
 describe('Navigation session', () => {
     const agent = request.agent(app);

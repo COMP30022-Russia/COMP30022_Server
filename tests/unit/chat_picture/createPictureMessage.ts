@@ -48,9 +48,9 @@ describe('Unit - Chat - Create Picture message', () => {
         // ID of created message
         const createdMessageID: number = 1;
 
-        // Get creation function of models.Picture.create to return argument
+        // Get creation function of models.ChatPicture.create to return argument
         // and a toJSON function
-        sandbox.replace(models.Picture, 'create', (input: any) => {
+        sandbox.replace(models.ChatPicture, 'create', (input: any) => {
             return { ...input, toJSON: () => input };
         });
 

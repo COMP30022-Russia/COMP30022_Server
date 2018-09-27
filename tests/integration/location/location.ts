@@ -1,6 +1,6 @@
 import { expect, request } from 'chai';
 import app from '../../';
-import { createAP, createCarer, createAssociation } from '../../helpers/user';
+import { createAP, createCarer, createAssociation } from '../helpers/user';
 
 describe('Location', () => {
     const agent = request.agent(app);

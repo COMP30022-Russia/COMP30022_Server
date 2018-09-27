@@ -1,7 +1,7 @@
 import { expect, request } from 'chai';
 import { readFileSync } from 'fs';
 import app from '../../';
-import { createAP, createCarer, createAssociation } from '../../helpers/user';
+import { createAP, createCarer, createAssociation } from '../helpers/user';
 
 describe('Chat - Upload picture', () => {
     const agent = request.agent(app);
@@ -32,7 +32,7 @@ describe('Chat - Upload picture', () => {
             .set('Authorization', 'Bearer ' + carerToken);
         expect(res).to.be.json;
         expect(res).to.have.status(400);
-        expect(res.body.message).to.equal('Picture cannot be set');
+        expect(res.body.message).to.equal('No file given');
     });
 
     it('Upload picture', async () => {
@@ -55,10 +55,15 @@ describe('Chat - Upload picture', () => {
             )
             .set('Content-Type', 'multipart/formdata')
             .set('Authorization', 'Bearer ' + carerToken)
-            .attach('picture', readFileSync(__dirname + '/yc.png'), '1.png');
+            .attach(
+                'picture',
+                readFileSync(__dirname + '/../helpers/yc.png'),
+                '1.png'
+            );
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res.body).to.have.property('id');
+        expect(res.body).to.have.property('associationId');
         expect(res.body).to.have.property('mime');
         expect(res.body).to.have.property('filename');
         expect(res.body).to.have.property('status');
@@ -74,10 +79,15 @@ describe('Chat - Upload picture', () => {
             )
             .set('Content-Type', 'multipart/formdata')
             .set('Authorization', 'Bearer ' + carerToken)
-            .attach('picture', readFileSync(__dirname + '/yc.png'), '2.png');
+            .attach(
+                'picture',
+                readFileSync(__dirname + '/../helpers/yc.png'),
+                '2.png'
+            );
         expect(res2).to.be.json;
         expect(res2).to.have.status(200);
         expect(res2.body).to.have.property('id');
+        expect(res2.body).to.have.property('associationId');
         expect(res2.body).to.have.property('mime');
         expect(res2.body).to.have.property('filename');
         expect(res2.body).to.have.property('status');

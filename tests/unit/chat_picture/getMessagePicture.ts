@@ -20,7 +20,7 @@ describe('Unit - Chat - Get message picture', () => {
         };
 
         // Fake retrieval function to return nothing
-        sandbox.replace(models.Picture, 'findOne', sinon.fake());
+        sandbox.replace(models.ChatPicture, 'findOne', sinon.fake());
 
         // @ts-ignore
         const result = await getMessagePicture(req, res, next);
@@ -54,7 +54,7 @@ describe('Unit - Chat - Get message picture', () => {
             status: 'Received'
         };
         sandbox.replace(
-            models.Picture,
+            models.ChatPicture,
             'findOne',
             sinon.stub().returns(picture)
         );
@@ -97,7 +97,7 @@ describe('Unit - Chat - Get message picture', () => {
             status: 'Sending'
         };
         sandbox.replace(
-            models.Picture,
+            models.ChatPicture,
             'findOne',
             sinon.stub().returns(picture)
         );
