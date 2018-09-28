@@ -25,6 +25,7 @@ export const sendChatMessage = async (
         message
     );
     const dataMessage = buildDataMessage('chat', data_payload);
+    await sendMessage({ ...dataMessage, ...notificationMessage }, targetID);
 };
 
 /**

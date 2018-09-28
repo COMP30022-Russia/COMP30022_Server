@@ -1,20 +1,16 @@
 import * as admin from 'firebase-admin';
 
-const PROJECT_ID = 'rservm';
-const CLIENT_EMAIL = 'firebase-adminsdk-0n4r2@rservm.iam.gserviceaccount.com';
-const DATABASE_URL = 'https://rservm.firebaseio.com';
-
 // Initalise firebase for production environments
 // Adapted from https://stackoverflow.com/questions/39492587
 if (process.env.NODE_ENV === 'production') {
     // Initialise app
     admin.initializeApp({
         credential: admin.credential.cert({
-            projectId: PROJECT_ID,
-            clientEmail: CLIENT_EMAIL,
+            projectId: process.env.FIREBASE_PROJECT_ID,
+            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
             privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
         }),
-        databaseURL: DATABASE_URL
+        databaseURL: process.env.FIREBASE_DATABASE_URL
     });
 }
 

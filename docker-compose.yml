@@ -12,7 +12,10 @@ services:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
       - POSTGRES_DB
+      - FIREBASE_PROJECT_ID
+      - FIREBASE_CLIENT_EMAIL
       - FIREBASE_PRIVATE_KEY
+      - FIREBASE_DATABASE_URL
       - DIRECTIONS_API_KEY
     links:
       - postgresql
