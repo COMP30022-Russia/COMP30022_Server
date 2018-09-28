@@ -11,7 +11,7 @@ describe('Unit - Middleware - Ensure Requested User is Associated', () => {
     const req = {
         userID: 2,
         params: {
-            userID: 2
+            userID: 3
         }
     };
 
@@ -28,6 +28,26 @@ describe('Unit - Middleware - Ensure Requested User is Associated', () => {
         // Call middleware, expect next() to be called with 0 arguments
         // @ts-ignore
         await ensureRequestedUserIsAssociated(req, res, nextSpy);
+        expect(nextSpy.calledWithExactly()).to.equal(true);
+    });
+
+    it('Is same user', async () => {
+        // Fake DB find
+        const dbFake = sinon.fake.returns({
+            id: 1
+        });
+        sandbox.replace(models.Association, 'findOne', dbFake);
+
+        // Define spy for next()
+        const nextSpy = sinon.spy();
+
+        // Call middleware, expect next() to be called with 0 arguments
+        await ensureRequestedUserIsAssociated(
+            // @ts-ignore
+            { ...req, userID: 3 },
+            res,
+            nextSpy
+        );
         expect(nextSpy.calledWithExactly()).to.equal(true);
     });
 

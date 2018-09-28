@@ -9,8 +9,8 @@ describe('Chat - Create Message', () => {
 
     before(async () => {
         // Create AP, carer
-        APToken = await createAP('ca1');
-        carerToken = await createCarer('cc1');
+        APToken = (await createAP('ca1')).token;
+        carerToken = (await createCarer('cc1')).token;
 
         // Create association
         const association = await createAssociation(APToken, carerToken);

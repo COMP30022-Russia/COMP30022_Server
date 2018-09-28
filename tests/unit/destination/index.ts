@@ -1,0 +1,2 @@
+import './getDestinations';
+import './setFavouriteDestination';

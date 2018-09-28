@@ -12,9 +12,9 @@ describe('Edit user details', () => {
 
     before(async () => {
         // Create carer
-        carerToken = await createCarer(CARER_USERNAME);
+        carerToken = (await createCarer(CARER_USERNAME)).token;
         // Create AP
-        APToken = await createAP('update_ap');
+        APToken = (await createAP('update_ap')).token;
     });
 
     it('Edit password', async () => {

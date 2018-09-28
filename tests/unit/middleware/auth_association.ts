@@ -4,7 +4,7 @@ import { res, next } from '../index';
 import models from '../../../models';
 import { ensureRequestedUserIsInRequestedAssociation } from '../../../middleware/auth';
 
-describe('Unit - Middleware - Ensure Ensure user is in requested association', () => {
+describe('Unit - Middleware - Ensure user is in requested association', () => {
     const sandbox = sinon.createSandbox();
 
     // Request with valid param

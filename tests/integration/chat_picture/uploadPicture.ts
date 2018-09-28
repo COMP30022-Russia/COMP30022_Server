@@ -10,8 +10,8 @@ describe('Chat - Upload picture', () => {
 
     before(async () => {
         // Create carer
-        APToken = await createAP('cpa2');
-        carerToken = await createCarer('cpc2');
+        APToken = (await createAP('cpa2')).token;
+        carerToken = (await createCarer('cpc2')).token;
 
         // Create association
         const association = await createAssociation(APToken, carerToken);

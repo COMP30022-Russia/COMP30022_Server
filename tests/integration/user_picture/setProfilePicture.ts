@@ -9,7 +9,7 @@ describe('User profile - Upload picture', () => {
 
     before(async () => {
         // Create user
-        userToken = await createAP('user_picture_upload');
+        userToken = (await createAP('user_picture_upload')).token;
     });
 
     it('Invalid upload', async () => {

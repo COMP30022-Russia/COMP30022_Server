@@ -10,8 +10,8 @@ describe('User profile - Get profile picture', () => {
 
     before(async () => {
         // Create associated AP and carer pair
-        APToken = await createAP('picture_get_ap');
-        carerToken = await createCarer('picture_get_carer');
+        APToken = (await createAP('picture_get_ap')).token;
+        carerToken = (await createCarer('picture_get_carer')).token;
 
         // Create association
         const association = await createAssociation(APToken, carerToken);

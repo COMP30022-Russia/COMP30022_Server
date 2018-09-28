@@ -8,9 +8,11 @@ const agent = request.agent(app);
 /**
  * Creates a carer with the given username and returns a login token.
  * @param {string} username Username of new user.
- * @return {Promise} Promise for login token of created user.
+ * @return {Promise} Promise for details of created user.
  */
-export const createCarer = async (username: string): Promise<string> => {
+export const createCarer = async (
+    username: string
+): Promise<{ id: number; username: string; token: string }> => {
     // Register as carer
     await agent.post('/users/register').send({
         name: 'Test Carer ' + carer_count++,
@@ -25,15 +27,21 @@ export const createCarer = async (username: string): Promise<string> => {
     const res = await agent
         .post('/users/login')
         .send({ username: username, password: username });
-    return res.body.token;
+    return {
+        id: res.body.id,
+        username: res.body.username,
+        token: res.body.token
+    };
 };
 
 /**
  * Creates an AP with the given username and returns a login token.
  * @param {string} username Username of new user.
- * @return {Promise} Promise for login token of created user.
+ * @return {Promise} Promise for details of created user.
  */
-export const createAP = async (username: string): Promise<string> => {
+export const createAP = async (
+    username: string
+): Promise<{ id: number; username: string; token: string }> => {
     // Register as AP
     await agent.post('/users/register').send({
         name: 'Test AP ' + AP_count++,
@@ -50,7 +58,11 @@ export const createAP = async (username: string): Promise<string> => {
     const res = await agent
         .post('/users/login')
         .send({ username: username, password: username });
-    return res.body.token;
+    return {
+        id: res.body.id,
+        username: res.body.username,
+        token: res.body.token
+    };
 };
 
 /**

@@ -8,7 +8,7 @@ describe('Notification - Get Token', () => {
 
     before(async () => {
         // Create AP, carer and association
-        userToken = await createAP('n2');
+        userToken = (await createAP('n2')).token;
     });
 
     it('Get empty', async () => {

@@ -12,6 +12,11 @@ export let ensureRequestedUserIsAssociated = async (
     const targetID = req.params.userID;
     const requesterID = req.userID;
 
+    // If the target is the requester
+    if (Number(targetID) === Number(requesterID)) {
+        return next();
+    }
+
     try {
         // Try to find an association between the requester and the target user
         const association = await models.Association.findOne({

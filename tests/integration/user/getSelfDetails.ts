@@ -8,7 +8,7 @@ describe('User details', () => {
 
     before(async () => {
         // Create AP, carer and association
-        userToken = await createAP('get_self_details');
+        userToken = (await createAP('get_self_details')).token;
     });
 
     // Get profile information of current authenticated user

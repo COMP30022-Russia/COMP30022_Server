@@ -11,10 +11,10 @@ describe('Association', () => {
 
     before(async () => {
         // Register as carers/APs and get login token
-        carer1Token = await createCarer('atc1');
-        carer2Token = await createCarer('atc2');
-        AP1Token = await createAP('ata1');
-        AP2Token = await createAP('ata2');
+        carer1Token = (await createCarer('atc1')).token;
+        carer2Token = (await createCarer('atc2')).token;
+        AP1Token = (await createAP('ata1')).token;
+        AP2Token = (await createAP('ata2')).token;
     });
 
     // Test user authentication via JWT token in header

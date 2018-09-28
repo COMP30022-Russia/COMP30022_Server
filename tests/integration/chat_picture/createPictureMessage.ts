@@ -10,8 +10,8 @@ describe('Chat - Create Picture Message', () => {
 
     before(async () => {
         // Create carer
-        APToken = await createAP('cpa1');
-        carerToken = await createCarer('cpc1');
+        APToken = (await createAP('cpa1')).token;
+        carerToken = (await createCarer('cpc1')).token;
 
         // Create association
         const association = await createAssociation(APToken, carerToken);

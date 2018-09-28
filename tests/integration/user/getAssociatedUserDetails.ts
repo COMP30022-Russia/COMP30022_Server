@@ -10,9 +10,9 @@ describe('User details', () => {
 
     before(async () => {
         // Create AP, carer and association
-        APToken = await createAP('da1');
-        carerToken = await createCarer('dc1');
-        maliciousCarerToken = await createCarer('dmc1');
+        APToken = (await createAP('da1')).token;
+        carerToken = (await createCarer('dc1')).token;
+        maliciousCarerToken = (await createCarer('dmc1')).token;
 
         // Create association
         association = await createAssociation(APToken, carerToken);

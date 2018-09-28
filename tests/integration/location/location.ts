@@ -13,10 +13,10 @@ describe('Location', () => {
 
     before(async () => {
         // Register as carers/APs and get login token
-        carerToken = await createCarer('lc1');
-        APToken = await createAP('lap1');
-        maliciousCarerToken = await createCarer('lmc1');
-        freshAPToken = await createAP('lap2');
+        carerToken = (await createCarer('lc1')).token;
+        APToken = (await createAP('lap1')).token;
+        maliciousCarerToken = (await createCarer('lmc1')).token;
+        freshAPToken = (await createAP('lap2')).token;
         // Associate AP with carer
         await createAssociation(carerToken, APToken);
     });

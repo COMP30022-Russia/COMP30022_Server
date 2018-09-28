@@ -13,8 +13,8 @@ describe('Navigation session', () => {
 
     before(async () => {
         // Register as carers/APs and get login token
-        carerToken = await createCarer('nav_control_carer');
-        APToken = await createAP('nav_control_ap');
+        carerToken = (await createCarer('nav_control_carer')).token;
+        APToken = (await createAP('nav_control_ap')).token;
         // Associate AP with carer
         const association = await createAssociation(carerToken, APToken);
         // Create navigation session for association
