@@ -47,8 +47,7 @@ describe('Unit - User - Register', () => {
                 mobileNumber: '0',
                 type: 'AP',
                 emergencyContactName: '1',
-                emergencyContactNumber: '1',
-                address: '1'
+                emergencyContactNumber: '1'
             }
         };
 
@@ -73,26 +72,6 @@ describe('Unit - User - Register', () => {
         const result = await register(req, res, next);
         expect(result).to.be.an('error');
         expect(result.message).to.be.equal('Missing emergency contact details');
-    });
-
-    it('AP without address', async () => {
-        const req: any = {
-            body: {
-                name: 'Person 1',
-                username: 'p1',
-                password: 'p1',
-                DOB: '1997-08-25',
-                mobileNumber: '0',
-                type: 'AP',
-                emergencyContactName: '1',
-                emergencyContactNumber: '1'
-            }
-        };
-
-        // @ts-ignore
-        const result = await register(req, res, next);
-        expect(result).to.be.an('error');
-        expect(result.message).to.be.equal('Missing address');
     });
 
     it('Without required fields', async () => {

@@ -65,8 +65,7 @@ export const updateUserDetails = async (
         'mobileNumber',
         'DOB',
         'emergencyContactName',
-        'emergencyContactNumber',
-        'address'
+        'emergencyContactNumber'
     ];
     const modifications = Object.keys(req.body)
         // Filter to allowed keys
@@ -85,8 +84,7 @@ export const updateUserDetails = async (
                 ('emergencyContactName' in modifications &&
                     !modifications.emergencyContactName) ||
                 ('emergencyContactNumber' in modifications &&
-                    !modifications.emergencyContactNumber) ||
-                ('address' in modifications && !modifications.address)
+                    !modifications.emergencyContactNumber)
             ) {
                 res.status(422);
                 return next(new Error('Required fields cannot be deleted'));

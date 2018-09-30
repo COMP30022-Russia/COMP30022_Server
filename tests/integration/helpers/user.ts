@@ -41,7 +41,6 @@ export const createAP = async (username: string): Promise<string> => {
         password: username,
         DOB: '2000-01-01',
         mobileNumber: '0',
-        address: 'A',
         emergencyContactNumber: '0',
         emergencyContactName: '0',
         type: 'AP'

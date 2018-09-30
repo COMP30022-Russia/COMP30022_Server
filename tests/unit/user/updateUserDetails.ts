@@ -64,7 +64,6 @@ describe('Unit - User Details', () => {
             DOB: '2018-12-10',
             emergencyContactName: 'fizz',
             emergencyContactNumber: '25',
-            address: 'buzz',
             password: 'foo'
         };
         const req: any = {

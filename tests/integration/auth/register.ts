@@ -42,8 +42,7 @@ describe('User register', () => {
             mobileNumber: '0',
             type: 'AP',
             emergencyContactName: 'Person 1',
-            emergencyContactNumber: '1',
-            address: '1 Flinders Street, East Melbourne'
+            emergencyContactNumber: '1'
         };
 
         const res = await agent.post('/users/register').send(user);
@@ -59,7 +58,6 @@ describe('User register', () => {
         expect(res.body).to.have.property('type');
         expect(res.body).to.have.property('emergencyContactName');
         expect(res.body).to.have.property('emergencyContactNumber');
-        expect(res.body).to.have.property('address');
 
         expect(res.body.name).to.equal(user.name);
         expect(res.body.username).to.equal(user.username);
@@ -72,7 +70,6 @@ describe('User register', () => {
         expect(res.body.emergencyContactNumber).to.equal(
             user.emergencyContactNumber
         );
-        expect(res.body.address).to.equal(user.address);
     });
 
     it('Register as AP without emergency details', async () => {
@@ -83,21 +80,6 @@ describe('User register', () => {
             DOB: '1950-08-25',
             mobileNumber: '0',
             type: 'AP',
-            emergencyContactNumber: '1'
-        });
-        expect(res).to.be.json;
-        expect(res).to.have.status(422);
-    });
-
-    it('Register as AP without address', async () => {
-        const res = await agent.post('/users/register').send({
-            name: 'AP 1',
-            username: 'ap_no_address',
-            password: 'a1',
-            DOB: '1950-08-25',
-            mobileNumber: '0',
-            type: 'AP',
-            emergencyContactName: 'Person 1',
             emergencyContactNumber: '1'
         });
         expect(res).to.be.json;

@@ -18,8 +18,7 @@ export const register = async (
         'mobileNumber',
         'DOB',
         'emergencyContactName',
-        'emergencyContactNumber',
-        'address'
+        'emergencyContactNumber'
     ];
     const user = Object.keys(req.body)
         // Filter to allowed keys
@@ -34,11 +33,6 @@ export const register = async (
     if (user.type === 'AP') {
         if (!user.emergencyContactName || !user.emergencyContactNumber) {
             const err = new Error('Missing emergency contact details');
-            res.status(422);
-            return next(err);
-        }
-        if (!user.address) {
-            const err = new Error('Missing address');
             res.status(422);
             return next(err);
         }

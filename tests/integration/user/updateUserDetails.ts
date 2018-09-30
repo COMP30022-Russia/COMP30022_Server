@@ -61,10 +61,10 @@ describe('Edit user details', () => {
         expect(res.body.username).to.equal(CARER_USERNAME);
     });
 
-    it('AP - try to blank address', async () => {
+    it('AP - try to blank emergencyContactName', async () => {
         const res = await agent
             .patch('/me/profile')
-            .send({ address: '' })
+            .send({ emergencyContactName: '' })
             .set('Authorization', 'Bearer ' + APToken);
         expect(res).to.be.json;
         expect(res).to.have.status(422);
@@ -78,8 +78,7 @@ describe('Edit user details', () => {
             mobileNumber: '20',
             DOB: '2018-12-10',
             emergencyContactName: 'fizz',
-            emergencyContactNumber: '25',
-            address: 'buzz'
+            emergencyContactNumber: '25'
         };
 
         const res = await agent
