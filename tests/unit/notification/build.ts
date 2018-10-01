@@ -11,6 +11,9 @@ describe('Unit - Build Firebase Message', () => {
             hello: 'world'
         };
         const result = buildDataMessage('test', payload);
+        expect(result).to.have.property('android');
+        expect(result.android).to.have.property('priority');
+        expect(result.android.priority).to.equal('high');
         expect(result).to.have.property('data');
         expect(result.data).to.have.property('type');
         expect(result.data.type).to.equal('test');
@@ -25,8 +28,9 @@ describe('Unit - Build Firebase Message', () => {
 
         const result = buildAndroidNotificationMessage(title, body);
         expect(result).to.have.property('android');
+        expect(result.android).to.have.property('priority');
+        expect(result.android.priority).to.equal('high');
         expect(result.android).to.have.property('notification');
-        expect(result.android.priority).to.equal('normal');
         expect(result.android.notification.title).to.equal(title);
         expect(result.android.notification.body).to.equal(body);
     });

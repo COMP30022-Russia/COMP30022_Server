@@ -101,6 +101,7 @@ describe('Unit - Navigation', () => {
                 sessionID: 5
             },
             session: {
+                id: 10,
                 APId: 1,
                 carerId: 2,
                 updateAttributes: updateSpy,
@@ -146,7 +147,13 @@ describe('Unit - Navigation', () => {
 
         // Check the Firebase send message
         expect(sendSpy.calledOnce).to.equal(true);
-        expect(sendSpy.alwaysCalledWith(req.session.APId, req.session.carerId));
+        expect(
+            sendSpy.alwaysCalledWith(
+                req.session.APId,
+                req.session.carerId,
+                req.session.id
+            )
+        ).to.equal(true);
     });
 
     it('Set destination - subsequent times, public transport', async () => {
@@ -161,6 +168,7 @@ describe('Unit - Navigation', () => {
                 sessionID: 5
             },
             session: {
+                id: 10,
                 APId: 1,
                 carerId: 2,
                 updateAttributes: updateSessionSpy,
@@ -209,6 +217,7 @@ describe('Unit - Navigation', () => {
         // Check the Firebase send message
         expect(sendSpy.lastCall.args[0]).to.equal(req.session.APId);
         expect(sendSpy.lastCall.args[1]).to.equal(req.session.carerId);
+        expect(sendSpy.lastCall.args[2]).to.equal(req.session.id);
     });
 
     afterEach(async () => {

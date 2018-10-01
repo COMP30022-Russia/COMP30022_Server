@@ -93,9 +93,14 @@ export const sendNavigationLocationMessage = async (
  * Builds and sends a route update message.
  * @param {number} apID ID of AP.
  * @param {number} carerID ID of carer.
+ * @param {number} sessionID ID of session.
  */
-export const sendRouteUpdateMessage = async (apID: number, carerID: number) => {
-    const dataMessage = buildDataMessage('route_update', {});
+export const sendRouteUpdateMessage = async (
+    apID: number,
+    carerID: number,
+    sessionID: number
+) => {
+    const dataMessage = buildDataMessage('route_update', { sessionID });
     await sendMessage(dataMessage, apID);
     await sendMessage(dataMessage, carerID);
 };

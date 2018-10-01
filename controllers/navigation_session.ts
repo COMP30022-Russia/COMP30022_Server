@@ -205,7 +205,7 @@ export const setDestination = async (
     }
 
     // Send notification
-    await sendRouteMessage(session.APId, session.carerId);
+    await sendRouteMessage(session.APId, session.carerId, session.id);
 
     return res.json({ status: 'success' });
 };

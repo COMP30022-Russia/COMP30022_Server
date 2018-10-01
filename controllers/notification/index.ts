@@ -5,7 +5,7 @@ import { updateFirebaseToken, getFirebaseTokens } from './actions';
 export { updateFirebaseToken, getFirebaseTokens };
 
 // The default priority
-const DEFAULT_PRIORITY = 'normal';
+const DEFAULT_PRIORITY = 'high';
 /**
  * Builds an android notification message.
  * @param {string} title Title of message.
@@ -34,10 +34,18 @@ export const buildAndroidNotificationMessage = (
  * Builds a data message.
  * @param {string} type The type of the message.
  * @param {Object} data Data of message.
+ * @param {string} [priority] Priority of message.
  * @returns {Object} Message object with data.
  */
-export const buildDataMessage = (type: string, content: any) => {
+export const buildDataMessage = (
+    type: string,
+    content: any,
+    priority?: string
+) => {
     return {
+        android: {
+            priority: priority ? priority : DEFAULT_PRIORITY
+        },
         data: {
             type,
             data: JSON.stringify(content)
