@@ -17,7 +17,9 @@ export const updateFirebaseToken = async (
         const user = await models.User.scope('id').findById(userID);
 
         // Remove all occurrences of tokens with the given instanceID
-        await models.FirebaseToken.destroy({ where: { instanceID } });
+        await models.FirebaseToken.destroy({
+            where: { instanceID, userId: userID }
+        });
 
         // Create and add new token
         const createdToken = await models.FirebaseToken.create({

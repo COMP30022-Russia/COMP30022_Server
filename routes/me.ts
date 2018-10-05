@@ -7,6 +7,7 @@ export const PROFILE_PICTURE_DEST = 'uploads/profile';
 const upload = multer({ dest: PROFILE_PICTURE_DEST }).single('picture');
 
 // Import controllers
+import { logout } from '../controllers/auth';
 import {
     getAssociationToken,
     createAssociation,
@@ -23,6 +24,9 @@ import {
     setProfilePicture,
     getProfilePicture
 } from '../controllers/user_picture';
+
+// Logout
+router.post('/logout', logout);
 
 // Edit/update user information
 router.patch('/profile', updateUserDetails);

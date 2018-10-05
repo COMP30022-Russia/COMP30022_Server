@@ -60,7 +60,7 @@ User.belongsTo(Location, {
 });
 
 // User has many Firebase tokens
-User.hasMany(FirebaseToken, { as: 'firebaseTokens' });
+User.hasMany(FirebaseToken, { as: 'firebaseTokens', foreignKey: 'userId' });
 
 // User can have 1 profile picture
 User.hasOne(ProfilePicture, { foreignKey: 'userId' });

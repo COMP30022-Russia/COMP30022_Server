@@ -42,7 +42,7 @@ describe('Unit - Notification - Update Firebase token', () => {
         sandbox.restore();
     });
 
-    it('Update token - only new token', async () => {
+    it('Update token', async () => {
         // Request should have userID (user should be authenticated)
         const req: any = {
             userID: 1,
@@ -62,7 +62,7 @@ describe('Unit - Notification - Update Firebase token', () => {
         expect(destroyCallSpy.callCount).to.equal(1);
         expect(destroyCallSpy.getCall(0).args).to.have.lengthOf(1);
         expect(destroyCallSpy.getCall(0).args[0]).to.deep.equal({
-            where: { instanceID: req.body.instanceID }
+            where: { instanceID: req.body.instanceID, userId: req.userID }
         });
 
         // Expect add token call to be called once

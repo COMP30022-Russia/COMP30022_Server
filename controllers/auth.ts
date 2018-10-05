@@ -84,3 +84,30 @@ export const login = async (
         return next(err);
     }
 };
+
+// Logout
+export const logout = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    // Extract user ID and instance ID
+    const userID = req.userID;
+    const instanceID = req.body.instanceID;
+
+    // If instanceID is not given
+    if (!instanceID) {
+        res.status(400);
+        return next(new Error('Instance ID not given'));
+    }
+
+    try {
+        // Remove tokens with specified instance ID
+        await models.FirebaseToken.destroy({
+            where: { instanceID, userId: userID }
+        });
+        return res.json({ status: 'success' });
+    } catch (err) {
+        return next(err);
+    }
+};
