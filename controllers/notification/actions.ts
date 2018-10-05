@@ -17,7 +17,7 @@ export const updateFirebaseToken = async (
         const user = await models.User.scope('id').findById(userID);
 
         // Remove all occurrences of tokens with the given instanceID
-        await removeFirebaseTokenHelper(instanceID);
+        await models.FirebaseToken.destroy({ where: { instanceID } });
 
         // Create and add new token
         const createdToken = await models.FirebaseToken.create({
@@ -67,12 +67,24 @@ export const getFirebaseTokensHelper = async (
 };
 
 /**
- * Removes tokens with the specified instanceID from the database.
- * @param {string} instanceID InstanceID of device.
+ * Replaces an old token with a new token.
+ * @param {string} oldToken The old token.
+ * @param {string} newToken The new token.
  * @returns {Promise} Promise for completion.
  */
-export const removeFirebaseTokenHelper = async (
-    instanceID: string
+export const replaceFirebaseToken = async (
+    oldToken: string,
+    newToken: string
 ): Promise<void> => {
-    await models.FirebaseToken.destroy({ where: { instanceID } });
+    const token = await models.FirebaseToken.findOne({ token: oldToken });
+    await token.updateAttributes({ token: newToken });
+};
+
+/**
+ * Removes a Firebase token.
+ * @param {string} token The token.
+ * @returns {Promise} Promise for completion.
+ */
+export const removeFirebaseToken = async (token: string): Promise<void> => {
+    await models.FirebaseToken.destroy({ where: { token } });
 };

@@ -14,32 +14,31 @@ if (process.env.NODE_ENV === 'production') {
     });
 }
 
-/**
- * Appends a token to a message.
- * @param {Object} message A token-less payload that is to be sent.
- * @param {token} token The registration token of the receipient.
- * @return {Object} Message with token appended (full message).
- */
-export const appendToken = (message: any, token: string) => {
-    return { ...message, token };
-};
+// Default priority for both notification and data messages
+const DEFAULT_PRIORITY = 'high';
 
 /**
  * Sends a message to the FCM.
  * @param {Object} message The payload to be sent.
+ * @param {string} tokens List of device tokens.
  * @return {Promise} Promise object representing the response.
  */
-export default async function(message: any) {
+export default async function(
+    message: any,
+    tokens: string[]
+): Promise<admin.messaging.MessagingDevicesResponse> {
     // Send the message and return the response
-    return new Promise((resolve, reject) => {
-        admin
-            .messaging()
-            .send(message)
-            .then(response => {
-                resolve(response);
-            })
-            .catch(err => {
-                reject(err);
-            });
-    });
+    return new Promise<admin.messaging.MessagingDevicesResponse>(
+        (resolve, reject) => {
+            admin
+                .messaging()
+                .sendToDevice(tokens, message, { priority: DEFAULT_PRIORITY })
+                .then((response: admin.messaging.MessagingDevicesResponse) => {
+                    resolve(response);
+                })
+                .catch((err: Error) => {
+                    reject(err);
+                });
+        }
+    );
 }

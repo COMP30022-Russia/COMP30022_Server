@@ -3,7 +3,6 @@ import {
     buildDataMessage,
     buildAndroidNotificationMessage
 } from '../../../controllers/notification';
-import { appendToken } from '../../../helpers/notifications';
 
 describe('Unit - Build Firebase Message', () => {
     it('Build data message', async () => {
@@ -11,9 +10,6 @@ describe('Unit - Build Firebase Message', () => {
             hello: 'world'
         };
         const result = buildDataMessage('test', payload);
-        expect(result).to.have.property('android');
-        expect(result.android).to.have.property('priority');
-        expect(result.android.priority).to.equal('high');
         expect(result).to.have.property('data');
         expect(result.data).to.have.property('type');
         expect(result.data.type).to.equal('test');
@@ -27,19 +23,7 @@ describe('Unit - Build Firebase Message', () => {
         const body = 'World';
 
         const result = buildAndroidNotificationMessage(title, body);
-        expect(result).to.have.property('android');
-        expect(result.android).to.have.property('priority');
-        expect(result.android.priority).to.equal('high');
-        expect(result.android).to.have.property('notification');
-        expect(result.android.notification.title).to.equal(title);
-        expect(result.android.notification.body).to.equal(body);
-    });
-
-    it('Append token', async () => {
-        const orig = { foo: 'bar' };
-        const token = 'cool';
-
-        const result = appendToken(orig, token);
-        expect(result).to.deep.equal({ ...orig, token });
+        expect(result.notification.title).to.equal(title);
+        expect(result.notification.body).to.equal(body);
     });
 });

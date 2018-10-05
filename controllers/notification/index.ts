@@ -1,11 +1,13 @@
 import models from '../../models';
-import send, { appendToken } from '../../helpers/notifications';
-import { getFirebaseTokensHelper, removeFirebaseTokenHelper } from './actions';
+import send from '../../helpers/notifications';
+import {
+    getFirebaseTokensHelper,
+    replaceFirebaseToken,
+    removeFirebaseToken
+} from './actions';
 import { updateFirebaseToken, getFirebaseTokens } from './actions';
 export { updateFirebaseToken, getFirebaseTokens };
 
-// The default priority
-const DEFAULT_PRIORITY = 'high';
 /**
  * Builds an android notification message.
  * @param {string} title Title of message.
@@ -19,12 +21,9 @@ export const buildAndroidNotificationMessage = (
     priority?: string
 ) => {
     const message: any = {
-        android: {
-            priority: priority ? priority : DEFAULT_PRIORITY,
-            notification: {
-                title,
-                body
-            }
+        notification: {
+            title,
+            body
         }
     };
     return message;
@@ -43,9 +42,6 @@ export const buildDataMessage = (
     priority?: string
 ) => {
     return {
-        android: {
-            priority: priority ? priority : DEFAULT_PRIORITY
-        },
         data: {
             type,
             data: JSON.stringify(content)
@@ -56,9 +52,9 @@ export const buildDataMessage = (
 /**
  * Sends a message to the specified receipient.
  * @param {Object} message The message to be sent.
- * @param {number} receipientID The ID of the receipient.
+ * @param {number|[number]} userID The ID(s) of the receipient.
  */
-export const sendMessage = async (message: any, userID: number) => {
+export const sendMessage = async (message: any, userID: number | number[]) => {
     // Only send in production environment
     if (process.env.NODE_ENV !== 'production') {
         // Output message to console if in development environment
@@ -68,25 +64,49 @@ export const sendMessage = async (message: any, userID: number) => {
         return;
     }
 
-    // Get token of target user and send message
-    const userFirebaseTokens = await getFirebaseTokensHelper(userID);
+    // Get token of target user(s)
+    let tokens: string[] = [];
+    if (Array.isArray(userID)) {
+        for (const id of userID) {
+            tokens.push(...(await getFirebaseTokensHelper(id)));
+        }
+    } else {
+        tokens = await getFirebaseTokensHelper(<number>userID);
+    }
 
     // Send the message with given tokens
-    for (const token of userFirebaseTokens) {
-        try {
-            await send(appendToken(message, token));
-        } catch (err) {
-            if (err.message === 'Requested entity was not found.') {
-                // Remove if token is invalid
-                try {
-                    await removeFirebaseTokenHelper(token);
-                } catch (err) {
-                    console.error(err);
+    try {
+        const response = await send(message, tokens);
+
+        // If there are errors
+        if (response.failureCount !== 0) {
+            for (const i in response.results) {
+                // Get current result
+                const result = response.results[i];
+
+                // Replace token, if applicable
+                if (result.canonicalRegistrationToken) {
+                    await replaceFirebaseToken(
+                        tokens[i],
+                        result.canonicalRegistrationToken
+                    );
                 }
-            } else {
-                // If not, log error
-                console.error(err);
+
+                if (result.error) {
+                    // Remove token, if applicable
+                    if (
+                        result.error.code ===
+                        'messaging/registration-token-not-registered'
+                    ) {
+                        await removeFirebaseToken(tokens[i]);
+                    } else {
+                        console.error(result.error);
+                    }
+                }
             }
         }
+    } catch (err) {
+        // Log error
+        console.error(err);
     }
 };

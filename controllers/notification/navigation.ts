@@ -101,6 +101,5 @@ export const sendRouteUpdateMessage = async (
     sessionID: number
 ) => {
     const dataMessage = buildDataMessage('route_update', { sessionID });
-    await sendMessage(dataMessage, apID);
-    await sendMessage(dataMessage, carerID);
+    await sendMessage(dataMessage, [apID, carerID]);
 };
