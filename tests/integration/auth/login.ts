@@ -43,6 +43,15 @@ describe('User login', () => {
         expect(res.body.type).to.equal(user.type);
     });
 
+    it('Login with capitalised username', async () => {
+        const res = await agent.post('/users/login').send({
+            username: user.username.toUpperCase(),
+            password: user.password
+        });
+        expect(res).to.be.json;
+        expect(res).to.have.status(200);
+    });
+
     it('Unsuccessful user login - wrong password', async () => {
         const res = await agent.post('/users/login').send({
             username: user.username,

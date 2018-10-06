@@ -124,4 +124,41 @@ describe('User register', () => {
         expect(res).to.be.json;
         expect(res).to.have.status(422);
     });
+
+    it('Register as Carer with same username', async () => {
+        const res = await agent.post('/users/register').send({
+            name: 'Carer 1',
+            username: 'carer_sameusername',
+            password: 'cool',
+            DOB: '1950-08-25',
+            type: 'Carer',
+            mobileNumber: '0'
+        });
+        expect(res).to.be.json;
+        expect(res).to.have.status(200);
+
+        // Same username
+        const res2 = await agent.post('/users/register').send({
+            name: 'Carer 1',
+            username: 'carer_sameusername',
+            password: 'cool',
+            DOB: '1950-08-25',
+            type: 'Carer',
+            mobileNumber: '0'
+        });
+        expect(res2).to.be.json;
+        expect(res2).to.have.status(422);
+
+        // Same username, but with uppercase letter
+        const res3 = await agent.post('/users/register').send({
+            name: 'Carer 1',
+            username: 'carer_sameusernamE',
+            password: 'cool',
+            DOB: '1950-08-25',
+            type: 'Carer',
+            mobileNumber: '0'
+        });
+        expect(res3).to.be.json;
+        expect(res3).to.have.status(422);
+    });
 });

@@ -62,7 +62,7 @@ export const login = async (
         // Get user with given username
         const user = await models.User.scope('withPassword').find({
             where: {
-                username
+                username: username.toLowerCase()
             }
         });
         // If user cannot be found

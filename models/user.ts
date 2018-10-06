@@ -11,7 +11,7 @@ const SALT_FACTOR = 10;
 
 // Define user schema
 const userSchema = {
-    username: { type: Sequelize.STRING, allowNull: false, unique: true },
+    username: { type: Sequelize.STRING, allowNull: false },
     password: { type: Sequelize.STRING, allowNull: false },
     type: { type: Sequelize.ENUM('Carer', 'AP'), allowNull: false },
     name: { type: Sequelize.STRING, allowNull: false },
@@ -33,6 +33,13 @@ export default class User extends Sequelize.Model {
     static init(sequelize: Sequelize.Sequelize) {
         return super.init(userSchema, {
             sequelize,
+            indexes: [
+                {
+                    name: 'unique_username',
+                    unique: true,
+                    fields: [sequelize.fn('lower', sequelize.col('username'))]
+                }
+            ],
             hooks: {
                 // Hash password before creation
                 beforeCreate: async (user: any) => {
