@@ -5,7 +5,9 @@ import {
     sendNavigationStartMessage,
     sendNavigationEndMessage
 } from './notification/navigation';
+import { sendNavigationCallRequestStartMessage } from './notification/call';
 import { locationCache } from './navigation_session';
+import { terminateCall } from './call';
 
 /**
  * Returns value indicating whether indicated user is in an active
@@ -39,8 +41,11 @@ export const startNavigationSession = async (
             (await isInSession(association.APId)) ||
             (await isInSession(association.carerId))
         ) {
-            throw new Error(
-                'Cannot start navigation session, user(s) are in session'
+            res.status(400);
+            return next(
+                new Error(
+                    'Cannot start navigation session, user(s) are in session'
+                )
             );
         }
 
@@ -82,6 +87,9 @@ export const getSelfNavigationSession = async (
             where: {
                 active: true,
                 [Op.or]: [{ APId: userID }, { carerId: userID }]
+            },
+            include: {
+                model: models.Call
             }
         });
         if (!session) {
@@ -126,9 +134,70 @@ export const endNavigationSession = async (
         // Remove AP location from cache
         locationCache.deleteItem(String(session.APId));
 
+        // Get and terminate call (if existant)
+        const call = await session.getCall();
+        if (call && call.state !== 'Terminated') {
+            await terminateCall(call, 'nav_session_end');
+        }
+
         await session.updateAttributes({ active: false });
         return res.json({ status: 'success' });
     } catch (err) {
         return next(err);
+    }
+};
+
+// Starts a voice/video (call) call in a navigation session
+export const startNavigationCall = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    // Extract various things
+    const userID = req.userID;
+    const sessionID = req.session.id;
+    const APId = req.session.APId;
+    const carerId = req.session.carerId;
+
+    try {
+        // Ensure that there isn't a pre-existing navigation voice/video call
+        // for either carer or AP
+        const existing = await models.Call.findOne({
+            where: {
+                [Op.or]: [{ APId }, { carerId }],
+                state: { [Op.not]: 'Terminated' }
+            }
+        });
+        if (existing) {
+            res.status(400);
+            return next(
+                new Error(
+                    'There is pre-existing non-terminated voice/video call'
+                )
+            );
+        }
+
+        // Create voice/video call and attach to navigation session
+        const call = await models.Call.create({
+            APId,
+            carerId,
+            sessionId: sessionID,
+            carerIsInitiator: userID === carerId
+        });
+
+        // Send message
+        const targetID = userID === APId ? carerId : APId;
+        const user = await models.User.scope('name').findById(userID);
+        await sendNavigationCallRequestStartMessage(
+            call.id,
+            sessionID,
+            user.name,
+            userID,
+            targetID
+        );
+
+        return res.json(call);
+    } catch (err) {
+        next(err);
     }
 };

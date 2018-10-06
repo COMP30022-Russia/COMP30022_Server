@@ -12,3 +12,4 @@ import './destination';
 import './chat';
 import './chat_picture';
 import './emergency';
+import './call';

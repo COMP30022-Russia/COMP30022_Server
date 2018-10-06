@@ -11,6 +11,7 @@ import destinationModel from './destination';
 import messageModel from './message';
 import chatPictureModel from './chat_picture';
 import emergencyModel from './emergency';
+import callModel from './call';
 
 // Define database connection
 const sequelize: Sequelize.Sequelize = new Sequelize(
@@ -36,6 +37,7 @@ const Location = locationModel.init(sequelize);
 const ChatPicture = chatPictureModel.init(sequelize);
 const FirebaseToken = firebaseTokenModel.init(sequelize);
 const ProfilePicture = profilePictureModel.init(sequelize);
+const Call = callModel.init(sequelize);
 
 // User-user through Association table
 User.belongsToMany(User, {
@@ -85,6 +87,11 @@ Destination.belongsTo(User, { as: 'user' });
 Emergency.belongsTo(User, { as: 'AP', foreignKey: 'APId' });
 Emergency.belongsTo(User, { as: 'Resolver', foreignKey: 'resolverId' });
 
+// Navigation session has a current call
+Session.hasOne(Call, { foreignKey: 'sessionId' });
+Call.belongsTo(User, { as: 'AP', foreignKey: 'APId' });
+Call.belongsTo(User, { as: 'Carer', foreignKey: 'carerId' });
+
 const db: any = {
     sequelize,
     User,
@@ -96,6 +103,7 @@ const db: any = {
     Location,
     FirebaseToken,
     ChatPicture,
-    ProfilePicture
+    ProfilePicture,
+    Call
 };
 export default db;

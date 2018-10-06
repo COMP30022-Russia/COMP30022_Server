@@ -4,3 +4,4 @@ import './auth_association';
 import './navigation';
 import './params';
 import './emergency';
+import './call';

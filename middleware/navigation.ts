@@ -6,23 +6,34 @@ import models from '../models';
  * Retrieves the specified navigation session.
  * @param {string[]} attributes Wanted attributes of navigation session.
  * @param {boolean} [allowInactive] Whether to allow requests when session is inactive.
+ * @param {boolean} [populateCall] Whether to include call data.
  * @return Express middleware
  */
 export let retrieveNavigationSession = (
     attributes: string[],
-    allowInactive = false
+    allowInactive = false,
+    populateCall = false
 ) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         // Extract userID
-        const userID = req.userID;
+        const userID: number = req.userID;
         try {
-            const session = await models.Session.findOne({
+            let options: any = {
                 where: { id: req.params.sessionID },
                 [Op.or]: [{ APId: userID }, { carerId: userID }],
                 attributes: Array.isArray(attributes)
                     ? [...attributes, 'active']
                     : attributes
-            });
+            };
+            if (populateCall) {
+                options = {
+                    ...options,
+                    include: {
+                        model: models.Call
+                    }
+                };
+            }
+            const session = await models.Session.findOne(options);
 
             // Ensure that session exists and that user is party of session
             if (!session) {

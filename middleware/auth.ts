@@ -21,6 +21,7 @@ declare module 'express' {
         association: any;
         session: any;
         event: any;
+        call: any;
     }
 }
 

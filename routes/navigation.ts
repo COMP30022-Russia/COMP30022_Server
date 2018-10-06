@@ -6,7 +6,8 @@ import { retrieveNavigationSession } from '../middleware/navigation';
 
 import {
     getNavigationSession,
-    endNavigationSession
+    endNavigationSession,
+    startNavigationCall
 } from '../controllers/navigation';
 import {
     switchNavigationControl,
@@ -20,7 +21,7 @@ import {
 // Get requested navigation session
 router.get(
     '/',
-    retrieveNavigationSession(models.Session.rawAttributes, true),
+    retrieveNavigationSession(models.Session.rawAttributes, true, true),
     getNavigationSession
 );
 
@@ -64,6 +65,13 @@ router.post(
     '/off_track',
     retrieveNavigationSession(['id', 'APId', 'carerId']),
     sendOffTrackNotification
+);
+
+// Start call
+router.post(
+    '/call',
+    retrieveNavigationSession(['id', 'APId', 'carerId']),
+    startNavigationCall
 );
 
 export default router;

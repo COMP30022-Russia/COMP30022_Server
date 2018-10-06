@@ -18,6 +18,7 @@ import associationRouter from './association';
 import navigationRouter from './navigation';
 import emergencyRouter from './emergency';
 import { retrieveEmergencyEvent } from '../middleware/emergency';
+import callRouter from './call';
 
 // Handle index route
 import { homeRoute } from '../controllers/home';
@@ -53,5 +54,6 @@ router.use(
     retrieveEmergencyEvent,
     emergencyRouter
 );
+router.use('/call/:callID', authenticate, verifyIDParam('callID'), callRouter);
 
 export default router;
