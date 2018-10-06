@@ -17,10 +17,10 @@ export {
 declare module 'express' {
     export interface Request {
         token: string;
-        user: string;
         userID: number;
         association: any;
         session: any;
+        event: any;
     }
 }
 

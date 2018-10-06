@@ -16,6 +16,7 @@ import './navigation_session';
 import './chat';
 import './chat_picture';
 import './destination';
+import './emergency';
 
 // Define res.json stub to return first argument
 const resJSONStub: SinonStub = sinon.stub().returnsArg(0);

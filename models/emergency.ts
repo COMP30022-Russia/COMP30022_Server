@@ -6,6 +6,11 @@ const emergencySchema = {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true
+    },
+    handled: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
     }
 };
 

@@ -16,6 +16,8 @@ import userRouter from './user';
 import meRouter from './me';
 import associationRouter from './association';
 import navigationRouter from './navigation';
+import emergencyRouter from './emergency';
+import { retrieveEmergencyEvent } from '../middleware/emergency';
 
 // Handle index route
 import { homeRoute } from '../controllers/home';
@@ -43,6 +45,13 @@ router.use(
     authenticate,
     verifyIDParam('sessionID'),
     navigationRouter
+);
+router.use(
+    '/emergency/:eventID',
+    authenticate,
+    verifyIDParam('eventID'),
+    retrieveEmergencyEvent,
+    emergencyRouter
 );
 
 export default router;

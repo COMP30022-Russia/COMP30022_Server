@@ -11,3 +11,4 @@ import './navigation_session';
 import './destination';
 import './chat';
 import './chat_picture';
+import './emergency';

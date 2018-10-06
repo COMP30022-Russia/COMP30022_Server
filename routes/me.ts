@@ -13,6 +13,7 @@ import {
     createAssociation,
     getAssociations
 } from '../controllers/association';
+import { inititateEmergencyEvent } from '../controllers/emergency';
 import { setSelfLocation, getSelfLocation } from '../controllers/location';
 import {
     updateFirebaseToken,
@@ -60,6 +61,9 @@ router.get('/association_token', getAssociationToken);
 router.post('/associate', createAssociation);
 // Get associations
 router.get('/associations', getAssociations);
+
+// Start emergency event
+router.post('/emergency', inititateEmergencyEvent);
 
 // Set location
 router.post('/location', setSelfLocation);
