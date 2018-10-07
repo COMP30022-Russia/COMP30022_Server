@@ -103,3 +103,22 @@ export const sendRouteUpdateMessage = async (
     const dataMessage = buildDataMessage('route_update', { sessionID });
     await sendMessage(dataMessage, [apID, carerID]);
 };
+
+/**
+ * Sends an AP off-track message.
+ * @param {number} targetID ID of target.
+ * @param {number} sessionID ID of session.
+ * @param {string} name Name of AP.
+ */
+export const sendOffTrackMessage = async (
+    targetID: number,
+    sessionID: number,
+    name: string
+) => {
+    const dataMessage = buildDataMessage('nav_off_track', { sessionID });
+    const notificationMessage = buildAndroidNotificationMessage(
+        `Navigation off-track`,
+        `${name} seems to be be off-track`
+    );
+    await sendMessage({ ...dataMessage, ...notificationMessage }, targetID);
+};

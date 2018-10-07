@@ -4,7 +4,8 @@ import models from '../models';
 import {
     sendNavigationControlSwitchedMessage,
     sendNavigationLocationMessage,
-    sendRouteUpdateMessage
+    sendRouteUpdateMessage,
+    sendOffTrackMessage
 } from './notification/navigation';
 import retrieveRoute from '../helpers/maps';
 
@@ -208,4 +209,33 @@ export const setDestination = async (
     await sendRouteMessage(session.APId, session.carerId, session.id);
 
     return res.json({ status: 'success' });
+};
+
+// Send off track notification to carer
+export const sendOffTrackNotification = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    // Extract session
+    const session = req.session;
+
+    try {
+        // Ensure that only APs are sending these notifications
+        if (req.userID !== session.APId) {
+            res.status(400);
+            return next(
+                new Error(
+                    'Non AP users are not allowed to send off-track notifications'
+                )
+            );
+        }
+
+        // Send off-track notification
+        const user = await models.User.scope('name').findById(session.APId);
+        await sendOffTrackMessage(session.carerId, session.id, user.name);
+        return res.json({ status: 'success' });
+    } catch (err) {
+        next(err);
+    }
 };

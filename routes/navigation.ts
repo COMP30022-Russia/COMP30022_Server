@@ -13,7 +13,8 @@ import {
     updateAPLocation,
     getAPLocation,
     getRoute,
-    setDestination
+    setDestination,
+    sendOffTrackNotification
 } from '../controllers/navigation_session';
 
 // Get requested navigation session
@@ -56,6 +57,13 @@ router.post(
     '/destination',
     retrieveNavigationSession(['id', 'APId', 'carerId']),
     setDestination
+);
+
+// Off track notification
+router.post(
+    '/off_track',
+    retrieveNavigationSession(['id', 'APId', 'carerId']),
+    sendOffTrackNotification
 );
 
 export default router;
