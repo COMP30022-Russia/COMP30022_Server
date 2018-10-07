@@ -74,6 +74,11 @@ export const sendMessage = async (message: any, userID: number | number[]) => {
         tokens = await getFirebaseTokensHelper(<number>userID);
     }
 
+    // Stop if there are no tokens
+    if (tokens.length === 0) {
+        return;
+    }
+
     // Send the message with given tokens
     try {
         const response = await send(message, tokens);
