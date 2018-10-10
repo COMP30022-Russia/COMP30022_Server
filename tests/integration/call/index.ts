@@ -5,3 +5,4 @@ import './updateCallFailureCount';
 import './setCallState';
 import './rejectCall';
 import './acceptCall';
+import './getNav';

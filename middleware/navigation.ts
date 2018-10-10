@@ -30,7 +30,8 @@ export let retrieveNavigationSession = (
                     ...options,
                     include: {
                         model: models.Call
-                    }
+                    },
+                    order: [[{ model: models.Call, as: 'Call' }, 'id', 'DESC']]
                 };
             }
             const session = await models.Session.findOne(options);

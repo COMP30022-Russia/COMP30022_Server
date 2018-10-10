@@ -33,15 +33,13 @@ describe('Unit - Navigation - End navigation session', () => {
 
     it('End session', async () => {
         const updateSpy = sinon.spy();
-        const session = {
+        const session: any = {
             id: 1,
             APId: 2,
             carerId: 3,
             active: true,
             updateAttributes: updateSpy,
-            getCall: (): any => {
-                return undefined;
-            }
+            Call: undefined
         };
         const req = {
             userID: 2,
@@ -78,9 +76,7 @@ describe('Unit - Navigation - End navigation session', () => {
             carerId: 3,
             active: true,
             updateAttributes: sinon.fake(),
-            getCall: () => {
-                return { state: 'Ongoing' };
-            }
+            Call: { state: 'Ongoing' }
         };
         const req = {
             userID: 2,

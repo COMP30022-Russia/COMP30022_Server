@@ -28,7 +28,7 @@ router.get(
 // End requested navigation session
 router.post(
     '/end',
-    retrieveNavigationSession(['id', 'active', 'carerId', 'APId']),
+    retrieveNavigationSession(['id', 'active', 'carerId', 'APId'], false, true),
     endNavigationSession
 );
 

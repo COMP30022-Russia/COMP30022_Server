@@ -89,7 +89,8 @@ export const getSelfNavigationSession = async (
                 [Op.or]: [{ APId: userID }, { carerId: userID }]
             },
             include: {
-                model: models.Call
+                model: models.Call,
+                order: [[{ model: models.Call, as: 'Call' }, 'id', 'DESC']]
             }
         });
         if (!session) {
@@ -135,7 +136,7 @@ export const endNavigationSession = async (
         locationCache.deleteItem(String(session.APId));
 
         // Get and terminate call (if existant)
-        const call = await session.getCall();
+        const call = session.Call;
         if (call && call.state !== 'Terminated') {
             await terminateCall(call, 'nav_session_end');
         }
