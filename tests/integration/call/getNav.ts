@@ -51,6 +51,28 @@ describe('Navigation call', () => {
         expect(res.body.Call.state).to.equal('Pending');
     });
 
+    it('Get call through /me', async () => {
+        const res1 = await agent
+            .get(`/me/navigation`)
+            .set('Authorization', 'Bearer ' + carerToken);
+        expect(res1).to.be.json;
+        expect(res1).to.have.status(200);
+        expect(res1.body).to.have.property('Call');
+        expect(res1.body.Call).to.have.property('id');
+        expect(res1.body.Call.id).to.equal(callID);
+        expect(res1.body.Call.state).to.equal('Pending');
+
+        const res2 = await agent
+            .get(`/me/navigation`)
+            .set('Authorization', 'Bearer ' + APToken);
+        expect(res2).to.be.json;
+        expect(res2).to.have.status(200);
+        expect(res2.body).to.have.property('Call');
+        expect(res2.body.Call).to.have.property('id');
+        expect(res2.body.Call.id).to.equal(callID);
+        expect(res2.body.Call.state).to.equal('Pending');
+    });
+
     it('End call through navigation', async () => {
         // End session
         await agent

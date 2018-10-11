@@ -90,8 +90,8 @@ export const getSelfNavigationSession = async (
             },
             include: {
                 model: models.Call,
-                order: [[{ model: models.Call, as: 'Call' }, 'id', 'DESC']]
-            }
+            },
+            order: [[{ model: models.Call, as: 'Call' }, 'id', 'DESC']]
         });
         if (!session) {
             return res.json({});
