@@ -1,5 +1,4 @@
 // Starts server
-// Adapated from: https://github.com/YC/Workflow/blob/dist/src/bin/www.ts
 import http, { Server } from 'http';
 
 // Set environment variables and initialise app

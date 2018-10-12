@@ -1,3 +1,9 @@
 docker/
 .git/
+.git*
 .env
+.env.sample
+node_modules/
+build/
+tests/
+data/

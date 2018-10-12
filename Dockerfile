@@ -1,5 +1,5 @@
 # Build from Node image
-FROM node:latest
+FROM node:10.12.0-alpine
 
 # Copy files to build directory and navigate to build directory
 COPY . /usr/src/build
@@ -14,8 +14,8 @@ RUN npm run build
 # Set NODE_ENV to production
 ENV NODE_ENV production
 
-# Move built app and switch directory
-RUN mv dist/ /usr/src/app
+# Move built app, remove build directory and switch directory
+RUN mv dist/ /usr/src/app && rm -r /usr/src/build
 WORKDIR /usr/src/app
 
 # Install production dependencies

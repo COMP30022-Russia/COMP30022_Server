@@ -17,13 +17,15 @@ services:
       - FIREBASE_PRIVATE_KEY
       - FIREBASE_DATABASE_URL
       - DIRECTIONS_API_KEY
+    volumes:
+      - ${DATA_PATH}/uploads:/usr/src/app/uploads
     links:
       - postgresql
     depends_on:
       - postgresql
     restart: always
   postgresql:
-    image: "postgres:latest"
+    image: "postgres:10-alpine"
     ports:
       - "5432:5432"
     environment:
