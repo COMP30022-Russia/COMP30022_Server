@@ -36,7 +36,7 @@ describe('Unit - Location - Get Associated AP Location', () => {
 
         // @ts-ignore
         const result = await getUserLocation(req, res, next);
-        expect(result).to.deep.equal({ location });
+        expect(result).to.deep.equal(location);
     });
 
     it('AP gets Carer', async () => {

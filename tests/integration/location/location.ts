@@ -62,11 +62,10 @@ describe('Location', () => {
             .set('Authorization', 'Bearer ' + APToken);
         expect(getQuery).to.be.json;
         expect(getQuery).to.have.status(200);
-        expect(getQuery.body).to.have.property('location');
-        expect(getQuery.body.location).to.have.property('lon');
-        expect(getQuery.body.location).to.have.property('lat');
-        expect(getQuery.body.location.lon).to.equal(String(newLocation.lon));
-        expect(getQuery.body.location.lat).to.equal(String(newLocation.lat));
+        expect(getQuery.body).to.have.property('lon');
+        expect(getQuery.body).to.have.property('lat');
+        expect(getQuery.body.lon).to.equal(String(newLocation.lon));
+        expect(getQuery.body.lat).to.equal(String(newLocation.lat));
     });
 
     it('Get location of AP who has not submitted a location', async () => {
@@ -74,9 +73,7 @@ describe('Location', () => {
             .get('/me/location')
             .set('Authorization', 'Bearer ' + freshAPToken);
         expect(res).to.be.json;
-        expect(res).to.have.status(200);
-        expect(res.body).to.have.property('location');
-        expect(res.body.location).to.be.null;
+        expect(res).to.have.status(400);
     });
 
     it('Get location of AP as carer', async () => {
@@ -100,11 +97,10 @@ describe('Location', () => {
             .set('Authorization', 'Bearer ' + carerToken);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
-        expect(res.body).to.have.property('location');
-        expect(res.body.location).to.have.property('lon');
-        expect(res.body.location).to.have.property('lat');
-        expect(res.body.location.lon).to.equal(String(newLocation.lon));
-        expect(res.body.location.lat).to.equal(String(newLocation.lat));
+        expect(res.body).to.have.property('lon');
+        expect(res.body).to.have.property('lat');
+        expect(res.body.lon).to.equal(String(newLocation.lon));
+        expect(res.body.lat).to.equal(String(newLocation.lat));
     });
 
     it('Try to get location of AP as carer who is not associated with AP', async () => {

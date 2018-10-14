@@ -13,8 +13,13 @@ const getLocation = async (id: number): Promise<any> => {
     if (user.type !== 'AP') {
         throw new Error("Only APs' locations can be accessed");
     }
-    // Get and return location
-    return await user.getCurrentLocation();
+
+    // Get location
+    const location = await user.getCurrentLocation();
+    if (!location) {
+        throw new Error('AP has not set their location yet');
+    }
+    return location;
 };
 
 // Get the authenticated user's location
@@ -26,7 +31,7 @@ export const getSelfLocation = async (
     try {
         // Get and return location of currently authenticated user
         const location = await getLocation(req.userID);
-        return res.json({ location });
+        return res.json(location);
     } catch (err) {
         res.status(400);
         return next(err);
@@ -42,7 +47,7 @@ export const getUserLocation = async (
     try {
         // Get and return location of specified user
         const location = await getLocation(req.params.userID);
-        return res.json({ location });
+        return res.json(location);
     } catch (err) {
         res.status(400);
         return next(err);

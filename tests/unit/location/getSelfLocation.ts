@@ -34,7 +34,7 @@ describe('Unit - Location - Get Self Location', () => {
 
         // @ts-ignore
         const result = await getSelfLocation(req, res, next);
-        expect(result).to.deep.equal({ location });
+        expect(result).to.deep.equal(location);
     });
 
     it('Carer gets Carer', async () => {
