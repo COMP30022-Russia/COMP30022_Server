@@ -100,14 +100,15 @@ export const uploadPicture = async (
         }
 
         // Set fields of picture with values of file and return
-        picture.filename = file.filename;
-        picture.mime = file.mimetype;
-        picture.status = 'Received';
-        const saved = await picture.save();
+        const saved = await picture.updateAttributes({
+            filename: file.filename,
+            mime: file.mimetype,
+            status: 'Received'
+        });
 
         // Find ID of recipient user and send data message
         const targetID = await association.getPartnerID(userID);
-        await sendChatPictureUploadMessage(targetID, associationID);
+        await sendChatPictureUploadMessage(targetID, associationID, picture.id);
 
         return res.json(saved.toJSON());
     } catch (err) {

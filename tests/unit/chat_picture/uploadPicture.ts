@@ -1,7 +1,7 @@
 import { expect, request } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
-import { res, next } from '../index';
+import { res, next, wrapToJSON } from '../index';
 
 import models from '../../../models';
 import { uploadPicture } from '../../../controllers/chat_picture';
@@ -29,7 +29,7 @@ describe('Unit - Chat - Upload message picture', () => {
                 pictureID: 3
             },
             file: {
-                mime: 'foo',
+                mimetype: 'foo',
                 filename: 'bar'
             },
             association: { getPartnerID: (_: number) => partnerID }
@@ -38,8 +38,13 @@ describe('Unit - Chat - Upload message picture', () => {
         // Fake retrieval function to return a partial picture object
         const picture: any = {
             id: 3,
-            status: 'Sending',
-            save: sinon.fake()
+            status: 'Sending'
+        };
+        picture.updateAttributes = (attributes: any) => {
+            return wrapToJSON({
+                ...picture,
+                ...attributes
+            });
         };
         sandbox.replace(
             models.ChatPicture,
@@ -50,19 +55,23 @@ describe('Unit - Chat - Upload message picture', () => {
         // Expect to get picture with mime and filename back
         // @ts-ignore
         const result = await chat_picture.uploadPicture(req, res, next);
-        expect(picture).to.have.property('id');
-        expect(picture).to.have.property('mime');
-        expect(picture).to.have.property('filename');
-        expect(picture).to.have.property('status');
-        expect(picture.id).to.equal(picture.id);
-        expect(picture.mime).to.equal(picture.mime);
-        expect(picture.filename).to.equal(picture.filename);
-        expect(picture.status).to.equal('Received');
+        expect(result).to.have.property('id');
+        expect(result).to.have.property('mime');
+        expect(result).to.have.property('filename');
+        expect(result).to.have.property('status');
+        expect(result.id).to.equal(picture.id);
+        expect(result.mime).to.equal(req.file.mimetype);
+        expect(result.filename).to.equal(req.file.filename);
+        expect(result.status).to.equal('Received');
 
         // Check send message spy
         expect(sendSpy.calledOnce).to.equal(true);
         expect(
-            sendSpy.alwaysCalledWith(partnerID, req.params.associationID)
+            sendSpy.alwaysCalledWith(
+                partnerID,
+                req.params.associationID,
+                picture.id
+            )
         ).to.equal(true);
     });
 
@@ -84,7 +93,7 @@ describe('Unit - Chat - Upload message picture', () => {
         expect(result.message).to.equal('Picture cannot be set');
     });
 
-    it('Set received picture', async () => {
+    it('Set already received picture', async () => {
         const req: any = {
             userID: 1,
             params: {
