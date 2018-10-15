@@ -2,6 +2,9 @@ import express, { Request, Response, NextFunction } from 'express';
 import bodyParser from 'body-parser';
 import helmet from 'helmet';
 
+// Import cron jobs
+import './helpers/cron';
+
 // Import router
 import router from './routes';
 

@@ -89,7 +89,7 @@ export const getSelfNavigationSession = async (
                 [Op.or]: [{ APId: userID }, { carerId: userID }]
             },
             include: {
-                model: models.Call,
+                model: models.Call
             },
             order: [[{ model: models.Call, as: 'Call' }, 'id', 'DESC']]
         });
@@ -201,4 +201,23 @@ export const startNavigationCall = async (
     } catch (err) {
         next(err);
     }
+};
+
+// Define idle timeout
+const NAVIGATION_SESSION_IDLE_TIMEOUT: number = 24 * 60 * 60 * 1000;
+/**
+ * Performs navigation call cleanup by terminating idle calls.
+ */
+export const cleanUpNavigationCalls = async () => {
+    return await models.Session.update(
+        { active: false },
+        {
+            where: {
+                active: true
+            },
+            updatedAt: {
+                [Op.lte]: Date.now() - NAVIGATION_SESSION_IDLE_TIMEOUT
+            }
+        }
+    );
 };

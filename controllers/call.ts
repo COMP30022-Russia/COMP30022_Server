@@ -224,3 +224,22 @@ export const terminateCall = async (call: any, reason: string) => {
         );
     }
 };
+
+// Define pending timeout
+const CALL_PENDING_TIMEOUT: number = 40 * 1000;
+/**
+ * Terminates idle pending calls.
+ */
+export const terminateIdlePendingCalls = async () => {
+    const calls = await models.Call.findAll({
+        where: {
+            state: 'Pending',
+            updatedAt: {
+                [Op.lte]: Date.now() - CALL_PENDING_TIMEOUT
+            }
+        }
+    });
+    for (const call of calls) {
+        await terminateCall(call, 'pending_timeout');
+    }
+};
