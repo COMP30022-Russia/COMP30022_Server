@@ -1,19 +1,17 @@
 import { Request, Response, NextFunction } from 'express';
 import models from '../models';
 
-// Retrieves user information for associated users
+// Retrieve profile information of associated users
 export const getAssociatedUserDetails = async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    // Extract ID from params
-    const id = req.params.userID;
+    const userID = req.params.userID;
 
-    // Perform query
     try {
         // Get user info
-        const user = await models.User.scope('withLocation').findById(id);
+        const user = await models.User.scope('withLocation').findById(userID);
 
         // Get location if user is AP
         if (user.type === 'AP') {
@@ -25,22 +23,19 @@ export const getAssociatedUserDetails = async (
         // If not, just return user
         return res.json(user.toJSON());
     } catch (err) {
-        res.status(400);
         return next(err);
     }
 };
 
-// Get user details
+// Retrieve profile information of authenticated user
 export const getSelfDetails = async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    // Extract user ID
     const userID = req.userID;
 
     try {
-        // Get and return
         const user = await models.User.findById(userID);
         return res.json(user.toJSON());
     } catch (err) {
@@ -54,10 +49,9 @@ export const updateUserDetails = async (
     res: Response,
     next: NextFunction
 ) => {
-    // Extract user ID and body of request
-    const userID = req.params.userID;
+    const userID = req.userID;
 
-    // Filter to allowed keys
+    // Filter request body to allowed keys
     // From https://stackoverflow.com/questions/38750705
     const allowed = [
         'password',
@@ -77,8 +71,8 @@ export const updateUserDetails = async (
         );
 
     try {
-        // Get user
-        const user = await models.User.findById(req.userID);
+        // Get current user
+        const user = await models.User.findById(userID);
         if (user.type === 'AP') {
             if (
                 ('emergencyContactName' in modifications &&

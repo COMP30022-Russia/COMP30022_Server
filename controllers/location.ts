@@ -3,12 +3,12 @@ import models from '../models';
 
 /**
  * Retrieves the most recent location of the specified user
- * @param {number} id ID of user.
+ * @param {number} userID ID of user.
  * @return {Promise} Promise for the location of the user.
  */
-const getLocation = async (id: number): Promise<any> => {
+const getLocation = async (userID: number): Promise<any> => {
     // Get specified user
-    const user = await models.User.scope('location').findById(id);
+    const user = await models.User.scope('location').findById(userID);
     // Ensure that only APs' locations are accessed
     if (user.type !== 'AP') {
         throw new Error("Only APs' locations can be accessed");
@@ -31,7 +31,7 @@ export const getSelfLocation = async (
     try {
         // Get and return location of currently authenticated user
         const location = await getLocation(req.userID);
-        return res.json(location);
+        return res.json(location.toJSON());
     } catch (err) {
         res.status(400);
         return next(err);
@@ -47,7 +47,7 @@ export const getUserLocation = async (
     try {
         // Get and return location of specified user
         const location = await getLocation(req.params.userID);
-        return res.json(location);
+        return res.json(location.toJSON());
     } catch (err) {
         res.status(400);
         return next(err);
@@ -62,10 +62,11 @@ export const setSelfLocation = async (
 ) => {
     // Extract latitude and longitude from request body
     const { lat, lon } = req.body;
+    const userID = req.userID;
 
     try {
         // Check type of user (only APs are able to set location)
-        const user = await models.User.scope('location').findById(req.userID);
+        const user = await models.User.scope('location').findById(userID);
         if (user.type !== 'AP') {
             res.status(400);
             return next(
@@ -77,12 +78,12 @@ export const setSelfLocation = async (
         const created = await models.Location.create({
             lat,
             lon,
-            userId: req.userID
+            userId: userID
         });
         // Update location of user
         await user.setCurrentLocation(created);
     } catch (err) {
-        res.status(400);
+        res.status(422);
         return next(err);
     }
 

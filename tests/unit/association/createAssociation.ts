@@ -1,7 +1,7 @@
 import { expect, request } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
-import { res, next } from '../index';
+import { res, next, wrapToJSON } from '../index';
 
 import models from '../../../models';
 
@@ -63,7 +63,7 @@ describe('Unit - Association - Create association', () => {
         sandbox.replace(
             models.Association,
             'create',
-            sinon.stub().returns({ id: associationID })
+            sinon.stub().returns(wrapToJSON({ id: associationID }))
         );
 
         const result = await association.createAssociation(req, res, next);
@@ -100,7 +100,7 @@ describe('Unit - Association - Create association', () => {
         sandbox.replace(
             models.Association,
             'create',
-            sinon.stub().returns({ id: associationID })
+            sinon.stub().returns(wrapToJSON({ id: associationID }))
         );
 
         const result = await association.createAssociation(req, res, next);

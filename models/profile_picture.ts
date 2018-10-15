@@ -24,11 +24,9 @@ const profilePictureSchema = {
 export default class ProfilePicture extends Sequelize.Model {
     /**
      * Initalises the model with the specified attributes and options.
-     * @param {sequelize} Sequelize instance to attach to the new Model.
+     * @param {sequelize} sequelize Sequelize instance.
      */
     static init(sequelize: Sequelize.Sequelize) {
-        return super.init(profilePictureSchema, {
-            sequelize
-        });
+        return super.init(profilePictureSchema, { sequelize });
     }
 }

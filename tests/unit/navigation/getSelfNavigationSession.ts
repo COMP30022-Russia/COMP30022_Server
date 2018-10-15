@@ -1,6 +1,6 @@
 import { expect, request } from 'chai';
 import sinon from 'sinon';
-import { res, next } from '../index';
+import { res, next, wrapToJSON } from '../index';
 
 import { getSelfNavigationSession } from '../../../controllers/navigation';
 import models from '../../../models';
@@ -18,7 +18,7 @@ describe('Unit - Navigation - Get self navigation session', () => {
             id: 1,
             foo: 'bar'
         };
-        const dbFake = sinon.fake.returns({ ...session });
+        const dbFake = sinon.fake.returns(wrapToJSON(session));
         sandbox.replace(models.Session, 'findOne', dbFake);
 
         // Expect fake session to be returned

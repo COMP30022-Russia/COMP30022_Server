@@ -5,7 +5,7 @@ import {
 } from './';
 
 /**
- * Builds and sends an emergency message.
+ * Builds and sends an emergency data and notification message.
  * @param {eventID} eventID ID of emergency event.
  * @param {string} senderID ID of sender.
  * @param {string} senderName Name of sender.
@@ -17,11 +17,7 @@ export const sendEmergencyMessage = async (
     senderName: string,
     targetIDs: [number]
 ) => {
-    const data_payload = {
-        eventID,
-        senderID,
-        senderName
-    };
+    const data_payload = { eventID, senderID, senderName };
     const notificationMessage = buildAndroidNotificationMessage(
         `Emergency event`,
         `${senderName} has raised an emergency`
@@ -39,9 +35,7 @@ export const sendEmergencyHandledMessage = async (
     eventID: number,
     targetIDs: [number]
 ) => {
-    const data_payload = {
-        eventID
-    };
+    const data_payload = { eventID };
     const notificationMessage = buildAndroidNotificationMessage(
         `Emergency handled`,
         `Emergency event has been handled`

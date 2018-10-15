@@ -7,7 +7,7 @@ const callSchema = {
         primaryKey: true,
         autoIncrement: true
     },
-    // Status of call
+    // State of call
     state: {
         type: Sequelize.ENUM(
             'Pending',
@@ -18,16 +18,19 @@ const callSchema = {
         allowNull: false,
         defaultValue: 'Pending'
     },
+    // Incremented value used for synchronisation
     sync: {
         type: Sequelize.INTEGER,
         allowNull: false,
         defaultValue: 1
     },
+    // Current failure count of call
     failureCount: {
         type: Sequelize.INTEGER,
         allowNull: false,
         defaultValue: 0
     },
+    // Whether carer is initiator
     carerIsInitiator: {
         type: Sequelize.BOOLEAN,
         allowNull: false
@@ -41,11 +44,9 @@ const callSchema = {
 export default class Call extends Sequelize.Model {
     /**
      * Initalises the model with the specified attributes and options.
-     * @param {sequelize} Sequelize instance to attach to the new Model.
+     * @param {sequelize} sequelize Sequelize instance.
      */
     static init(sequelize: Sequelize.Sequelize) {
-        return super.init(callSchema, {
-            sequelize
-        });
+        return super.init(callSchema, { sequelize });
     }
 }

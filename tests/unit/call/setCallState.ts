@@ -1,7 +1,7 @@
 import { expect, request } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
-import { res, next } from '../index';
+import { res, next, wrapToJSON } from '../index';
 
 import models from '../../../models';
 
@@ -67,7 +67,8 @@ describe('Unit - Navigation call', () => {
                 sessionId: 5,
                 failureCount: 4,
                 save: saveSpy,
-                state: 'OngoingCamera'
+                state: 'OngoingCamera',
+                toJSON: () => req.call
             },
             body: { state: 'Ongoing' }
         };

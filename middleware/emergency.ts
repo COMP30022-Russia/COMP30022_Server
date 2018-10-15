@@ -20,16 +20,13 @@ export const retrieveEmergencyEvent = async (
         }
         req.event = event;
 
-        // Get ID of target
-        const targetID: number = event.APId;
-
-        // Ensure that requester and target AP are associated
+        // Ensure that requester and AP are associated
         // (or they are the same user)
-        if (userID !== targetID) {
+        if (userID !== event.APId) {
             const association = await models.Association.findOne({
                 where: {
                     active: true,
-                    [Op.and]: [{ APId: targetID }, { carerId: userID }]
+                    [Op.and]: [{ APId: event.APId }, { carerId: userID }]
                 },
                 attributes: ['id']
             });

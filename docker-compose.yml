@@ -7,11 +7,11 @@ services:
       - "3000:3000"
     environment:
       - PORT=3000
-      - JWT_SECRET
       - DB_HOST=postgresql
       - POSTGRES_USER
       - POSTGRES_PASSWORD
       - POSTGRES_DB
+      - JWT_SECRET
       - FIREBASE_PROJECT_ID
       - FIREBASE_CLIENT_EMAIL
       - FIREBASE_PRIVATE_KEY

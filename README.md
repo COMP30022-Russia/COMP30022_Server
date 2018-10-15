@@ -36,10 +36,10 @@ This command will watch the files and restart the server when changes are made.
 Run `npm run build`, which will build the project to the `dist/` folder.
 The server can then be started using `npm start` from within the `dist/` folder, given that the required environment variables have been provided.
 
-### Docker
+### Docker Compose (Recommended)
 - Install `docker` and `docker-compose`
 - Copy `.env.sample` to `.env` and fill with required keys and secrets
-- Run `docker compose up`
+- Run `docker compose build` and `docker compose up`
 
 ## Configuration
 Here are a list of environment variables which will need to be configured.

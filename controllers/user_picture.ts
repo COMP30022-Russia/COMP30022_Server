@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import models from '../models';
 
-// Sets the user's profile picture
+// Sets the current user's profile picture
 export const setProfilePicture = async (
     req: Request,
     res: Response,
@@ -12,16 +12,13 @@ export const setProfilePicture = async (
         const userID = req.userID;
         const file = req.file;
 
-        // Create picture
+        // Create and return picture
         const picture = await models.ProfilePicture.create({
-            userId: req.userID,
+            userId: userID,
             filename: file.filename,
             mime: file.mimetype
         });
-        // Set picture
-        const user = await models.User.scope('id').findById(userID);
-        await user.setProfilePicture(picture);
-        return res.json(picture);
+        return res.json(picture.toJSON());
     } catch (err) {
         next(err);
     }
@@ -33,29 +30,26 @@ export const getProfilePicture = async (
     res: Response,
     next: NextFunction
 ) => {
-    // Can get user's profile picture through association or authenticated
-    // user's profile picture
+    // Can get user profile pictures through both /users/:userID and /me routes
     const userID = req.params.userID || req.userID;
 
     try {
-        // Retrieve picture
+        // Retrieve latest profile picture of user
         const picture = await models.ProfilePicture.findOne({
-            where: { userId: userID }
+            where: { userId: userID },
+            order: [['id', 'DESC']]
         });
 
-        // If there is no picture with ID
+        // If user does not have profile picture
         if (!picture) {
-            throw new Error('Picture cannot be retrieved');
+            res.status(400);
+            return next(new Error('Picture cannot be retrieved'));
         }
 
         // Send image
         res.setHeader('Content-Type', picture.mime);
-        const options = {
-            root: 'uploads/profile'
-        };
-        return res.sendFile(picture.filename, options);
+        return res.sendFile(picture.filename, { root: 'uploads/profile' });
     } catch (err) {
-        res.status(400);
         return next(err);
     }
 };

@@ -2,10 +2,6 @@ import express, { Router, Request, Response, NextFunction } from 'express';
 const router: Router = express.Router();
 import multer from 'multer';
 
-// Configure multer for profile picture uploads
-export const PROFILE_PICTURE_DEST = 'uploads/profile';
-const upload = multer({ dest: PROFILE_PICTURE_DEST }).single('picture');
-
 // Import controllers
 import { logout } from '../controllers/auth';
 import {
@@ -25,6 +21,10 @@ import {
     setProfilePicture,
     getProfilePicture
 } from '../controllers/user_picture';
+
+// Configure multer for profile picture uploads
+export const PROFILE_PICTURE_DEST = 'uploads/profile';
+const upload = multer({ dest: PROFILE_PICTURE_DEST }).single('picture');
 
 // Logout
 router.post('/logout', logout);

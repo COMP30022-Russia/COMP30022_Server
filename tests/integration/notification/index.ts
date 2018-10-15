@@ -1,2 +1,0 @@
-import './updateToken';
-import './getTokens';

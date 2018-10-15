@@ -12,7 +12,7 @@ import { terminateCall } from './call';
 /**
  * Returns value indicating whether indicated user is in an active
  * navigation session.
- * @param {number} isInSession ID of user.
+ * @param {number} userID ID of user.
  * @return {Promise<number|boolean>} ID of active session or 'false'.
  */
 const isInSession = async (userID: number): Promise<number | boolean> => {
@@ -32,11 +32,11 @@ export const startNavigationSession = async (
     res: Response,
     next: NextFunction
 ) => {
-    // Extract association
     const association = req.association;
+    const userID = req.userID;
 
     try {
-        // Ensure users only have 1 active session at a time
+        // Ensure that user is only in 1 active session at a time
         if (
             (await isInSession(association.APId)) ||
             (await isInSession(association.carerId))
@@ -49,27 +49,26 @@ export const startNavigationSession = async (
             );
         }
 
-        // Create and return session
+        // Create session
         const session = await models.Session.create({
             carerId: association.carerId,
             APId: association.APId,
             carerHasControl: req.userID === req.association.carerId
         });
-        const sender = await models.User.scope('name').findById(req.userID);
+        const sender = await models.User.scope('name').findById(userID);
 
-        // Send notification
+        // Send notification to opposite party
         await sendNavigationStartMessage(
             sender.name,
             req.userID === association.APId
                 ? association.carerId
                 : association.APId,
-            req.association.id,
+            association.id,
             session.id
         );
 
-        return res.json(session);
+        return res.json(session.toJSON());
     } catch (err) {
-        res.status(400);
         return next(err);
     }
 };
@@ -83,6 +82,7 @@ export const getSelfNavigationSession = async (
     const userID = req.userID;
 
     try {
+        // Find active session where user is either AP or carer
         const session = await models.Session.findOne({
             where: {
                 active: true,
@@ -97,7 +97,7 @@ export const getSelfNavigationSession = async (
             return res.json({});
         }
 
-        return res.json(session);
+        return res.json(session.toJSON());
     } catch (err) {
         return next(err);
     }
@@ -110,37 +110,38 @@ export const getNavigationSession = async (
     next: NextFunction
 ) => {
     try {
-        return res.json(req.session);
+        return res.json(req.session.toJSON());
     } catch (err) {
         return next(err);
     }
 };
 
-// End session
+// End navigation session
 export const endNavigationSession = async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    try {
-        // Make session inactive
-        const session = req.session;
+    const session = req.session;
+    const userID = req.userID;
 
+    try {
         // Send notification
         await sendNavigationEndMessage(
-            session.APId === req.userID ? session.carerId : session.APId,
+            session.APId === userID ? session.carerId : session.APId,
             session.id
         );
 
         // Remove AP location from cache
         locationCache.deleteItem(String(session.APId));
 
-        // Get and terminate call (if existant)
+        // Get and terminate call (if exists)
         const call = session.Call;
         if (call && call.state !== 'Terminated') {
             await terminateCall(call, 'nav_session_end');
         }
 
+        // Make session inactive
         await session.updateAttributes({ active: false });
         return res.json({ status: 'success' });
     } catch (err) {
@@ -148,21 +149,21 @@ export const endNavigationSession = async (
     }
 };
 
-// Starts a voice/video (call) call in a navigation session
+// Starts a call in a navigation session
 export const startNavigationCall = async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    // Extract various things
+    // Extract various IDs
     const userID = req.userID;
     const sessionID = req.session.id;
     const APId = req.session.APId;
     const carerId = req.session.carerId;
 
     try {
-        // Ensure that there isn't a pre-existing navigation voice/video call
-        // for either carer or AP
+        // Ensure that there isn't a pre-existing call for either
+        // the carer or AP
         const existing = await models.Call.findOne({
             where: {
                 [Op.or]: [{ APId }, { carerId }],
@@ -178,7 +179,7 @@ export const startNavigationCall = async (
             );
         }
 
-        // Create voice/video call and attach to navigation session
+        // Create call and attach to navigation session
         const call = await models.Call.create({
             APId,
             carerId,
@@ -186,7 +187,7 @@ export const startNavigationCall = async (
             carerIsInitiator: userID === carerId
         });
 
-        // Send message
+        // Send data/notification message
         const targetID = userID === APId ? carerId : APId;
         const user = await models.User.scope('name').findById(userID);
         await sendNavigationCallRequestStartMessage(
@@ -197,7 +198,8 @@ export const startNavigationCall = async (
             targetID
         );
 
-        return res.json(call);
+        // Return created call
+        return res.json(call.toJSON());
     } catch (err) {
         next(err);
     }

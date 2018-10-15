@@ -3,15 +3,6 @@ import { Op } from 'sequelize';
 import { jwt_verify } from '../helpers/jwt';
 import models from '../models';
 
-import {
-    ensureRequestedUserIsAssociated,
-    ensureRequestedUserIsInRequestedAssociation
-} from './auth_association';
-export {
-    ensureRequestedUserIsAssociated,
-    ensureRequestedUserIsInRequestedAssociation
-};
-
 // Extend express Request type
 // Adapted from: https://stackoverflow.com/questions/44383387
 declare module 'express' {
@@ -25,7 +16,7 @@ declare module 'express' {
     }
 }
 
-// Ensure that the user is authenticated
+// Middleware for decoding and verifying authentication token
 export let authenticate = async (
     req: Request,
     res: Response,
@@ -40,7 +31,7 @@ export let authenticate = async (
     }
 
     try {
-        // Extract JWT token
+        // Decode JWT token
         const header_token = req.headers.authorization.split(' ')[1];
         const token = await jwt_verify(header_token);
 

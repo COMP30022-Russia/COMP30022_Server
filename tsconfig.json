@@ -10,10 +10,7 @@
         "noImplicitAny": true,
         "sourceMap": true,
         "outDir": "dist",
-        "baseUrl": ".",
-        "typeRoots": [
-          "./node_modules/@types"
-        ]
+        "baseUrl": "."
     },
     "include": [
         "*.ts",

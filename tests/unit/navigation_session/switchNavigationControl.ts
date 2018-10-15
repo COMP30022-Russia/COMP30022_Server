@@ -1,7 +1,7 @@
 import { expect, request } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
-import { res, next } from '../index';
+import { res, next, wrapToJSON } from '../index';
 
 import models from '../../../models';
 
@@ -25,20 +25,19 @@ describe('Unit - Navigation', () => {
 
     it('Switch control', async () => {
         const saveSpy = sinon.spy();
-        // 'id', 'carerHasControl', 'APId', 'carerId'
-        const session = {
-            id: 1,
-            APId: 2,
-            carerId: 3,
-            carerHasControl: true,
-            save: saveSpy
-        };
         const req = {
             userID: 2,
             params: {
                 sessionID: 1
             },
-            session: { ...session }
+            session: {
+                id: 1,
+                APId: 2,
+                carerId: 3,
+                carerHasControl: true,
+                save: saveSpy,
+                toJSON: () => req.session
+            }
         };
 
         // Expect success message to be returned
@@ -48,10 +47,10 @@ describe('Unit - Navigation', () => {
         expect(result).to.have.property('APId');
         expect(result).to.have.property('carerId');
         expect(result).to.have.property('carerHasControl');
-        expect(result.id).to.equal(session.id);
-        expect(result.APId).to.equal(session.APId);
-        expect(result.carerId).to.equal(session.carerId);
-        expect(result.carerHasControl).to.equal(!session.carerHasControl);
+        expect(result.id).to.equal(req.session.id);
+        expect(result.APId).to.equal(req.session.APId);
+        expect(result.carerId).to.equal(req.session.carerId);
+        expect(result.carerHasControl).to.equal(false);
         expect(saveSpy.calledWithExactly()).to.equal(true);
 
         // Verify the send message call
@@ -60,11 +59,7 @@ describe('Unit - Navigation', () => {
         // Third argument: carerHasControl
         expect(sendSpy.calledOnce).to.equal(true);
         expect(
-            sendSpy.alwaysCalledWith(
-                session.carerId,
-                session.id,
-                !session.carerHasControl
-            )
+            sendSpy.alwaysCalledWith(req.session.carerId, req.session.id, false)
         ).to.equal(true);
     });
 

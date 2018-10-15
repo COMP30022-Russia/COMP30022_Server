@@ -1,6 +1,6 @@
 import { expect, request } from 'chai';
 import sinon from 'sinon';
-import { res, next } from '../index';
+import { res, next, wrapToJSON } from '../index';
 
 import { getSelfLocation } from '../../../controllers/location';
 import models from '../../../models';
@@ -24,9 +24,7 @@ describe('Unit - Location - Get Self Location', () => {
         const dbFake = sinon.fake.returns({
             id: 1,
             type: 'AP',
-            getCurrentLocation: () => {
-                return location;
-            }
+            getCurrentLocation: () => wrapToJSON(location)
         });
         sandbox.replace(models.User, 'scope', (scopeName: string) => {
             return { findById: dbFake };

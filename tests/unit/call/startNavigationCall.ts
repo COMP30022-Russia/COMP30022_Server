@@ -1,7 +1,7 @@
 import { expect, request } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
-import { res, next } from '../index';
+import { res, next, wrapToJSON } from '../index';
 import { Op } from 'sequelize';
 
 import models from '../../../models';
@@ -23,7 +23,7 @@ describe('Unit - Navigation call', () => {
     beforeEach(async () => {
         // Replace create call
         sandbox.replace(models.Call, 'create', (properties: any) => {
-            return { ...properties, id: 5 };
+            return wrapToJSON({ ...properties, id: 5 });
         });
 
         // Replace name call

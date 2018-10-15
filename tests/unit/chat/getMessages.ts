@@ -9,11 +9,6 @@ import { getMessages } from '../../../controllers/chat';
 describe('Unit - Chat - Get messages', () => {
     const sandbox = sinon.createSandbox();
 
-    before(async () => {
-        // Replace find function by getting it to return its argument
-        sandbox.replace(models.Message, 'findAll', sinon.stub().returnsArg(0));
-    });
-
     it('All queries', async () => {
         // Define request with all queries
         const req: any = {
@@ -27,12 +22,17 @@ describe('Unit - Chat - Get messages', () => {
             }
         };
 
+        // Spy on find function
+        const findSpy = sinon.spy();
+        sandbox.replace(models.Message, 'findAll', findSpy);
+
         // Get and verify the DB query
         // @ts-ignore
         const result = await getMessages(req, res, next);
-        const dbQuery = result.messages;
-        expect(dbQuery.limit).to.equal(req.query.limit);
-        expect(dbQuery.where.associationId).to.equal(req.params.associationID);
+        expect(findSpy.lastCall.args[0].limit).to.equal(req.query.limit);
+        expect(findSpy.lastCall.args[0].where.associationId).to.equal(
+            req.params.associationID
+        );
     });
 
     it('No limit', async () => {
@@ -44,12 +44,17 @@ describe('Unit - Chat - Get messages', () => {
             query: {}
         };
 
+        // Spy on find function
+        const findSpy = sinon.spy();
+        sandbox.replace(models.Message, 'findAll', findSpy);
+
         // Should default to limit of 10
         // @ts-ignore
         const result = await getMessages(req, res, next);
-        const dbQuery = result.messages;
-        expect(dbQuery.limit).to.equal(10);
-        expect(dbQuery.where.associationId).to.equal(req.params.associationID);
+        expect(findSpy.lastCall.args[0].limit).to.equal(10);
+        expect(findSpy.lastCall.args[0].where.associationId).to.equal(
+            req.params.associationID
+        );
     });
 
     it('No messages', async () => {
@@ -72,7 +77,7 @@ describe('Unit - Chat - Get messages', () => {
         expect(result.messages).to.have.lengthOf(0);
     });
 
-    after(async () => {
+    afterEach(async () => {
         sandbox.restore();
     });
 });

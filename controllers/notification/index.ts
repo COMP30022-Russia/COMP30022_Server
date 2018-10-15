@@ -1,40 +1,35 @@
-import models from '../../models';
 import send from '../../helpers/notifications';
 import {
     getFirebaseTokensHelper,
     replaceFirebaseToken,
     removeFirebaseToken
 } from './actions';
-import { updateFirebaseToken, getFirebaseTokens } from './actions';
-export { updateFirebaseToken, getFirebaseTokens };
+export { updateFirebaseToken, getFirebaseTokens } from './actions';
 
 /**
- * Builds an android notification message.
+ * Builds an Firebase android notification message.
  * @param {string} title Title of message.
  * @param {string} body Body of message.
  * @param {string} [priority] Priority of message.
- * @returns {Object} Message object with specified content.
  */
 export const buildAndroidNotificationMessage = (
     title: string,
     body: string,
     priority?: string
 ) => {
-    const message: any = {
+    return {
         notification: {
             title,
             body
         }
     };
-    return message;
 };
 
 /**
- * Builds a data message.
+ * Builds a Firebase data message.
  * @param {string} type The type of the message.
- * @param {Object} data Data of message.
+ * @param {Object} content Content of message.
  * @param {string} [priority] Priority of message.
- * @returns {Object} Message object with data.
  */
 export const buildDataMessage = (
     type: string,
@@ -50,9 +45,9 @@ export const buildDataMessage = (
 };
 
 /**
- * Sends a message to the specified receipient.
+ * Sends a message to the specified recipient.
  * @param {Object} message The message to be sent.
- * @param {number|[number]} userID The ID(s) of the receipient.
+ * @param {number|[number]} userID The ID(s) of the recipient.
  */
 export const sendMessage = async (message: any, userID: number | number[]) => {
     // Only send in production environment
@@ -67,10 +62,12 @@ export const sendMessage = async (message: any, userID: number | number[]) => {
     // Get token of target user(s)
     let tokens: string[] = [];
     if (Array.isArray(userID)) {
+        // More than 1 user
         for (const id of userID) {
             tokens.push(...(await getFirebaseTokensHelper(id)));
         }
     } else {
+        // One user only
         tokens = await getFirebaseTokensHelper(<number>userID);
     }
 
@@ -79,8 +76,8 @@ export const sendMessage = async (message: any, userID: number | number[]) => {
         return;
     }
 
-    // Send the message with given tokens
     try {
+        // Send the message with given tokens
         const response = await send(message, tokens);
 
         // If there are errors
@@ -97,8 +94,8 @@ export const sendMessage = async (message: any, userID: number | number[]) => {
                     );
                 }
 
+                // Remove token, if applicable
                 if (result.error) {
-                    // Remove token, if applicable
                     if (
                         result.error.code ===
                         'messaging/registration-token-not-registered'
@@ -111,7 +108,6 @@ export const sendMessage = async (message: any, userID: number | number[]) => {
             }
         }
     } catch (err) {
-        // Log error
         console.error(err);
     }
 };

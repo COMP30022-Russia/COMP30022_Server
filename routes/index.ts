@@ -1,12 +1,13 @@
 import express, { Router } from 'express';
 const router: Router = express.Router();
 
-// Import auth middleware
+// Import middleware
+import { authenticate } from '../middleware/authenticate';
 import {
-    authenticate,
     ensureRequestedUserIsAssociated,
-    ensureRequestedUserIsInRequestedAssociation
-} from '../middleware/auth';
+    retrieveAssociation
+} from '../middleware/association';
+import { retrieveEmergencyEvent } from '../middleware/emergency';
 // Import param verification middleware
 import { verifyIDParam } from '../middleware/params';
 
@@ -17,7 +18,6 @@ import meRouter from './me';
 import associationRouter from './association';
 import navigationRouter from './navigation';
 import emergencyRouter from './emergency';
-import { retrieveEmergencyEvent } from '../middleware/emergency';
 import callRouter from './call';
 
 // Handle index route
@@ -28,8 +28,8 @@ router.get('/', homeRoute);
 router.use('/users', authRouter);
 router.use(
     '/users/:userID',
-    verifyIDParam('userID'),
     authenticate,
+    verifyIDParam('userID'),
     ensureRequestedUserIsAssociated,
     userRouter
 );
@@ -38,7 +38,7 @@ router.use(
     '/associations/:associationID',
     authenticate,
     verifyIDParam('associationID'),
-    ensureRequestedUserIsInRequestedAssociation,
+    retrieveAssociation,
     associationRouter
 );
 router.use(

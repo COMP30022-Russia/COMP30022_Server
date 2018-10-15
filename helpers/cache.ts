@@ -2,6 +2,9 @@
 // Adapted from https://stackoverflow.com/questions/46048844
 import { NodeCache } from 'node-cache';
 
+/**
+ * Defines an in-memory caching service with NodeCache as the provider.
+ */
 export default (provider: NodeCache) => {
     /**
      * Saves an item to the cache.

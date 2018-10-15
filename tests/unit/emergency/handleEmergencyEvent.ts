@@ -1,6 +1,6 @@
 import { expect, request } from 'chai';
 import sinon from 'sinon';
-import { res, next } from '../index';
+import { res, next, wrapToJSON } from '../index';
 import proxyquire from 'proxyquire';
 
 import models from '../../../models';
@@ -48,15 +48,20 @@ describe('Unit - Emergency - Handle emergency event', () => {
         const saveSpy = sinon.spy();
         const req: any = {
             userID: 0,
-            event: { handled: false, id: 1, save: saveSpy },
+            event: {
+                handled: false,
+                id: 1,
+                save: saveSpy,
+                toJSON: () => req.event
+            },
             params: {}
         };
 
         // @ts-ignore
         const result = await emergency.handleEmergencyEvent(req, res, next);
         expect(result.id).to.equal(req.event.id);
-        expect(result.handled).to.equal(true);
         expect(result.resolverId).to.equal(req.userID);
+        expect(result.handled).to.equal(true);
 
         // Expect save to be called once
         expect(saveSpy.calledOnce).to.equal(true);

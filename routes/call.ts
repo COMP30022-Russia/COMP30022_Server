@@ -1,7 +1,6 @@
 import express, { Router } from 'express';
 const router: Router = express.Router({ mergeParams: true });
 
-// Import controllers
 import {
     getCall,
     setCallState,
@@ -21,13 +20,13 @@ router.post('/accept', retrieveCall(), acceptCall);
 // Reject call
 router.post('/reject', retrieveCall(), rejectCall);
 
-// Set state
+// Set call state
 router.post('/state', retrieveCall(), setCallState);
 
-// Update failure count
+// Update failure count of call
 router.post('/failure', retrieveCall(), updateCallFailureCount);
 
-// End voice/video call
+// End call
 router.post('/end', retrieveCall(), endCall);
 
 export default router;

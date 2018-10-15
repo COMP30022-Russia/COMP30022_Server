@@ -1,7 +1,7 @@
 import { expect, request } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
-import { res, next } from '../index';
+import { res, next, wrapToJSON } from '../index';
 
 import models from '../../../models';
 
@@ -11,6 +11,9 @@ describe('Unit - Chat - Create message', () => {
     // Chat controller
     let chat: any;
 
+    // ID of created message
+    const createdMessageID: number = 1;
+
     // Spy for Firebase send message call
     const sendSpy = sinon.spy();
 
@@ -18,6 +21,21 @@ describe('Unit - Chat - Create message', () => {
         // Import the chat controller with a spy on the notification function
         chat = proxyquire('../../../controllers/chat', {
             './notification/chat': { sendChatMessage: sendSpy }
+        });
+
+        // Replace create function by getting it to return its argument
+        // but with an ID field
+        sandbox.replace(models.Message, 'create', (input: any) => {
+            return wrapToJSON(Object.assign(input, { id: createdMessageID }));
+        });
+
+        // Replace findById function also (as it's used to get user name)
+        sandbox.replace(models.User, 'scope', (scopeName: string) => {
+            return {
+                findById: () => {
+                    return { id: 2, name: 'Example' };
+                }
+            };
         });
     });
 
@@ -34,23 +52,6 @@ describe('Unit - Chat - Create message', () => {
             },
             association: { getPartnerID: (_: number) => partnerID }
         };
-        // ID of created message
-        const createdMessageID: number = 1;
-
-        // Replace create function by getting it to return its argument
-        // but with an ID field
-        sandbox.replace(models.Message, 'create', (input: any) => {
-            return Object.assign(input, { id: createdMessageID });
-        });
-
-        // Replace findById function also (as it's used to get user name)
-        sandbox.replace(models.User, 'scope', (scopeName: string) => {
-            return {
-                findById: () => {
-                    return { id: 2, name: 'Example' };
-                }
-            };
-        });
 
         // Should get message with ID back
         // @ts-ignore

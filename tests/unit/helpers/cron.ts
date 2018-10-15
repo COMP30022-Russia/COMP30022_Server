@@ -5,8 +5,6 @@ import { cleanUpNavigationCalls } from '../../../controllers/navigation';
 import { terminateIdlePendingCalls } from '../../../controllers/call';
 
 describe('Unit - Cron', () => {
-    const sandbox = sinon.createSandbox();
-
     it('Clean up navigation sessions', async () => {
         const result = await cleanUpNavigationCalls();
         expect(result).to.be.an('array');

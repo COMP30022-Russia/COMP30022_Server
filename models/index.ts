@@ -13,7 +13,7 @@ import chatPictureModel from './chat_picture';
 import emergencyModel from './emergency';
 import callModel from './call';
 
-// Define database connection
+// Initiate sequelize instance
 const sequelize: Sequelize.Sequelize = new Sequelize(
     process.env.POSTGRES_DB,
     process.env.POSTGRES_USER,
@@ -26,7 +26,7 @@ const sequelize: Sequelize.Sequelize = new Sequelize(
     }
 );
 
-// Import/associate models
+// Initiate and associate models
 const User = userModel.init(sequelize);
 const Association = associationModel.init(sequelize);
 const Message = messageModel.init(sequelize);
@@ -39,7 +39,7 @@ const FirebaseToken = firebaseTokenModel.init(sequelize);
 const ProfilePicture = profilePictureModel.init(sequelize);
 const Call = callModel.init(sequelize);
 
-// User-user through Association table
+// User-User through Association table
 User.belongsToMany(User, {
     through: Association,
     as: 'Carer',
@@ -64,10 +64,10 @@ User.belongsTo(Location, {
 // User has many Firebase tokens
 User.hasMany(FirebaseToken, { as: 'firebaseTokens', foreignKey: 'userId' });
 
-// User can have 1 profile picture
+// User has one current profile picture
 User.hasOne(ProfilePicture, { foreignKey: 'userId' });
 
-// Message is associated with an author (a user) and an association
+// Message is associated with an author (a User) and an Association
 Message.belongsTo(User, { as: 'author' });
 Message.belongsTo(Association, { as: 'association' });
 
@@ -83,11 +83,11 @@ Session.belongsTo(User, { as: 'AP', foreignKey: 'APId' });
 Session.belongsTo(Destination, { as: 'destination' });
 Destination.belongsTo(User, { as: 'user' });
 
-// Emergency has initator and handler
+// Emergency has initator and resolver
 Emergency.belongsTo(User, { as: 'AP', foreignKey: 'APId' });
 Emergency.belongsTo(User, { as: 'Resolver', foreignKey: 'resolverId' });
 
-// Navigation session has a current call
+// Navigation session can have many calls, and calls belongs to users
 Session.hasOne(Call, { foreignKey: 'sessionId' });
 Call.belongsTo(User, { as: 'AP', foreignKey: 'APId' });
 Call.belongsTo(User, { as: 'Carer', foreignKey: 'carerId' });

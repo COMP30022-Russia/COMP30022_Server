@@ -54,7 +54,7 @@ export const login = async (
     res: Response,
     next: NextFunction
 ) => {
-    // Get username/password from request
+    // Get username/password from request body
     const username = req.body.username;
     const password = req.body.password;
 
@@ -91,9 +91,9 @@ export const logout = async (
     res: Response,
     next: NextFunction
 ) => {
-    // Extract user ID and instance ID
-    const userID = req.userID;
+    // Extract instanceID from request body
     const instanceID = req.body.instanceID;
+    const userID = req.userID;
 
     // If instanceID is not given
     if (!instanceID) {

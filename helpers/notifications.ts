@@ -1,9 +1,8 @@
 import * as admin from 'firebase-admin';
 
-// Initalise firebase for production environments
-// Adapted from https://stackoverflow.com/questions/39492587
+// Initalise firebase in production environments
+// From https://firebase.google.com/docs/admin/setup#initialize_the_sdk
 if (process.env.NODE_ENV === 'production') {
-    // Initialise app
     admin.initializeApp({
         credential: admin.credential.cert({
             projectId: process.env.FIREBASE_PROJECT_ID,
@@ -20,7 +19,7 @@ const DEFAULT_PRIORITY = 'high';
 /**
  * Sends a message to the FCM.
  * @param {Object} message The payload to be sent.
- * @param {string} tokens List of device tokens.
+ * @param {string[]} tokens List of device tokens.
  * @return {Promise} Promise object representing the response.
  */
 export default async function(

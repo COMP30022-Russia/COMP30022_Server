@@ -7,17 +7,17 @@ import {
     sendCallStartedMessage
 } from './notification/call';
 
-// Gets a navigation voice/video call
+// Returns a call
 export const getCall = async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
     const call = req.call;
-    return res.json(call);
+    return res.json(call.toJSON());
 };
 
-// Updates/sets the status of a voice/video call.
+// Updates/sets call state
 export const setCallState = async (
     req: Request,
     res: Response,
@@ -26,7 +26,7 @@ export const setCallState = async (
     const call = req.call;
     const newState = req.body.state;
 
-    // Reject, if old/new states are not ongoing/ongoing camera
+    // Only allow transitions between Ongoing and OngoingCamera
     if (
         (call.state !== 'Ongoing' && call.state !== 'OngoingCamera') ||
         (newState !== 'Ongoing' && newState !== 'OngoingCamera') ||
@@ -56,14 +56,15 @@ export const setCallState = async (
             );
         }
 
-        return res.json(call);
+        return res.json(call.toJSON());
     } catch (err) {
         return next(err);
     }
 };
 
-// Update failure count and terminates call
+// Failure count limit
 const FAILURE_COUNT_THRESHOLD = 5;
+// Update failure count and terminate call when limit is reached
 export const updateCallFailureCount = async (
     req: Request,
     res: Response,
@@ -88,7 +89,7 @@ export const updateCallFailureCount = async (
     }
 };
 
-// Accepts a call
+// Accepts a call in the pending stage
 export const acceptCall = async (
     req: Request,
     res: Response,
@@ -103,7 +104,7 @@ export const acceptCall = async (
         return next(new Error('Can only accept in pending state'));
     }
 
-    // Reject accept when user is not initiator
+    // Reject request if user is not initiator
     if (
         userIsInitiator(call.carerIsInitiator, userID, call.APId, call.carerId)
     ) {
@@ -129,7 +130,7 @@ export const acceptCall = async (
     }
 };
 
-// Closes a call in the pending stage
+// Terminates a call in the pending stage
 export const rejectCall = async (
     req: Request,
     res: Response,
@@ -152,6 +153,7 @@ export const rejectCall = async (
         call.carerId
     );
 
+    // Terminate the call
     try {
         await terminateCall(
             call,
@@ -185,7 +187,7 @@ const userIsInitiator = (
     return false;
 };
 
-// Ends a call normally
+// Terminates a call
 export const endCall = async (
     req: Request,
     res: Response,
@@ -194,7 +196,6 @@ export const endCall = async (
     const call = req.call;
 
     try {
-        // Terminate call
         await terminateCall(call, 'normal');
         return res.json({ status: 'success' });
     } catch (err) {
@@ -203,8 +204,9 @@ export const endCall = async (
 };
 
 /**
- * Terminates a voice/video call.
- * @param {number} call ID of voice/video session.
+ * Helper for terminating calls.
+ * @param {Object} call The call.
+ * @param {string} reason Reason for termination.
  * @return Promise for call termination.
  */
 export const terminateCall = async (call: any, reason: string) => {
@@ -231,6 +233,7 @@ const CALL_PENDING_TIMEOUT: number = 40 * 1000;
  * Terminates idle pending calls.
  */
 export const terminateIdlePendingCalls = async () => {
+    // Find pending calls which have exceeded timeout
     const calls = await models.Call.findAll({
         where: {
             state: 'Pending',
@@ -239,6 +242,7 @@ export const terminateIdlePendingCalls = async () => {
             }
         }
     });
+    // Terminate each call
     for (const call of calls) {
         await terminateCall(call, 'pending_timeout');
     }

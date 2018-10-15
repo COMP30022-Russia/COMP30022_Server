@@ -18,11 +18,9 @@ const locationSchema = {
 export default class Location extends Sequelize.Model {
     /**
      * Initalises the model with the specified attributes and options.
-     * @param {sequelize} Sequelize instance to attach to the new Model.
+     * @param {sequelize} sequelize Sequelize instance.
      */
     static init(sequelize: Sequelize.Sequelize) {
-        return super.init(locationSchema, {
-            sequelize
-        });
+        return super.init(locationSchema, { sequelize });
     }
 }

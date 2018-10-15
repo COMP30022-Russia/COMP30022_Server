@@ -17,10 +17,7 @@ export const sendNavigationStartMessage = async (
     associationID: number,
     sessionID: number
 ) => {
-    const data_payload = {
-        associationID: associationID,
-        sessionID: sessionID
-    };
+    const data_payload = { associationID, sessionID };
     const notificationMessage = buildAndroidNotificationMessage(
         `Navigation session started`,
         `Navigation session has been started by ${senderName}`
@@ -38,9 +35,7 @@ export const sendNavigationEndMessage = async (
     targetID: number,
     sessionID: number
 ) => {
-    const data_payload = {
-        sessionID
-    };
+    const data_payload = { sessionID };
     const notificationMessage = buildAndroidNotificationMessage(
         `Navigation session ended`,
         `Navigation session has been ended`
@@ -60,10 +55,7 @@ export const sendNavigationControlSwitchedMessage = async (
     sessionID: number,
     carerHasControl: boolean
 ) => {
-    const data_payload = {
-        sessionID,
-        carerHasControl
-    };
+    const data_payload = { sessionID, carerHasControl };
     const dataMessage = buildDataMessage('nav_control_switch', data_payload);
     await sendMessage(dataMessage, targetID);
 };
@@ -81,10 +73,7 @@ export const sendNavigationLocationMessage = async (
     lat: number,
     lon: number
 ) => {
-    const data_payload = {
-        lat,
-        lon
-    };
+    const data_payload = { lat, lon };
     const dataMessage = buildDataMessage('nav_location_update', data_payload);
     await sendMessage(dataMessage, targetID);
 };
@@ -105,7 +94,7 @@ export const sendRouteUpdateMessage = async (
 };
 
 /**
- * Sends an AP off-track message.
+ * Builds and sends an AP off-track message.
  * @param {number} targetID ID of target.
  * @param {number} sessionID ID of session.
  * @param {string} name Name of AP.

@@ -1,7 +1,7 @@
 import { expect, request } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
-import { res, next } from '../index';
+import { res, next, wrapToJSON } from '../index';
 
 import models from '../../../models';
 
@@ -51,7 +51,7 @@ describe('Unit - Navigation - Start navigation session', () => {
         sandbox.replace(models.Session, 'findOne', inSessionStub);
 
         sandbox.replace(models.Session, 'create', (arg: any) => {
-            return { ...arg, id: 50 };
+            return wrapToJSON({ ...arg, id: 50 });
         });
 
         // Expect success message to be returned
@@ -97,7 +97,9 @@ describe('Unit - Navigation - Start navigation session', () => {
         inSessionStub.onCall(1).returns(null);
         sandbox.replace(models.Session, 'findOne', inSessionStub);
 
-        sandbox.replace(models.Session, 'create', sinon.stub().returnsArg(0));
+        sandbox.replace(models.Session, 'create', (session: any) => {
+            return wrapToJSON(session);
+        });
 
         // Expect success message to be returned
         // @ts-ignore

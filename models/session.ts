@@ -12,6 +12,7 @@ const sessionSchema = {
         defaultValue: true,
         allowNull: false
     },
+    // Whether the carer has control of interface
     carerHasControl: {
         type: Sequelize.BOOLEAN,
         allowNull: false
@@ -26,6 +27,7 @@ const sessionSchema = {
         defaultValue: 'Walking',
         allowNull: false
     },
+    // Route of session (as JSON)
     route: {
         type: Sequelize.JSON,
         allowNull: true
@@ -39,11 +41,9 @@ const sessionSchema = {
 export default class Session extends Sequelize.Model {
     /**
      * Initalises the model with the specified attributes and options.
-     * @param {sequelize} Sequelize instance to attach to the new Model.
+     * @param {sequelize} sequelize Sequelize instance.
      */
     static init(sequelize: Sequelize.Sequelize) {
-        return super.init(sessionSchema, {
-            sequelize
-        });
+        return super.init(sessionSchema, { sequelize });
     }
 }

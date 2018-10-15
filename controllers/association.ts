@@ -87,19 +87,19 @@ export const createAssociation = async (
                 // If association exists and is already active
                 throw new Error('An association already exists');
             } else {
-                // If association is not active, make association active
+                // If association is inactive, make association active
                 await existing.update({ active: true });
                 return res.json({ status: 'success' });
             }
         }
 
-        // If association does not exist, create it
+        // Create association
         const created = await models.Association.create({ carerId, APId });
 
-        // Also send data message
+        // Send data message to notify target
         await sendMessage(targetID);
 
-        return res.json(created);
+        return res.json(created.toJSON());
     } catch (err) {
         res.status(400);
         return next(err);

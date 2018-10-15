@@ -2,7 +2,7 @@ import { expect, request } from 'chai';
 import sinon from 'sinon';
 import { res, next } from '../index';
 import models from '../../../models';
-import { ensureRequestedUserIsAssociated } from '../../../middleware/auth';
+import { ensureRequestedUserIsAssociated } from '../../../middleware/association';
 
 describe('Unit - Middleware - Ensure Requested User is Associated', () => {
     const sandbox = sinon.createSandbox();

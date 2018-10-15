@@ -1,4 +1,3 @@
-// Starts server
 import http, { Server } from 'http';
 
 // Set environment variables and initialise app
@@ -8,7 +7,7 @@ import app from './app';
 // Initialise database
 import models from './models';
 
-// Get port from Node environment and set provided port
+// Get and set provided port
 const port: string = process.env.PORT || '3000';
 app.set('port', port);
 
@@ -26,7 +25,7 @@ export default (async () => {
         await models.sequelize.authenticate();
         console.log(`Database running on port ${db_port} of host ${db_host}`);
 
-        // Sync all defined models
+        // Sync defined models
         await models.sequelize.sync();
 
         // Create listener on port

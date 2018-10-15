@@ -1,6 +1,6 @@
 import Sequelize from 'sequelize';
 
-// Define schema for pictures
+// Define schema for chat pictures
 const chatPictureSchema = {
     id: {
         type: Sequelize.INTEGER,
@@ -23,17 +23,15 @@ const chatPictureSchema = {
 };
 
 /**
- * Class representing model of text chat pictures.
+ * Class representing model of chat pictures.
  */
 // @ts-ignore: @types/sequelize is not up to date with v4
 export default class ChatPicture extends Sequelize.Model {
     /**
      * Initalises the model with the specified attributes and options.
-     * @param {sequelize} Sequelize instance to attach to the new Model.
+     * @param {sequelize} sequelize Sequelize instance.
      */
     static init(sequelize: Sequelize.Sequelize) {
-        return super.init(chatPictureSchema, {
-            sequelize
-        });
+        return super.init(chatPictureSchema, { sequelize });
     }
 }

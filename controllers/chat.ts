@@ -12,13 +12,13 @@ export const getMessages = async (
     res: Response,
     next: NextFunction
 ) => {
-    // Get params
+    // Extract params
     const associationID = req.params.associationID;
     const limit: number = Number(req.query.limit);
     const before: number = Number(req.query.before);
     const after: number = Number(req.query.after);
 
-    // before/after portion of query
+    // Build before/after portion of query
     let seq: any = {};
     if (before) {
         seq = { id: { [Op.lt]: before } };
@@ -30,7 +30,7 @@ export const getMessages = async (
         seq = { id: { [Op.and]: [{ [Op.lt]: before }, { [Op.gt]: after }] } };
     }
 
-    // ID portion of query
+    // Build ID portion of query
     const idQuery = {
         associationId: associationID
     };
@@ -47,14 +47,13 @@ export const getMessages = async (
             }
         });
 
-        // Return empty array if there are no messages
+        // If there are no messages, return empty array
         if (!messages) {
             return res.json({ messages: [] });
         }
-        // Return normally
-        return res.json({ messages });
+        // If not, return messages normally
+        return res.json({ messages: messages.map((m: any) => m.toJSON()) });
     } catch (err) {
-        res.status(400);
         next(err);
     }
 };
@@ -65,34 +64,34 @@ export const createMessage = async (
     res: Response,
     next: NextFunction
 ) => {
-    // Get association ID
-    const associationID = req.params.associationID;
-    // Extract message content from body
+    // Extract message content from body and IDs
     const { content } = req.body;
+    const associationID = req.params.associationID;
+    const userID = req.userID;
+    const association = req.association;
+
+    // If there is no message
+    if (!content || content === '') {
+        res.status(400);
+        return next(new Error('No message given'));
+    }
 
     try {
-        // If there's no message
-        if (!content) {
-            throw new Error('No message given');
-        }
-
-        // Create and return message
+        // Create message
         const message = await models.Message.create({
             content,
-            authorId: req.userID,
+            authorId: userID,
             associationId: associationID
         });
 
-        // Get ID of target user
-        const targetID = await req.association.getPartnerID(req.userID);
-        const sender = await models.User.scope('name').findById(req.userID);
-
-        // Send notification
+        // Get ID of associated user and name of sender
+        const targetID = await association.getPartnerID(userID);
+        const sender = await models.User.scope('name').findById(userID);
+        // Send notification to target user
         await sendChatMessage(sender.name, targetID, associationID, content);
 
-        return res.json(message);
+        return res.json(message.toJSON());
     } catch (err) {
-        res.status(400);
         return next(err);
     }
 };

@@ -1,2 +1,0 @@
-import './createMessage';
-import './getMessages';

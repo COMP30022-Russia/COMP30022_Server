@@ -1,16 +1,17 @@
 // Adapted from:
 // https://github.com/sequelize/express-example/blob/master/models/index.js
-// https://gist.github.com/JesusMurF/9d206738aa54131a6e7ac88ab2d9084e
 // https://github.com/sequelize/sequelize/issues/6524
 // https://github.com/sequelize/sequelize/issues/6253
 import Sequelize from 'sequelize';
 import bcrypt from 'bcryptjs';
 
-// Define salt factor
-const SALT_FACTOR = 10;
-
 // Define user schema
 const userSchema = {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
     username: { type: Sequelize.STRING, allowNull: false },
     password: { type: Sequelize.STRING, allowNull: false },
     type: { type: Sequelize.ENUM('Carer', 'AP'), allowNull: false },
@@ -28,12 +29,13 @@ const userSchema = {
 export default class User extends Sequelize.Model {
     /**
      * Initalises the model with the specified attributes and options.
-     * @param {sequelize} Sequelize instance to attach to the new Model.
+     * @param {sequelize} sequelize Sequelize instance.
      */
     static init(sequelize: Sequelize.Sequelize) {
         return super.init(userSchema, {
             sequelize,
             indexes: [
+                // Ensure that usernames are unique
                 {
                     name: 'unique_username',
                     unique: true,
@@ -80,7 +82,7 @@ export default class User extends Sequelize.Model {
                 type: {
                     attributes: ['id', 'type']
                 },
-                // Location scope - retrieve id, type and location of user
+                // Retrieve id, type and location of user
                 location: {
                     attributes: ['id', 'type', 'currentLocationId']
                 },
@@ -106,7 +108,7 @@ export default class User extends Sequelize.Model {
     };
 
     /**
-     * Overrides the toJSON function to remove the password.
+     * Override the toJSON function to remove password.
      * @override
      * @returns {Object} JSON representation of instance.
      */
@@ -117,6 +119,9 @@ export default class User extends Sequelize.Model {
     };
 }
 
+// Define salt factor
+const SALT_FACTOR = 10;
+
 /**
  * Hashes a password using bcrypt and returns the hash.
  * @param {string} password The password to be hashed.
@@ -126,11 +131,9 @@ function hashPassword(password: string): Promise<string> {
     return new Promise((resolve, reject) => {
         // Generate salt
         bcrypt.genSalt(SALT_FACTOR, (err, salt) => {
-            // Return on error
             if (err) {
                 reject(err);
             }
-
             // Use salt to hash password
             bcrypt.hash(password, salt, (err: Error, hash) => {
                 if (err) {

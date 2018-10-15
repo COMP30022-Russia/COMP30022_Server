@@ -1,4 +1,3 @@
-// Controllers for actions that occur during a navigation session
 import { Request, Response, NextFunction } from 'express';
 import models from '../models';
 import {
@@ -9,16 +8,16 @@ import {
 } from './notification/navigation';
 import retrieveRoute from '../helpers/maps';
 
-// Redeclare to make it easy to replace and test
-const sendLocationMessage = sendNavigationLocationMessage;
-const sendRouteMessage = sendRouteUpdateMessage;
-const getMapRoute = retrieveRoute;
-
 // Cache for location
 import NodeCache from 'node-cache';
 import cacheService from '../helpers/cache';
 const locationCache = cacheService(new NodeCache());
 export { locationCache };
+
+// Redeclare functions for tests
+const sendLocationMessage = sendNavigationLocationMessage;
+const sendRouteMessage = sendRouteUpdateMessage;
+const getMapRoute = retrieveRoute;
 
 // Switch control during navigation session
 export const switchNavigationControl = async (
@@ -30,7 +29,7 @@ export const switchNavigationControl = async (
     const session = req.session;
 
     try {
-        // Flip and save
+        // Flip control and save
         session.carerHasControl = !session.carerHasControl;
         await session.save();
 
@@ -41,7 +40,7 @@ export const switchNavigationControl = async (
             session.carerHasControl
         );
 
-        return res.json(session);
+        return res.json(session.toJSON());
     } catch (err) {
         next(err);
     }
@@ -53,8 +52,9 @@ export const updateAPLocation = async (
     res: Response,
     next: NextFunction
 ) => {
-    // Extract session ID and lat/lon
+    // Extract IDs and lat/lon
     const sessionID = req.params.sessionID;
+    const userID = req.userID;
     const { lat, lon } = req.body;
     if (!lat || !lon) {
         res.status(422);
@@ -62,14 +62,14 @@ export const updateAPLocation = async (
     }
 
     // First, check cache to see if location of current user is already stored
-    const currentLocation: any = locationCache.getItem(String(req.userID));
+    const currentLocation: any = locationCache.getItem(String(userID));
     let targetID = currentLocation ? currentLocation.targetID : undefined;
 
     // If location is not stored, query for user's active session
     if (!currentLocation) {
         // Get session information
         const session = await models.Session.findOne({
-            where: { id: req.params.sessionID, active: true },
+            where: { id: sessionID, active: true },
             attributes: ['carerId', 'APId']
         });
 
@@ -91,10 +91,10 @@ export const updateAPLocation = async (
         targetID = session.carerId;
     }
 
-    // Update location
+    // Cache user IDs and location
     locationCache.setItem(String(req.userID), { targetID, lat, lon });
 
-    // Send firebase notification to target
+    // Send Firebase notification to target
     await sendLocationMessage(targetID, sessionID, lat, lon);
 
     // Return success
@@ -132,7 +132,6 @@ export const getRoute = async (
         if (!req.session.route) {
             return res.json({});
         }
-
         return res.json(req.session.route);
     } catch (err) {
         next(err);
@@ -152,7 +151,7 @@ export const setDestination = async (
     const placeID: string = req.body.placeID;
     const name = req.body.name;
 
-    // Do brief validation of placeID and name
+    // Perform brief validation of placeID and name
     if (!placeID || !name) {
         res.status(400);
         return next(new Error('Incorrect input parameters'));
@@ -180,7 +179,7 @@ export const setDestination = async (
     }
 
     try {
-        // Update route
+        // Set route of navigation session
         await session.updateAttributes({
             route,
             transportMode: mode,
@@ -193,7 +192,7 @@ export const setDestination = async (
             // If destination for session already exists, update it
             await destination.updateAttributes({ name, placeID });
         } else {
-            // If not, create and set it
+            // If not, create and set
             destination = await models.Destination.create({
                 placeID,
                 name,
@@ -221,17 +220,18 @@ export const sendOffTrackNotification = async (
     const session = req.session;
 
     try {
-        // Ensure that only APs are sending these notifications
+        // Ensure that only APs are sending notifications
         if (req.userID !== session.APId) {
             res.status(400);
             return next(
                 new Error(
-                    'Non AP users are not allowed to send off-track notifications'
+                    'Non AP users are not allowed to send' +
+                        ' off-track notifications'
                 )
             );
         }
 
-        // Send off-track notification
+        // Send notification
         const user = await models.User.scope('name').findById(session.APId);
         await sendOffTrackMessage(session.carerId, session.id, user.name);
         return res.json({ status: 'success' });

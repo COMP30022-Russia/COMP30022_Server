@@ -2,11 +2,6 @@ import express, { Router, Request, Response, NextFunction } from 'express';
 import multer from 'multer';
 const router: Router = express.Router({ mergeParams: true });
 
-// Multer configuration
-export const CHAT_PICTURE_DEST = 'uploads/chat';
-const upload = multer({ dest: CHAT_PICTURE_DEST }).single('picture');
-
-// Import controllers
 import {
     createPictureMessage,
     uploadPicture,
@@ -14,7 +9,11 @@ import {
 } from '../controllers/chat_picture';
 import { verifyIDParam } from '../middleware/params';
 
-// Create message with pictures
+// Multer configuration
+export const CHAT_PICTURE_DEST = 'uploads/chat';
+const upload = multer({ dest: CHAT_PICTURE_DEST }).single('picture');
+
+// Create picture message
 router.post('/picture', createPictureMessage);
 
 // Upload picture
@@ -25,11 +24,11 @@ router.post(
         upload(req, res, (err: Error) => {
             if (err) {
                 res.status(400);
-                next(err);
+                return next(err);
             }
             if (!req.file) {
                 res.status(400);
-                next(new Error('No file given'));
+                return next(new Error('No file given'));
             }
             next();
         });
@@ -37,7 +36,7 @@ router.post(
     uploadPicture
 );
 
-// Get specific picture
+// Get uploaded picture
 router.get(
     '/picture/:pictureID',
     verifyIDParam('pictureID'),

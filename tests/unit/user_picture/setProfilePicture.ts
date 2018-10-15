@@ -19,21 +19,10 @@ describe('Unit - User Profile - Upload profile picture', () => {
         };
 
         // Stub create function to return its argument
-        sandbox.replace(
-            models.ProfilePicture,
-            'create',
-            sinon.stub().returnsArg(0)
-        );
-
-        // Stub user query
-        sandbox.replace(models.User, 'scope', (_: string) => {
+        sandbox.replace(models.ProfilePicture, 'create', (properties: any) => {
             return {
-                findById: (_: number) => {
-                    return {
-                        id: req.userID,
-                        setProfilePicture: sinon.stub().returnsArg(0)
-                    };
-                }
+                ...properties,
+                toJSON: () => properties
             };
         });
 

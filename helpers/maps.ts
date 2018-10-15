@@ -1,15 +1,15 @@
 import https from 'https';
 
-// Key for Directions API
+// Key for Google Maps Directions API
 const KEY = process.env.DIRECTIONS_API_KEY;
 
 /**
- * Retrieves a route from the Directions API.
+ * Retrieves a route from Google Maps Directions API.
  * @param {boolean} isWalking Is walking mode.
- * @param {string} placeID Place ID.
- * @param {number} lat Latitude.
- * @param {number} lon Longitude.
- * @return {Promise} Promise of query result.
+ * @param {string} placeID Google Maps Place ID.
+ * @param {number} lat Latitude of current location.
+ * @param {number} lon Longitude of current location.
+ * @return {Promise} Promise for query result.
  */
 export default (
     isWalking: boolean,
@@ -17,6 +17,7 @@ export default (
     lat: number,
     lon: number
 ) => {
+    // Convert mode to form accepted by API
     const mode = isWalking ? 'walking' : 'transit';
 
     // If not in production, return fake response (as API calls are expensive)

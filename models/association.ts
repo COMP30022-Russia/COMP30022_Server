@@ -21,12 +21,10 @@ const associationSchema = {
 export default class Association extends Sequelize.Model {
     /**
      * Initalises the model with the specified attributes and options.
-     * @param {sequelize} Sequelize instance to attach to the new Model.
+     * @param {sequelize} sequelize Sequelize instance.
      */
     static init(sequelize: Sequelize.Sequelize) {
-        return super.init(associationSchema, {
-            sequelize
-        });
+        return super.init(associationSchema, { sequelize });
     }
 
     /**
@@ -40,7 +38,7 @@ export default class Association extends Sequelize.Model {
                 reject(new Error('APId or carerId is not in object'));
             }
             if (!myID) {
-                reject(new Error('myID is invalid'));
+                reject(new Error('User ID is not valid'));
             }
 
             if (this.APId === myID) {

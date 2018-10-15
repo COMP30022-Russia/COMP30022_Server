@@ -15,7 +15,7 @@ describe('Unit - Middleware - Authenticate', () => {
         JWTVerifyStub.withArgs('1234').returns({ id: 1 });
         JWTVerifyStub.throws();
         // Import the user controllers with the jwt_sign function stubbed
-        auth = proxyquire('../../../middleware/auth', {
+        auth = proxyquire('../../../middleware/authenticate', {
             '../helpers/jwt': { jwt_verify: JWTVerifyStub }
         });
     });

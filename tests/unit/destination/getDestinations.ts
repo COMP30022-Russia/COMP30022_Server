@@ -1,6 +1,6 @@
 import { expect, request } from 'chai';
 import sinon from 'sinon';
-import { res, next } from '../index';
+import { res, next, wrapToJSON } from '../index';
 
 import { getDestinations } from '../../../controllers/destination';
 import models from '../../../models';
@@ -17,17 +17,24 @@ describe('Unit - Destination - Get destinations', () => {
             query: {}
         };
 
+        const destination1 = { foo: 'bar' };
+        const destination2 = { fizz: 'buzz' };
+
         // Fake DB call
         const fakeFind = sinon.stub();
-        fakeFind.onCall(0).returns([1, 1]);
-        fakeFind.onCall(1).returns([2]);
+        fakeFind
+            .onCall(0)
+            .returns(
+                [destination1, destination2].map((d: any) => wrapToJSON(d))
+            );
+        fakeFind.onCall(1).returns([wrapToJSON(destination2)]);
         sandbox.replace(models.Destination, 'findAll', fakeFind);
 
         // @ts-ignore
         const result = await getDestinations(req, res, next);
         expect(result).to.deep.equal({
-            recents: [1, 1],
-            favourites: [2]
+            recents: [destination1, destination2],
+            favourites: [destination2]
         });
     });
 
@@ -43,14 +50,13 @@ describe('Unit - Destination - Get destinations', () => {
         };
 
         // Stub DB call to return first argument
-        const stubFind = sinon.stub().returnsArg(0);
-        sandbox.replace(models.Destination, 'findAll', stubFind);
+        const findSpy = sinon.spy();
+        sandbox.replace(models.Destination, 'findAll', findSpy);
 
         // @ts-ignore
         const result = await getDestinations(req, res, next);
-        expect(result).to.have.property('recents');
-        expect(result.recents).to.have.property('limit');
-        expect(result.recents.limit).to.equal(req.query.limit);
+        // Ensure that limit is given to find query
+        expect(findSpy.firstCall.args[0].limit).to.equal(req.query.limit);
     });
 
     afterEach(async () => {

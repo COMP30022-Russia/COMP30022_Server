@@ -17,9 +17,7 @@ export const sendChatMessage = async (
     associationID: number,
     message: string
 ) => {
-    const data_payload = {
-        associationID: String(associationID)
-    };
+    const data_payload = { associationID: String(associationID) };
     const notificationMessage = buildAndroidNotificationMessage(
         `New message from ${senderName}`,
         message
@@ -37,9 +35,7 @@ export const sendChatPictureUploadMessage = async (
     targetID: number,
     associationID: number
 ) => {
-    const data_payload = {
-        associationID: String(associationID)
-    };
+    const data_payload = { associationID: String(associationID) };
     const dataMessage = buildDataMessage('chat_picture_uploaded', data_payload);
     await sendMessage(dataMessage, targetID);
 };

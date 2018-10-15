@@ -2,7 +2,7 @@ import { expect, request } from 'chai';
 import sinon from 'sinon';
 import { res, next } from '../index';
 import models from '../../../models';
-import { ensureRequestedUserIsInRequestedAssociation } from '../../../middleware/auth';
+import { retrieveAssociation } from '../../../middleware/association';
 
 describe('Unit - Middleware - Ensure user is in requested association', () => {
     const sandbox = sinon.createSandbox();
@@ -27,7 +27,7 @@ describe('Unit - Middleware - Ensure user is in requested association', () => {
 
         // Call middleware, expect next() to be called with 0 arguments
         // @ts-ignore
-        await ensureRequestedUserIsInRequestedAssociation(req, res, nextSpy);
+        await retrieveAssociation(req, res, nextSpy);
         expect(nextSpy.calledWithExactly()).to.equal(true);
     });
 
@@ -38,12 +38,8 @@ describe('Unit - Middleware - Ensure user is in requested association', () => {
         sandbox.replace(models.Association, 'findOne', dbFake);
 
         // Call middleware, expect next(err) to be returned
-        const result = await ensureRequestedUserIsInRequestedAssociation(
-            // @ts-ignore
-            req,
-            res,
-            next
-        );
+        // @ts-ignore
+        const result = await retrieveAssociation(req, res, next);
         expect(result).to.be.an('error');
         expect(result.message).to.equal(
             'User is not party of requested association'

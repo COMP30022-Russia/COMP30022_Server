@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-import { Op } from 'sequelize';
 import models from '../models';
 import { CHAT_PICTURE_DEST } from '../routes/chat_picture';
 import {
@@ -7,15 +6,17 @@ import {
     sendChatPictureUploadMessage
 } from './notification/chat';
 
-// Create and return picture message
+// Creates and returns a picture message
 export const createPictureMessage = async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    // Get association ID and count
+    // Get association ID and number of pictures in this message
     const associationID = req.params.associationID;
     const count: number = Number(req.body.count);
+    const userID = req.userID;
+    const association = req.association;
 
     // Ensure that count value is given
     if (!count || Number(count) <= 0) {
@@ -29,7 +30,7 @@ export const createPictureMessage = async (
         for (const n of Array(count).keys()) {
             picture_array.push(
                 await models.ChatPicture.create({
-                    associationId: req.params.associationID
+                    associationId: associationID
                 })
             );
         }
@@ -37,14 +38,14 @@ export const createPictureMessage = async (
         // Create message and set pictures
         const message = await models.Message.create({
             type: 'Picture',
-            authorId: req.userID,
+            authorId: userID,
             associationId: associationID
         });
         await message.setPictures(picture_array);
 
-        // Get ID of target user
-        const targetID = await req.association.getPartnerID(req.userID);
-        const sender = await models.User.scope('name').findById(req.userID);
+        // Get ID and name of target user
+        const targetID = await association.getPartnerID(userID);
+        const sender = await models.User.scope('name').findById(userID);
 
         // Send notification
         await sendChatMessage(
@@ -63,7 +64,6 @@ export const createPictureMessage = async (
             pictures
         });
     } catch (err) {
-        res.status(400);
         return next(err);
     }
 };
@@ -74,37 +74,43 @@ export const uploadPicture = async (
     res: Response,
     next: NextFunction
 ) => {
+    // Extract IDs and information about uploaded file
+    const userID = req.userID;
     const pictureID = req.params.pictureID;
+    const associationID = req.params.associationID;
+    const association = req.association;
+    const file = req.file;
 
     try {
         // Retrieve picture
         const picture = await models.ChatPicture.findOne({
-            where: { id: pictureID, associationId: req.params.associationID }
+            where: { id: pictureID, associationId: associationID }
         });
 
         // If there is no picture with ID or picture does not belong to
         // association
         if (!picture) {
-            throw new Error('Picture cannot be set');
+            res.status(400);
+            return next(new Error('Picture cannot be set'));
         }
         // If picture has been received already
         if (picture.status === 'Received') {
-            throw new Error('Picture has already been received');
+            res.status(400);
+            return next(new Error('Picture has already been received'));
         }
 
-        // Set properties of picture with values of file and return
-        picture.filename = req.file.filename;
-        picture.mime = req.file.mimetype;
+        // Set fields of picture with values of file and return
+        picture.filename = file.filename;
+        picture.mime = file.mimetype;
         picture.status = 'Received';
         const saved = await picture.save();
 
-        // Find ID of receipient user
-        const targetID = await req.association.getPartnerID(req.userID);
-        await sendChatPictureUploadMessage(targetID, req.params.associationID);
+        // Find ID of recipient user and send data message
+        const targetID = await association.getPartnerID(userID);
+        await sendChatPictureUploadMessage(targetID, associationID);
 
-        return res.json(saved);
+        return res.json(saved.toJSON());
     } catch (err) {
-        res.status(400);
         return next(err);
     }
 };
@@ -116,22 +122,27 @@ export const getMessagePicture = async (
     next: NextFunction
 ) => {
     const pictureID = req.params.pictureID;
+    const associationID = req.params.associationID;
 
     try {
         // Retrieve picture
         const picture = await models.ChatPicture.findOne({
-            where: { id: pictureID, associationId: req.params.associationID }
+            where: { id: pictureID, associationId: associationID }
         });
 
         // If there is no picture with ID or picture does not belong to
         // association
         if (!picture) {
-            throw new Error('Picture cannot be retrieved');
+            res.status(400);
+            return next(new Error('Picture cannot be retrieved'));
         }
 
         // If picture has not been received
         if (picture.status !== 'Received') {
-            throw new Error('Picture has not been received by server yet');
+            res.status(400);
+            return next(
+                new Error('Picture has not been received by server yet')
+            );
         }
 
         // If not, it's ok to send the image
@@ -141,7 +152,6 @@ export const getMessagePicture = async (
         };
         return res.sendFile(picture.filename, options);
     } catch (err) {
-        res.status(400);
         return next(err);
     }
 };

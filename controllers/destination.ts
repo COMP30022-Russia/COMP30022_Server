@@ -11,12 +11,13 @@ export const getDestinations = async (
     res: Response,
     next: NextFunction
 ) => {
-    // Extract user ID, limit
-    const userID = req.params.userID;
+    // Extract limit from request body
     const limit = req.query.limit;
+    const userID = req.params.userID;
 
     try {
-        // Query for recents/favourites and return
+        // Query for recents/favourites
+        // Ensure that placeIDs (and hence destinations) are unique
         const recents = await models.Destination.findAll({
             attributes: [
                 sequelize.literal('DISTINCT ON ("placeID", "id") 1'),
@@ -34,7 +35,12 @@ export const getDestinations = async (
         const favourites = await models.Destination.findAll({
             where: { userId: userID, favourite: true }
         });
-        return res.json({ recents, favourites });
+
+        // Return as JSON
+        return res.json({
+            recents: recents.map((d: any) => d.toJSON()),
+            favourites: favourites.map((d: any) => d.toJSON())
+        });
     } catch (err) {
         return next(err);
     }
@@ -46,10 +52,9 @@ export const setFavouriteDestination = async (
     res: Response,
     next: NextFunction
 ) => {
-    // Extract user, destination ID
+    // Extract IDs and favourite query
     const userID = req.params.userID;
     const destinationID = req.params.destinationID;
-    // Extract favourite query
     const favourite = !req.query.favourite || req.query.favourite === 'true';
 
     try {

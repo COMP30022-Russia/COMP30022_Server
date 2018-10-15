@@ -11,7 +11,6 @@ export const inititateEmergencyEvent = async (
     res: Response,
     next: NextFunction
 ) => {
-    // Extract user ID
     const userID = req.userID;
 
     try {
@@ -33,9 +32,8 @@ export const inititateEmergencyEvent = async (
             }
         });
 
-        // If there is not an unhandled emergency event, create it
+        // If there is not an unhandled emergency event, create an event
         if (!event) {
-            // Create an emergency event
             event = await models.Emergency.create({
                 APId: userID
             });
@@ -51,25 +49,24 @@ export const inititateEmergencyEvent = async (
         });
         const targetIDs = associations.map((assoc: any) => assoc.carerId);
 
-        // Send notification
+        // Send notification to carers
         await sendEmergencyMessage(event.id, userID, user.name, targetIDs);
 
         // Return event
-        return res.json(event);
+        return res.json(event.toJSON());
     } catch (err) {
-        res.status(400);
         return next(err);
     }
 };
 
-// Retrieves an emergency event
+// Returns an emergency event
 export const getEmergencyEvent = async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
     try {
-        return res.json(req.event);
+        return res.json(req.event.toJSON());
     } catch (err) {
         next(err);
     }
@@ -81,17 +78,18 @@ export const handleEmergencyEvent = async (
     res: Response,
     next: NextFunction
 ) => {
-    // Extract user, emergency ID
     const userID = req.userID;
     const emergencyID = req.params.emergencyID;
     const event = req.event;
 
     try {
-        // Update status
+        // Make sure that event is not already handled
         if (event.handled) {
             res.status(400);
             return next(new Error('Emergency event has already been handled'));
         }
+
+        // Update status
         event.handled = true;
         event.resolverId = userID;
         await event.save();
@@ -111,7 +109,8 @@ export const handleEmergencyEvent = async (
         // Send notification
         await sendEmergencyHandledMessage(event.id, targetIDs);
 
-        return res.json(event);
+        // Return updated event
+        return res.json(event.toJSON());
     } catch (err) {
         next(err);
     }

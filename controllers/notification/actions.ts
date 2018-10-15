@@ -1,8 +1,7 @@
 import models from '../../models';
 import { Request, Response, NextFunction } from 'express';
 
-// Add to/updates the current user's Firebase token
-// Adapted from: https://stackoverflow.com/questions/41924281
+// Updates the current user's Firebase tokens
 export const updateFirebaseToken = async (
     req: Request,
     res: Response,
@@ -13,10 +12,7 @@ export const updateFirebaseToken = async (
     const token = req.body.token;
 
     try {
-        // Retrieve user with device tokens
-        const user = await models.User.scope('id').findById(userID);
-
-        // Remove all occurrences of tokens with the given instanceID
+        // Remove all occurrences of tokens with given instanceID
         await models.FirebaseToken.destroy({
             where: { instanceID, userId: userID }
         });
@@ -26,7 +22,11 @@ export const updateFirebaseToken = async (
             token,
             instanceID
         });
+
+        // Add created token to user
+        const user = await models.User.scope('id').findById(userID);
         await user.addFirebaseToken(createdToken);
+
         return res.json({ status: 'success' });
     } catch (err) {
         res.status(400);
@@ -43,11 +43,10 @@ export const getFirebaseTokens = async (
     const userID = req.userID;
 
     try {
-        // Get and return tokens as array
+        // Get and return tokens as array of strings
         const tokens: [string] = await getFirebaseTokensHelper(userID);
         return res.json({ id: userID, tokens });
     } catch (err) {
-        res.status(400);
         return next(err);
     }
 };
@@ -55,7 +54,7 @@ export const getFirebaseTokens = async (
 /**
  * Retrieves the Firebase tokens of the specified user as an array.
  * @param {number} userID ID of user.
- * @returns {Promise} Promise for tokens of specified user.
+ * @returns {Promise} Promise for Firebase tokens of specified user.
  */
 export const getFirebaseTokensHelper = async (
     userID: number
