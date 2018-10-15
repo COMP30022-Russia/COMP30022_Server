@@ -122,6 +122,8 @@ export const getAssociations = async (
     res: Response,
     next: NextFunction
 ) => {
+    const userID = req.userID;
+
     try {
         // Find type of user and the opposite type
         const oppositeType = await findOppositeUserType(req.userID);
@@ -130,7 +132,7 @@ export const getAssociations = async (
         const associations = await models.Association.findAll({
             where: {
                 active: true,
-                [Op.or]: [{ APId: req.userID }, { carerId: req.userID }]
+                [Op.or]: [{ APId: userID }, { carerId: userID }]
             },
             include: {
                 model: models.User,
@@ -143,12 +145,12 @@ export const getAssociations = async (
         }
 
         // Map to JSON and return
-        const associationsJSON = associations.map(async (association: any) => {
+        const associationsJSON = associations.map((association: any) => {
             // Rename 'AP'/'Carer' key to 'user'
             const { [oppositeType]: user, ...other } = association.toJSON();
             return { ...other, user };
         });
-        return res.json(await Promise.all(associationsJSON));
+        return res.json(associationsJSON);
     } catch (err) {
         next(err);
     }
@@ -160,9 +162,11 @@ export const getAssociation = async (
     res: Response,
     next: NextFunction
 ) => {
+    const userID = req.userID;
+
     try {
         // Find type of user and the opposite type
-        const oppositeType = await findOppositeUserType(req.userID);
+        const oppositeType = await findOppositeUserType(userID);
 
         // Find the requested association, where the authenticated user is a
         // carer/AP for the association and populate the other user
@@ -170,7 +174,7 @@ export const getAssociation = async (
             where: {
                 id: req.params.associationID,
                 active: true,
-                [Op.or]: [{ APId: req.userID }, { carerId: req.userID }]
+                [Op.or]: [{ APId: userID }, { carerId: userID }]
             },
             include: {
                 model: models.User,

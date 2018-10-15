@@ -10,6 +10,11 @@ const TIMEZONE: string = 'Australia/Melbourne';
 new CronJob(
     '99 59 23 * * *',
     async () => {
+        // Do not execute in non-production environments
+        if (process.env.NODE_ENV !== 'production') {
+            return;
+        }
+
         try {
             await cleanUpNavigationCalls();
         } catch (err) {
@@ -26,6 +31,11 @@ new CronJob(
 new CronJob(
     '*/20 * * * * *',
     async () => {
+        // Do not execute in non-production environments
+        if (process.env.NODE_ENV !== 'production') {
+            return;
+        }
+
         try {
             await terminateIdlePendingCalls();
         } catch (err) {

@@ -12,7 +12,7 @@ export const getDestinations = async (
     next: NextFunction
 ) => {
     // Extract limit from request body
-    const limit = req.query.limit;
+    const limit = Number(req.query.limit);
     const userID = req.params.userID;
 
     try {
