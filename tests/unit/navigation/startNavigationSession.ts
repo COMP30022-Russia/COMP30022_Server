@@ -51,7 +51,7 @@ describe('Unit - Navigation - Start navigation session', () => {
         sandbox.replace(models.Session, 'findOne', inSessionStub);
 
         sandbox.replace(models.Session, 'create', (arg: any) => {
-            return wrapToJSON({ ...arg, id: 50 });
+            return wrapToJSON({ ...arg, id: 50, sync: 1 });
         });
 
         // Expect success message to be returned
@@ -69,13 +69,15 @@ describe('Unit - Navigation - Start navigation session', () => {
         // Second argument: ID of opposite party
         // Third argument: ID of association
         // Fourth argument: ID of session
+        // Fifth argument: Sync
         expect(sendSpy.calledOnce).to.equal(true);
         expect(
             sendSpy.alwaysCalledWith(
                 'A name',
                 req.association.carerId,
                 req.association.id,
-                50
+                50,
+                1
             )
         ).to.equal(true);
     });

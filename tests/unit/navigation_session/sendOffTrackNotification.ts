@@ -65,7 +65,9 @@ describe('Unit - Navigation', () => {
     });
 
     it('Off-track notification', async () => {
+        const updateSpy = sinon.spy(() => req.session.sync++);
         const session = {};
+        const sync = 8;
         const req = {
             userID: 2,
             params: {
@@ -75,7 +77,9 @@ describe('Unit - Navigation', () => {
                 id: 1,
                 APId: 2,
                 carerId: 3,
-                carerHasControl: true
+                carerHasControl: true,
+                sync,
+                updateAttributes: updateSpy
             }
         };
 
@@ -89,17 +93,19 @@ describe('Unit - Navigation', () => {
         expect(result).to.have.property('status');
         expect(result.status).to.equal('success');
 
+        // Check update
+        expect(updateSpy.calledOnce).to.equal(true);
+        expect(updateSpy.lastCall.args[0]).to.deep.equal({ sync: sync + 1 });
+
         // Verify the send message call
         // First argument: ID of carer
         // Second argument: ID of session
         // Third argument: name of AP
         expect(sendSpy.calledOnce).to.equal(true);
-        expect(
-            sendSpy.alwaysCalledWith(
-                req.session.carerId,
-                req.session.id,
-                AP_NAME
-            )
-        ).to.equal(true);
+        expect(sendSpy.lastCall.args).to.have.lengthOf(4);
+        expect(sendSpy.lastCall.args[0]).to.equal(req.session.carerId);
+        expect(sendSpy.lastCall.args[1]).to.equal(req.session.id);
+        expect(sendSpy.lastCall.args[2]).to.equal(AP_NAME);
+        expect(sendSpy.lastCall.args[3]).to.equal(sync + 1);
     });
 });

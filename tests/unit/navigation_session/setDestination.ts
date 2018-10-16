@@ -91,10 +91,11 @@ describe('Unit - Navigation', () => {
 
     it('Set destination - first time, walking', async () => {
         // Update attribute spy
-        const updateSpy = sinon.spy();
+        const updateSpy = sinon.spy(() => req.session.sync++);
         const setDestinationSpy = sinon.spy();
 
         // tslint:disable:no-null-keyword / DB will return null here
+        const sync = 8;
         const req = {
             userID: 1,
             params: {
@@ -106,7 +107,8 @@ describe('Unit - Navigation', () => {
                 carerId: 2,
                 updateAttributes: updateSpy,
                 setDestination: setDestinationSpy,
-                getDestination: sinon.stub().returns(null)
+                getDestination: sinon.stub().returns(null),
+                sync
             },
             body: { ...location, name: 'Hi', placeID: '1234' }
         };
@@ -134,7 +136,8 @@ describe('Unit - Navigation', () => {
                 placeID: req.body.placeID,
                 lat: location.lat,
                 lon: location.lon
-            }
+            },
+            sync: sync + 1
         });
 
         // Check the setDestination message
@@ -146,22 +149,20 @@ describe('Unit - Navigation', () => {
         });
 
         // Check the Firebase send message
-        expect(sendSpy.calledOnce).to.equal(true);
-        expect(
-            sendSpy.alwaysCalledWith(
-                req.session.APId,
-                req.session.carerId,
-                req.session.id
-            )
-        ).to.equal(true);
+        expect(sendSpy.lastCall.args).to.have.lengthOf(4);
+        expect(sendSpy.lastCall.args[0]).to.equal(req.session.APId);
+        expect(sendSpy.lastCall.args[1]).to.equal(req.session.carerId);
+        expect(sendSpy.lastCall.args[2]).to.equal(req.session.id);
+        expect(sendSpy.lastCall.args[3]).to.equal(sync + 1);
     });
 
     it('Set destination - subsequent times, public transport', async () => {
         // Attribute update spies
-        const updateSessionSpy = sinon.spy();
+        const updateSessionSpy = sinon.spy(() => req.session.sync++);
         const updateDestinationSpy = sinon.spy();
 
         // tslint:disable:no-null-keyword / DB will return null here
+        const sync = 8;
         const req = {
             userID: 1,
             params: {
@@ -176,7 +177,8 @@ describe('Unit - Navigation', () => {
                     return {
                         updateAttributes: updateDestinationSpy
                     };
-                }
+                },
+                sync
             },
             body: { ...location, name: 'Hi', placeID: '1234', mode: 'PT' }
         };
@@ -204,7 +206,8 @@ describe('Unit - Navigation', () => {
                 placeID: req.body.placeID,
                 lat: location.lat,
                 lon: location.lon
-            }
+            },
+            sync: sync + 1
         });
 
         // First check the update route call
@@ -215,9 +218,11 @@ describe('Unit - Navigation', () => {
         });
 
         // Check the Firebase send message
+        expect(sendSpy.lastCall.args).to.have.lengthOf(4);
         expect(sendSpy.lastCall.args[0]).to.equal(req.session.APId);
         expect(sendSpy.lastCall.args[1]).to.equal(req.session.carerId);
         expect(sendSpy.lastCall.args[2]).to.equal(req.session.id);
+        expect(sendSpy.lastCall.args[3]).to.equal(sync + 1);
     });
 
     afterEach(async () => {

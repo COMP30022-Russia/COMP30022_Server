@@ -31,6 +31,12 @@ const sessionSchema = {
     route: {
         type: Sequelize.JSON,
         allowNull: true
+    },
+    // Value used for synchronisation
+    sync: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 1
     }
 };
 

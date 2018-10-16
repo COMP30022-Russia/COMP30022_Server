@@ -24,7 +24,7 @@ export let retrieveNavigationSession = (
                 where: { id: sessionID },
                 [Op.or]: [{ APId: userID }, { carerId: userID }],
                 attributes: Array.isArray(attributes)
-                    ? [...attributes, 'active']
+                    ? [...attributes, 'active', 'sync']
                     : attributes
             };
             // Add to options if call is to be included

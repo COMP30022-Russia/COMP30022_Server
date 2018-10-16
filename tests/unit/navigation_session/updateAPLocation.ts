@@ -21,7 +21,7 @@ describe('Unit - Navigation', () => {
     const NON_CACHED_APID = 2;
 
     // Data returned by cache
-    const cachedData = { lat: 10.23, lon: 203.4, targetID: 1 };
+    const cachedData = { lat: 10.23, lon: 203.4, targetID: 1, sync: 5 };
 
     before(async () => {
         const getStub = sinon.stub();
@@ -76,14 +76,17 @@ describe('Unit - Navigation', () => {
         expect(setSpy.lastCall.args[0]).to.equal(String(req.userID));
         expect(setSpy.lastCall.args[1]).to.deep.equal({
             targetID: cachedData.targetID,
+            sync: cachedData.sync + 1,
             ...req.body
         });
 
         // Check sent message
+        expect(sendSpy.lastCall.args).to.have.lengthOf(5);
         expect(sendSpy.lastCall.args[0]).to.equal(cachedData.targetID);
         expect(sendSpy.lastCall.args[1]).to.equal(req.params.sessionID);
         expect(sendSpy.lastCall.args[2]).to.equal(req.body.lat);
         expect(sendSpy.lastCall.args[3]).to.equal(req.body.lon);
+        expect(sendSpy.lastCall.args[4]).to.equal(cachedData.sync + 1);
     });
 
     it('Update uncached AP location - Bad session', async () => {
@@ -165,10 +168,12 @@ describe('Unit - Navigation', () => {
         expect(setSpy.lastCall.args[0]).to.equal(String(req.userID));
         expect(setSpy.lastCall.args[1]).to.deep.equal({
             targetID: CARER_ID,
+            sync: 1,
             ...req.body
         });
 
         // Check sent message
+        expect(sendSpy.lastCall.args).to.have.lengthOf(5);
         expect(sendSpy.lastCall.args[0]).to.equal(CARER_ID);
         expect(sendSpy.lastCall.args[1]).to.equal(req.params.sessionID);
         expect(sendSpy.lastCall.args[2]).to.equal(req.body.lat);

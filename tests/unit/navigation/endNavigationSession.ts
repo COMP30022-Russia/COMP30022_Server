@@ -32,14 +32,16 @@ describe('Unit - Navigation - End navigation session', () => {
     });
 
     it('End session', async () => {
-        const updateSpy = sinon.spy();
+        const sync = 1;
+        const updateSpy = sinon.spy(() => session.sync++);
         const session: any = {
             id: 1,
             APId: 2,
             carerId: 3,
             active: true,
             updateAttributes: updateSpy,
-            Call: undefined
+            Call: undefined,
+            sync
         };
         const req = {
             userID: 2,
@@ -53,15 +55,21 @@ describe('Unit - Navigation - End navigation session', () => {
         // @ts-ignore
         const result = await navigation.endNavigationSession(req, res, next);
         expect(result).to.deep.equal({ status: 'success' });
-        expect(updateSpy.calledWithExactly({ active: false })).to.equal(true);
+
+        // Check update
+        expect(
+            updateSpy.calledWithExactly({ active: false, sync: sync + 1 })
+        ).to.equal(true);
 
         // Verify the send message call
         // First argument: ID of opposite party
         // Second argument: ID of session
+        // Third argument: sync
         expect(sendSpy.calledOnce).to.equal(true);
-        expect(sendSpy.alwaysCalledWith(session.carerId, session.id)).to.equal(
-            true
-        );
+        expect(sendSpy.lastCall.args).to.have.lengthOf(3);
+        expect(sendSpy.lastCall.args[0]).to.equal(session.carerId);
+        expect(sendSpy.lastCall.args[1]).to.equal(session.id);
+        expect(sendSpy.lastCall.args[2]).to.equal(sync + 1);
 
         // Verify delete cache item call
         expect(deleteSpy.calledOnce).to.equal(true);
@@ -70,13 +78,15 @@ describe('Unit - Navigation - End navigation session', () => {
 
     it('End session with call', async () => {
         const updateSpy = sinon.spy();
+        const sync = 1;
         const session = {
             id: 1,
             APId: 2,
             carerId: 3,
             active: true,
             updateAttributes: sinon.fake(),
-            Call: { state: 'Ongoing' }
+            Call: { state: 'Ongoing' },
+            sync
         };
         const req = {
             userID: 2,

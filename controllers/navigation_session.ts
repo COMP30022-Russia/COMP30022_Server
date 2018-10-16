@@ -29,15 +29,17 @@ export const switchNavigationControl = async (
     const session = req.session;
 
     try {
-        // Flip control and save
+        // Flip control, increment sync and save
         session.carerHasControl = !session.carerHasControl;
+        session.sync = session.sync + 1;
         await session.save();
 
         // Send notification
         await sendNavigationControlSwitchedMessage(
             session.APId === req.userID ? session.carerId : session.APId,
             session.id,
-            session.carerHasControl
+            session.carerHasControl,
+            session.sync
         );
 
         return res.json(session.toJSON());
@@ -62,8 +64,10 @@ export const updateAPLocation = async (
     }
 
     // First, check cache to see if location of current user is already stored
+    // If location is stored, extract ID of target and increment sync
     const currentLocation: any = locationCache.getItem(String(userID));
     let targetID = currentLocation ? currentLocation.targetID : undefined;
+    let sync = currentLocation ? currentLocation.sync + 1 : undefined;
 
     // If location is not stored, query for user's active session
     if (!currentLocation) {
@@ -87,15 +91,16 @@ export const updateAPLocation = async (
             );
         }
 
-        // Set userID of carer (opposite party)
+        // Set userID of carer (opposite party) and initiate sync
         targetID = session.carerId;
+        sync = 1;
     }
 
     // Cache user IDs and location
-    locationCache.setItem(String(req.userID), { targetID, lat, lon });
+    locationCache.setItem(String(req.userID), { targetID, lat, lon, sync });
 
     // Send Firebase notification to target
-    await sendLocationMessage(targetID, sessionID, lat, lon);
+    await sendLocationMessage(targetID, sessionID, lat, lon, sync);
 
     // Return success
     return res.json({ status: 'success' });
@@ -183,7 +188,8 @@ export const setDestination = async (
         await session.updateAttributes({
             route,
             transportMode: mode,
-            state: 'Started'
+            state: 'Started',
+            sync: session.sync + 1
         });
 
         // Get destination
@@ -205,7 +211,12 @@ export const setDestination = async (
     }
 
     // Send notification
-    await sendRouteMessage(session.APId, session.carerId, session.id);
+    await sendRouteMessage(
+        session.APId,
+        session.carerId,
+        session.id,
+        session.sync
+    );
 
     return res.json({ status: 'success' });
 };
@@ -231,9 +242,17 @@ export const sendOffTrackNotification = async (
             );
         }
 
+        // Increment sync
+        await session.updateAttributes({ sync: session.sync + 1 });
+
         // Send notification
         const user = await models.User.scope('name').findById(session.APId);
-        await sendOffTrackMessage(session.carerId, session.id, user.name);
+        await sendOffTrackMessage(
+            session.carerId,
+            session.id,
+            user.name,
+            session.sync
+        );
         return res.json({ status: 'success' });
     } catch (err) {
         next(err);

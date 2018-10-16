@@ -18,7 +18,7 @@ const callSchema = {
         allowNull: false,
         defaultValue: 'Pending'
     },
-    // Incremented value used for synchronisation
+    // Value used for synchronisation
     sync: {
         type: Sequelize.INTEGER,
         allowNull: false,

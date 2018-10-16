@@ -10,14 +10,16 @@ import {
  * @param {string} targetID ID of target.
  * @param {number} associationID ID of association.
  * @param {number} sessionID ID of session.
+ * @param {number} sync Sync count.
  */
 export const sendNavigationStartMessage = async (
     senderName: string,
     targetID: number,
     associationID: number,
-    sessionID: number
+    sessionID: number,
+    sync: number
 ) => {
-    const data_payload = { associationID, sessionID };
+    const data_payload = { associationID, sessionID, sync, senderName };
     const notificationMessage = buildAndroidNotificationMessage(
         `Navigation session started`,
         `Navigation session has been started by ${senderName}`
@@ -30,12 +32,14 @@ export const sendNavigationStartMessage = async (
  * Builds and sends a navigation ended message.
  * @param {number} targetID ID of target.
  * @param {number} sessionID ID of session.
+ * @param {number} sync Sync count.
  */
 export const sendNavigationEndMessage = async (
     targetID: number,
-    sessionID: number
+    sessionID: number,
+    sync: number
 ) => {
-    const data_payload = { sessionID };
+    const data_payload = { sessionID, sync };
     const notificationMessage = buildAndroidNotificationMessage(
         `Navigation session ended`,
         `Navigation session has been ended`
@@ -49,13 +53,15 @@ export const sendNavigationEndMessage = async (
  * @param {number} targetID ID of target.
  * @param {number} sessionID ID of session.
  * @param {boolean} carerHasControl Whether carer has control.
+ * @param {number} sync Sync count.
  */
 export const sendNavigationControlSwitchedMessage = async (
     targetID: number,
     sessionID: number,
-    carerHasControl: boolean
+    carerHasControl: boolean,
+    sync: number
 ) => {
-    const data_payload = { sessionID, carerHasControl };
+    const data_payload = { sessionID, carerHasControl, sync };
     const dataMessage = buildDataMessage('nav_control_switch', data_payload);
     await sendMessage(dataMessage, targetID);
 };
@@ -66,14 +72,16 @@ export const sendNavigationControlSwitchedMessage = async (
  * @param {number} sessionID ID of session.
  * @param {number} lat Latitude of AP.
  * @param {number} lon Longitude of AP.
+ * @param {number} sync Sync count.
  */
 export const sendNavigationLocationMessage = async (
     targetID: number,
     sessionID: number,
     lat: number,
-    lon: number
+    lon: number,
+    sync: number
 ) => {
-    const data_payload = { lat, lon };
+    const data_payload = { lat, lon, sync };
     const dataMessage = buildDataMessage('nav_location_update', data_payload);
     await sendMessage(dataMessage, targetID);
 };
@@ -83,13 +91,15 @@ export const sendNavigationLocationMessage = async (
  * @param {number} apID ID of AP.
  * @param {number} carerID ID of carer.
  * @param {number} sessionID ID of session.
+ * @param {number} sync Sync count.
  */
 export const sendRouteUpdateMessage = async (
     apID: number,
     carerID: number,
-    sessionID: number
+    sessionID: number,
+    sync: number
 ) => {
-    const dataMessage = buildDataMessage('route_update', { sessionID });
+    const dataMessage = buildDataMessage('route_update', { sessionID, sync });
     await sendMessage(dataMessage, [apID, carerID]);
 };
 
@@ -98,13 +108,15 @@ export const sendRouteUpdateMessage = async (
  * @param {number} targetID ID of target.
  * @param {number} sessionID ID of session.
  * @param {string} name Name of AP.
+ * @param {number} sync Sync count.
  */
 export const sendOffTrackMessage = async (
     targetID: number,
     sessionID: number,
-    name: string
+    name: string,
+    sync: number
 ) => {
-    const dataMessage = buildDataMessage('nav_off_track', { sessionID });
+    const dataMessage = buildDataMessage('nav_off_track', { sessionID, sync });
     const notificationMessage = buildAndroidNotificationMessage(
         `Navigation off-track`,
         `${name} seems to be be off-track`

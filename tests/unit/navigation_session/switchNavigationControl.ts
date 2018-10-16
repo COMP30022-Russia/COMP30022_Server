@@ -24,6 +24,7 @@ describe('Unit - Navigation', () => {
     });
 
     it('Switch control', async () => {
+        const sync = 1;
         const saveSpy = sinon.spy();
         const req = {
             userID: 2,
@@ -36,6 +37,7 @@ describe('Unit - Navigation', () => {
                 carerId: 3,
                 carerHasControl: true,
                 save: saveSpy,
+                sync,
                 toJSON: () => req.session
             }
         };
@@ -59,7 +61,12 @@ describe('Unit - Navigation', () => {
         // Third argument: carerHasControl
         expect(sendSpy.calledOnce).to.equal(true);
         expect(
-            sendSpy.alwaysCalledWith(req.session.carerId, req.session.id, false)
+            sendSpy.alwaysCalledWith(
+                req.session.carerId,
+                req.session.id,
+                false,
+                sync + 1
+            )
         ).to.equal(true);
     });
 

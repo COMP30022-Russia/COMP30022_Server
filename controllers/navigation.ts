@@ -64,7 +64,8 @@ export const startNavigationSession = async (
                 ? association.carerId
                 : association.APId,
             association.id,
-            session.id
+            session.id,
+            session.sync
         );
 
         return res.json(session.toJSON());
@@ -126,12 +127,6 @@ export const endNavigationSession = async (
     const userID = req.userID;
 
     try {
-        // Send notification
-        await sendNavigationEndMessage(
-            session.APId === userID ? session.carerId : session.APId,
-            session.id
-        );
-
         // Remove AP location from cache
         locationCache.deleteItem(String(session.APId));
 
@@ -142,7 +137,18 @@ export const endNavigationSession = async (
         }
 
         // Make session inactive
-        await session.updateAttributes({ active: false });
+        await session.updateAttributes({
+            active: false,
+            sync: session.sync + 1
+        });
+
+        // Send notification
+        await sendNavigationEndMessage(
+            session.APId === userID ? session.carerId : session.APId,
+            session.id,
+            session.sync
+        );
+
         return res.json({ status: 'success' });
     } catch (err) {
         return next(err);
