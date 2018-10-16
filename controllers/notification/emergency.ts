@@ -9,15 +9,17 @@ import {
  * @param {eventID} eventID ID of emergency event.
  * @param {string} senderID ID of sender.
  * @param {string} senderName Name of sender.
+ * @param {string} mobileNumber Mobile number of sender.
  * @param {[number]} targetIDs ID of targets.
  */
 export const sendEmergencyMessage = async (
     eventID: number,
     senderID: number,
     senderName: string,
+    mobileNumber: string,
     targetIDs: [number]
 ) => {
-    const data_payload = { eventID, senderID, senderName };
+    const data_payload = { eventID, senderID, mobileNumber, senderName };
     const notificationMessage = buildAndroidNotificationMessage(
         `Emergency event`,
         `${senderName} has raised an emergency`

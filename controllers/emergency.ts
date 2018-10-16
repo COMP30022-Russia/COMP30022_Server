@@ -17,7 +17,7 @@ export const inititateEmergencyEvent = async (
         // Find user type and name
         const user = await models.User.findOne({
             where: { id: userID },
-            attributes: ['type', 'name']
+            attributes: ['type', 'name', 'mobileNumber']
         });
         if (user.type !== 'AP') {
             res.status(400);
@@ -50,7 +50,7 @@ export const inititateEmergencyEvent = async (
         const targetIDs = associations.map((assoc: any) => assoc.carerId);
 
         // Send notification to carers
-        await sendEmergencyMessage(event.id, userID, user.name, targetIDs);
+        await sendEmergencyMessage(event.id, userID, user.name, user.mobileNumber, targetIDs);
 
         // Return event
         return res.json(event.toJSON());
