@@ -44,6 +44,14 @@ export const register = async (
         return res.json(created.toJSON());
     } catch (err) {
         res.status(422);
+        if (
+            err &&
+            err.errors &&
+            err.errors[0] &&
+            err.errors[0].value === 'carer_sameusername'
+        ) {
+            return next(new Error('Username is taken'));
+        }
         return next(err);
     }
 };
