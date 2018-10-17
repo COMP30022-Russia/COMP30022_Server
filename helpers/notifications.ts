@@ -1,4 +1,5 @@
 import * as admin from 'firebase-admin';
+import { sendServerMessage } from '../socket';
 
 // Initalise firebase in production environments
 // From https://firebase.google.com/docs/admin/setup#initialize_the_sdk
@@ -17,7 +18,7 @@ if (process.env.NODE_ENV === 'production') {
 const DEFAULT_PRIORITY = 'high';
 
 /**
- * Sends a message to the FCM.
+ * Sends a message to the socket service and FCM.
  * @param {Object} message The payload to be sent.
  * @param {string[]} tokens List of device tokens.
  * @return {Promise} Promise object representing the response.
@@ -26,6 +27,13 @@ export default async function(
     message: any,
     tokens: string[]
 ): Promise<admin.messaging.MessagingDevicesResponse> {
+    // Send message to socket service
+    try {
+        await sendServerMessage(tokens, JSON.stringify(message.data));
+    } catch (err) {
+        console.error(err);
+    }
+
     // Send the message and return the response
     return new Promise<admin.messaging.MessagingDevicesResponse>(
         (resolve, reject) => {

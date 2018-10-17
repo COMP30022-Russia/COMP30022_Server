@@ -7,6 +7,10 @@ import app from './app';
 // Initialise database
 import models from './models';
 
+// socket.io imports
+import socket from 'socket.io';
+import io from './socket';
+
 // Get and set provided port
 const port: string = process.env.PORT || '3000';
 app.set('port', port);
@@ -27,6 +31,9 @@ export default (async () => {
 
         // Sync defined models
         await models.sequelize.sync();
+
+        // Set up socket.io
+        io(socket(server));
 
         // Create listener on port
         await server.listen(port);

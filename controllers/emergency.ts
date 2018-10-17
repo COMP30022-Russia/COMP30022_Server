@@ -50,7 +50,13 @@ export const inititateEmergencyEvent = async (
         const targetIDs = associations.map((assoc: any) => assoc.carerId);
 
         // Send notification to carers
-        await sendEmergencyMessage(event.id, userID, user.name, user.mobileNumber, targetIDs);
+        await sendEmergencyMessage(
+            event.id,
+            userID,
+            user.name,
+            user.mobileNumber,
+            targetIDs
+        );
 
         // Return event
         return res.json(event.toJSON());

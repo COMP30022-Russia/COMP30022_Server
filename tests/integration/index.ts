@@ -1,4 +1,5 @@
 // Import tests
+import './socket';
 import './home';
 
 import './auth/login';
