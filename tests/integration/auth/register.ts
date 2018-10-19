@@ -148,6 +148,8 @@ describe('User register', () => {
         });
         expect(res2).to.be.json;
         expect(res2).to.have.status(422);
+        expect(res2.body).to.have.property('message');
+        expect(res2.body.message).equal('Username is taken');
 
         // Same username, but with uppercase letter
         const res3 = await agent.post('/users/register').send({
@@ -160,5 +162,7 @@ describe('User register', () => {
         });
         expect(res3).to.be.json;
         expect(res3).to.have.status(422);
+        expect(res3.body).to.have.property('message');
+        expect(res3.body.message).equal('Username is taken');
     });
 });

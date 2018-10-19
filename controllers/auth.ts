@@ -48,7 +48,8 @@ export const register = async (
             err &&
             err.errors &&
             err.errors[0] &&
-            err.errors[0].value === 'carer_sameusername'
+            err.errors[0].path === 'lower(username::text)' &&
+            err.errors[0].validatorKey === 'not_unique'
         ) {
             return next(new Error('Username is taken'));
         }
