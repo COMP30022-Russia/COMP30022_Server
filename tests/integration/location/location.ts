@@ -9,14 +9,14 @@ describe('Location', () => {
     let carerToken: string;
     let apToken: string;
     let maliciousCarerToken: string;
-    let freshapToken: string;
+    let freshAPToken: string;
 
     before(async () => {
         // Register as carers/APs and get login token
         carerToken = (await createCarer('lc1')).token;
         apToken = (await createAP('lap1')).token;
         maliciousCarerToken = (await createCarer('lmc1')).token;
-        freshapToken = (await createAP('lap2')).token;
+        freshAPToken = (await createAP('lap2')).token;
 
         // Associate AP with carer
         await createAssociation(carerToken, apToken);
@@ -72,7 +72,7 @@ describe('Location', () => {
     it('Get location of AP who has not submitted a location', async () => {
         const res = await agent
             .get('/me/location')
-            .set('Authorization', `Bearer ${freshapToken}`);
+            .set('Authorization', `Bearer ${freshAPToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(400);
     });

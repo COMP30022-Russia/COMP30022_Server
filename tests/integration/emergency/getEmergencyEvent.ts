@@ -7,7 +7,7 @@ describe('Emergency', () => {
 
     let apToken: string;
     let carerToken: string;
-    let maliciousapToken: string;
+    let maliciousAPToken: string;
     let maliciousCarerToken: string;
     let eventID: number;
 
@@ -17,7 +17,7 @@ describe('Emergency', () => {
         carerToken = (await createCarer('emergency_get_2')).token;
 
         // Create some malicious users
-        maliciousapToken = (await createAP('emergency_get_3')).token;
+        maliciousAPToken = (await createAP('emergency_get_3')).token;
         maliciousCarerToken = (await createCarer('emergency_get_4')).token;
 
         // Create association
@@ -68,7 +68,7 @@ describe('Emergency', () => {
 
         const res2 = await agent
             .get(`/emergency/${eventID}`)
-            .set('Authorization', `Bearer ${maliciousapToken}`);
+            .set('Authorization', `Bearer ${maliciousAPToken}`);
         expect(res2).to.be.json;
         expect(res2).to.have.status(403);
     });
