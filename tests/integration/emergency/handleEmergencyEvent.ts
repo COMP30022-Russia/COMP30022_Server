@@ -2,34 +2,35 @@ import { expect, request } from 'chai';
 import app from '../../';
 import { createAP, createCarer, createAssociation } from '../helpers/user';
 
-describe('Emergency - initiate event', () => {
+describe('Emergency', () => {
     const agent = request.agent(app);
 
-    let APToken: string, carerToken: string;
+    let apToken: string;
+    let carerToken: string;
     let carerID: number;
     let eventID: number;
 
     before(async () => {
         // Create AP, carer
-        APToken = (await createAP('emergency_get_1')).token;
+        apToken = (await createAP('emergency_get_1')).token;
         const carer = await createCarer('emergency_get_2');
         carerToken = carer.token;
         carerID = carer.id;
 
         // Create association
-        await createAssociation(APToken, carerToken);
+        await createAssociation(apToken, carerToken);
 
         // Create event
         const event = await agent
             .post('/me/emergency')
-            .set('Authorization', 'Bearer ' + APToken);
+            .set('Authorization', `Bearer ${apToken}`);
         eventID = event.body.id;
     });
 
-    it('Handle event as carer', async () => {
+    it('Handle emergency event as carer', async () => {
         const res = await agent
             .post(`/emergency/${eventID}`)
-            .set('Authorization', 'Bearer ' + carerToken);
+            .set('Authorization', `Bearer ${carerToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res.body).to.have.property('id');
@@ -40,10 +41,10 @@ describe('Emergency - initiate event', () => {
         expect(res.body.resolverId).to.equal(carerID);
     });
 
-    it('Try to handle handled event', async () => {
+    it('Try to handle handled emergency event', async () => {
         const res = await agent
             .post(`/emergency/${eventID}`)
-            .set('Authorization', 'Bearer ' + carerToken);
+            .set('Authorization', `Bearer ${carerToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(400);
     });

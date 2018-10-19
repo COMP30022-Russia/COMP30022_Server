@@ -2,35 +2,37 @@ import { expect, request } from 'chai';
 import app from '../../';
 import { createAP, createCarer, createAssociation } from '../helpers/user';
 
-describe('Emergency - initiate event', () => {
+describe('Emergency', () => {
     const agent = request.agent(app);
+
     let APID: number;
-    let APToken: string, carerToken: string;
+    let apToken: string;
+    let carerToken: string;
 
     before(async () => {
         // Create AP, carer
         const createdAP = await createAP('emergency_initiate_1');
-        APToken = createdAP.token;
+        apToken = createdAP.token;
         APID = createdAP.id;
         carerToken = (await createCarer('emergency_initiate_2')).token;
 
         // Create association
-        const association = await createAssociation(APToken, carerToken);
+        await createAssociation(apToken, carerToken);
     });
 
-    it('Create as carer', async () => {
+    it('Try to create emergency event as carer', async () => {
         const res = await agent
             .post('/me/emergency')
-            .set('Authorization', 'Bearer ' + carerToken);
+            .set('Authorization', `Bearer ${carerToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(400);
     });
 
     let firstID: number;
-    it('Create event - first time', async () => {
+    it('Create emergency event (first time)', async () => {
         const res = await agent
             .post('/me/emergency')
-            .set('Authorization', 'Bearer ' + APToken);
+            .set('Authorization', `Bearer ${apToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res.body).to.have.property('id');
@@ -41,10 +43,10 @@ describe('Emergency - initiate event', () => {
         firstID = res.body.id;
     });
 
-    it('Resend event as same AP', async () => {
+    it('Resend emergency event initiation as same AP', async () => {
         const res = await agent
             .post('/me/emergency')
-            .set('Authorization', 'Bearer ' + APToken);
+            .set('Authorization', `Bearer ${apToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res.body).to.have.property('id');

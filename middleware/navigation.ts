@@ -4,9 +4,9 @@ import models from '../models';
 
 /**
  * Retrieves the specified navigation session.
- * @param {string[]} attributes Wanted attributes of navigation session.
- * @param {boolean} [allowInactive] Allow requests when session is inactive.
- * @param {boolean} [populateCall] Include Call.
+ * @param attributes Wanted attributes of navigation session.
+ * @param [allowInactive] Allow requests when session is inactive.
+ * @param [populateCall] Include Call.
  * @return Express middleware
  */
 export let retrieveNavigationSession = (

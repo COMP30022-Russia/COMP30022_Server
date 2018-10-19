@@ -6,20 +6,19 @@ import { createNavigationSession } from '../helpers/navigation';
 describe('Navigation session', () => {
     const agent = request.agent(app);
 
-    // Tokens
     let carerToken: string;
-    let APToken: string;
+    let apToken: string;
     let navSessionID: number;
 
     before(async () => {
         // Register as carers/APs and get login token
         carerToken = (await createCarer('navget_carer')).token;
-        APToken = (await createAP('navget_ap')).token;
+        apToken = (await createAP('navget_ap')).token;
         // Associate AP with carer
-        const association = await createAssociation(carerToken, APToken);
+        const association = await createAssociation(carerToken, apToken);
         // Create navigation session for association
         const navSession = await createNavigationSession(
-            APToken,
+            apToken,
             association.id
         );
         navSessionID = navSession.id;
@@ -28,7 +27,7 @@ describe('Navigation session', () => {
     it('Get navigation session as carer', async () => {
         const res = await agent
             .get(`/navigation/${navSessionID}`)
-            .set('Authorization', 'Bearer ' + carerToken);
+            .set('Authorization', `Bearer ${carerToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res.body).to.have.property('id');
@@ -38,7 +37,7 @@ describe('Navigation session', () => {
     it('Get navigation session as AP', async () => {
         const res = await agent
             .get(`/navigation/${navSessionID}`)
-            .set('Authorization', 'Bearer ' + APToken);
+            .set('Authorization', `Bearer ${apToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res.body).to.have.property('id');
@@ -48,7 +47,7 @@ describe('Navigation session', () => {
     it('Get invalid navigation session', async () => {
         const res = await agent
             .get(`/navigation/10000`)
-            .set('Authorization', 'Bearer ' + APToken);
+            .set('Authorization', `Bearer ${apToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(403);
     });

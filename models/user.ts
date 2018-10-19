@@ -29,7 +29,7 @@ const userSchema = {
 export default class User extends Sequelize.Model {
     /**
      * Initalises the model with the specified attributes and options.
-     * @param {sequelize} sequelize Sequelize instance.
+     * @param sequelize Sequelize instance.
      */
     static init(sequelize: Sequelize.Sequelize) {
         return super.init(userSchema, {
@@ -55,7 +55,9 @@ export default class User extends Sequelize.Model {
                 // Hash password before update
                 beforeUpdate: async (user: any) => {
                     // If password is not changed
-                    if (!user.password) return;
+                    if (!user.password) {
+                        return;
+                    }
 
                     try {
                         const hash = await hashPassword(user.password);
@@ -100,8 +102,8 @@ export default class User extends Sequelize.Model {
 
     /**
      * Verifies the provided password against the password of this instance.
-     * @param {string} password The password that needs to be verified.
-     * @return {Promise} Promise object for result of verification.
+     * @param password The password that needs to be verified.
+     * @return Promise object for result of verification.
      */
     verifyPassword = async function(password: string): Promise<boolean> {
         return bcrypt.compare(password, this.password);
@@ -109,11 +111,10 @@ export default class User extends Sequelize.Model {
 
     /**
      * Override the toJSON function to remove password.
-     * @override
-     * @returns {Object} JSON representation of instance.
+     * @return JSON representation of instance.
      */
     toJSON = function(): any {
-        const r = Object.assign({}, this.get());
+        const r = { ...this.get() };
         delete r.password;
         return r;
     };
@@ -124,8 +125,8 @@ const SALT_FACTOR = 10;
 
 /**
  * Hashes a password using bcrypt and returns the hash.
- * @param {string} password The password to be hashed.
- * @return {Promise} Promise object for the hash of the password.
+ * @param password The password to be hashed.
+ * @return Promise object for the hash of the password.
  */
 function hashPassword(password: string): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -135,9 +136,9 @@ function hashPassword(password: string): Promise<string> {
                 reject(err);
             }
             // Use salt to hash password
-            bcrypt.hash(password, salt, (err: Error, hash) => {
-                if (err) {
-                    reject(err);
+            bcrypt.hash(password, salt, (hashErr: Error, hash) => {
+                if (hashErr) {
+                    reject(hashErr);
                 }
                 // Return hash
                 resolve(hash);

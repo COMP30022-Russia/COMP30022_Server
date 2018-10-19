@@ -39,7 +39,7 @@ export const getMessages = async (
         // Retrieve messages (with constraints)
         const messages = await models.Message.findAll({
             limit: !limit ? DEFAULT_LIMIT : limit,
-            where: before || after ? Object.assign(idQuery, seq) : idQuery,
+            where: before || after ? { ...idQuery, ...seq } : idQuery,
             order: [['createdAt', 'DESC']],
             include: {
                 model: models.ChatPicture,

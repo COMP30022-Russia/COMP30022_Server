@@ -1,11 +1,11 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import rewire from 'rewire';
 import { res, next } from '../index';
 
 import models from '../../../models';
 
-describe('Unit - Navigation', () => {
+describe('Navigation', () => {
     const sandbox = sinon.createSandbox();
 
     // Navigation controller
@@ -37,6 +37,10 @@ describe('Unit - Navigation', () => {
         navigation.__set__('sendLocationMessage', sendSpy);
     });
 
+    afterEach(async () => {
+        sandbox.restore();
+    });
+
     it('Update location with bad lat/lon', async () => {
         const req = {
             userID: CACHED_APID,
@@ -48,7 +52,6 @@ describe('Unit - Navigation', () => {
             }
         };
 
-        // Expect error
         // @ts-ignore
         const result = await navigation.updateAPLocation(req, res, next);
         expect(result).to.be.an('error');
@@ -104,7 +107,6 @@ describe('Unit - Navigation', () => {
         // Replace findOne query to return null
         sandbox.replace(models.Session, 'findOne', sinon.fake());
 
-        // Expect error
         // @ts-ignore
         const result = await navigation.updateAPLocation(req, res, next);
         expect(result).to.be.an('error');
@@ -130,7 +132,6 @@ describe('Unit - Navigation', () => {
             sinon.stub().returns({ APId: 1, carerId: 2 })
         );
 
-        // Expect error
         // @ts-ignore
         const result = await navigation.updateAPLocation(req, res, next);
         expect(result).to.be.an('error');
@@ -178,9 +179,5 @@ describe('Unit - Navigation', () => {
         expect(sendSpy.lastCall.args[1]).to.equal(req.params.sessionID);
         expect(sendSpy.lastCall.args[2]).to.equal(req.body.lat);
         expect(sendSpy.lastCall.args[3]).to.equal(req.body.lon);
-    });
-
-    afterEach(async () => {
-        sandbox.restore();
     });
 });

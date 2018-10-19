@@ -167,21 +167,21 @@ export const rejectCall = async (
 
 /**
  * Given parameters, determine whether user is initiator of call.
- * @param {boolean} carerIsInitiator Whether the carer is the initiator.
- * @param {number} userID User ID.
- * @param {number} APId ID of AP.
- * @param {number} carerId ID of carer.
- * @return {boolean} Whether user is initiator.
+ * @param carerIsInitiator Whether the carer is the initiator.
+ * @param userID User ID.
+ * @param apId ID of AP.
+ * @param carerId ID of carer.
+ * @return Whether user is initiator.
  */
 const userIsInitiator = (
     carerIsInitiator: boolean,
     userID: number,
-    APId: number,
+    apId: number,
     carerId: number
 ) => {
     if (carerIsInitiator && carerId === userID) {
         return true;
-    } else if (!carerIsInitiator && APId === userID) {
+    } else if (!carerIsInitiator && apId === userID) {
         return true;
     }
     return false;
@@ -205,8 +205,8 @@ export const endCall = async (
 
 /**
  * Helper for terminating calls.
- * @param {Object} call The call.
- * @param {string} reason Reason for termination.
+ * @param call The call.
+ * @param reason Reason for termination.
  * @return Promise for call termination.
  */
 export const terminateCall = async (call: any, reason: string) => {

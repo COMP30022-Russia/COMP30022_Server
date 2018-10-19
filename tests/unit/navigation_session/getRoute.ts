@@ -1,14 +1,8 @@
-import { expect, request } from 'chai';
-import sinon from 'sinon';
-import rewire from 'rewire';
+import { expect } from 'chai';
 import { res, next } from '../index';
 import { getRoute } from '../../../controllers/navigation_session';
 
-import models from '../../../models';
-
-describe('Unit - Navigation', () => {
-    const sandbox = sinon.createSandbox();
-
+describe('Navigation', () => {
     it('Get route', async () => {
         const session = {
             route: {
@@ -46,9 +40,5 @@ describe('Unit - Navigation', () => {
         // @ts-ignore
         const result = await getRoute(req, res, next);
         expect(result).to.deep.equal({});
-    });
-
-    afterEach(async () => {
-        sandbox.restore();
     });
 });

@@ -1,11 +1,9 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import rewire from 'rewire';
 import { res, next } from '../index';
 
-import models from '../../../models';
-
-describe('Unit - Navigation', () => {
+describe('Navigation', () => {
     const sandbox = sinon.createSandbox();
 
     // Navigation controller
@@ -27,10 +25,14 @@ describe('Unit - Navigation', () => {
         navigation.__set__('locationCache', { getItem: getStub });
     });
 
+    afterEach(async () => {
+        sandbox.restore();
+    });
+
     it('Get cached AP location', async () => {
         const session = {
             id: 1,
-            APId: 1,
+            APId: APID,
             carerId: 2
         };
         const req = {
@@ -50,7 +52,7 @@ describe('Unit - Navigation', () => {
     it('Get AP location when there is no location', async () => {
         const session = {
             id: 1,
-            APId: 2,
+            APId: BAD_APID,
             carerId: 2
         };
         const req = {
@@ -61,14 +63,9 @@ describe('Unit - Navigation', () => {
             session
         };
 
-        // Expect error
         // @ts-ignore
         const result = await navigation.getAPLocation(req, res, next);
         expect(result).to.be.an('error');
         expect(result.message).to.equal('AP location has not been set');
-    });
-
-    afterEach(async () => {
-        sandbox.restore();
     });
 });

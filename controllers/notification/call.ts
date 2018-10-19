@@ -6,11 +6,11 @@ import {
 
 /**
  * Builds and sends a navigation call start request message.
- * @param {number} callID Call ID.
- * @param {number} sessionID Navigation session ID.
- * @param {number} senderName Name of initiator of call.
- * @param {number} senderID ID of sender.
- * @param {number} targetID ID of target.
+ * @param callID Call ID.
+ * @param sessionID Navigation session ID.
+ * @param senderName Name of initiator of call.
+ * @param senderID ID of sender.
+ * @param targetID ID of target.
  */
 export const sendNavigationCallRequestStartMessage = async (
     callID: number,
@@ -19,7 +19,7 @@ export const sendNavigationCallRequestStartMessage = async (
     senderID: number,
     targetID: number
 ) => {
-    const data_payload = { sessionID, callID, senderName, sync: 1 };
+    const dataPayload = { sessionID, callID, senderName, sync: 1 };
 
     // Send accept_other message to target
     const notificationMessage = buildAndroidNotificationMessage(
@@ -28,7 +28,7 @@ export const sendNavigationCallRequestStartMessage = async (
     );
     const dataMessageTarget = buildDataMessage(
         'nav_voice_pending_accept_other',
-        data_payload
+        dataPayload
     );
     await sendMessage(
         { ...dataMessageTarget, ...notificationMessage },
@@ -38,17 +38,17 @@ export const sendNavigationCallRequestStartMessage = async (
     // Sender accept_me message to initiator
     const dataMessageSender = buildDataMessage(
         'nav_voice_pending_accept_me',
-        data_payload
+        dataPayload
     );
     await sendMessage(dataMessageSender, senderID);
 };
 
 /**
  * Builds and sends call started message to both party of call.
- * @param {number} callID Call ID.
- * @param {number} sync Sync count.
- * @param {number} sessionID Navigation session ID.
- * @param {number} targetIDs IDs of targets.
+ * @param callID Call ID.
+ * @param sync Sync count.
+ * @param sessionID Navigation session ID.
+ * @param targetIDs IDs of targets.
  */
 export const sendCallStartedMessage = async (
     callID: number,
@@ -56,18 +56,18 @@ export const sendCallStartedMessage = async (
     sessionID: number,
     targetIDs: number[]
 ) => {
-    const data_payload = { callID, sessionID, sync };
-    const dataMessage = buildDataMessage('nav_call_started', data_payload);
+    const dataPayload = { callID, sessionID, sync };
+    const dataMessage = buildDataMessage('nav_call_started', dataPayload);
     await sendMessage(dataMessage, targetIDs);
 };
 
 /**
  * Builds and sends call state change messages to both party of call.
- * @param {number} callID Call ID.
- * @param {number} sync Sync count.
- * @param {number} sessionID Navigation session ID.
- * @param {string} state New state.
- * @param {number} targetIDs IDs of targets.
+ * @param callID Call ID.
+ * @param sync Sync count.
+ * @param sessionID Navigation session ID.
+ * @param state New state.
+ * @param targetIDs IDs of targets.
  */
 export const sendNavigationCallStateChangeMessage = async (
     callID: number,
@@ -76,18 +76,18 @@ export const sendNavigationCallStateChangeMessage = async (
     state: string,
     targetIDs: number[]
 ) => {
-    const data_payload = { callID, sessionID, sync, state };
-    const dataMessage = buildDataMessage('nav_voice_state', data_payload);
+    const dataPayload = { callID, sessionID, sync, state };
+    const dataMessage = buildDataMessage('nav_voice_state', dataPayload);
     await sendMessage(dataMessage, targetIDs);
 };
 
 /**
  * Builds and sends call state terminated messages to both party of call.
- * @param {number} callID Call ID.
- * @param {number} sync Sync count.
- * @param {number} sessionID Navigation session ID.
- * @param {string} reason Reason for termination.
- * @param {number} targetIDs IDs of targets.
+ * @param callID Call ID.
+ * @param sync Sync count.
+ * @param sessionID Navigation session ID.
+ * @param reason Reason for termination.
+ * @param targetIDs IDs of targets.
  */
 export const sendNavigationCallTerminatedMessage = async (
     callID: number,
@@ -96,7 +96,7 @@ export const sendNavigationCallTerminatedMessage = async (
     reason: string,
     targetIDs: number[]
 ) => {
-    const data_payload = { callID, sessionID, sync, reason };
-    const dataMessage = buildDataMessage('nav_call_terminated', data_payload);
+    const dataPayload = { callID, sessionID, sync, reason };
+    const dataMessage = buildDataMessage('nav_call_terminated', dataPayload);
     await sendMessage(dataMessage, targetIDs);
 };

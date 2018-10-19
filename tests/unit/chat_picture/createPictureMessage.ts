@@ -1,23 +1,28 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
 
-import { res, next } from '../index';
+import { res, next, wrapToJSON } from '../index';
 import models from '../../../models';
-import { createPictureMessage } from '../../../controllers/chat_picture';
 
-describe('Unit - Chat - Create Picture message', () => {
+describe('Chat - Create Picture message', () => {
     const sandbox = sinon.createSandbox();
 
     // Spy for message sending
     const sendSpy = sinon.spy();
 
-    let chat_picture: any;
+    // Chat picture controller
+    let chatPicture: any;
+
     before(async () => {
         // Import the controller with a spy on the notification function
-        chat_picture = proxyquire('../../../controllers/chat_picture', {
+        chatPicture = proxyquire('../../../controllers/chat_picture', {
             './notification/chat': { sendChatMessage: sendSpy }
         });
+    });
+
+    afterEach(async () => {
+        sandbox.restore();
     });
 
     it('No count', async () => {
@@ -30,7 +35,7 @@ describe('Unit - Chat - Create Picture message', () => {
         };
 
         // @ts-ignore
-        const result = await chat_picture.createPictureMessage(req, res, next);
+        const result = await chatPicture.createPictureMessage(req, res, next);
         expect(result).to.be.an('Error');
         expect(result.message).to.equal('Need number of pictures');
     });
@@ -45,43 +50,40 @@ describe('Unit - Chat - Create Picture message', () => {
             body: { count: 2 },
             association: { getPartnerID: (_: number) => partnerID }
         };
-        // ID of created message
-        const createdMessageID: number = 1;
 
-        // Get creation function of models.ChatPicture.create to return argument
-        // and a toJSON function
+        // Get creation function of models.ChatPicture.create to return
+        // argument and a toJSON function
         sandbox.replace(models.ChatPicture, 'create', (input: any) => {
             return { ...input, toJSON: () => input };
         });
 
+        // Define ID of created message
+        const createdMessageID = 1;
         // Replace create function by getting it to return its argument,
         // a setPictures function and a fake id
         sandbox.replace(models.Message, 'create', (input: any) => {
             return {
-                ...input,
-                id: createdMessageID,
-                setPictures: sinon.mock().returnsArg(0),
-                toJSON: () => {
-                    return { ...input, id: createdMessageID };
-                }
+                ...wrapToJSON({
+                    ...input,
+                    id: createdMessageID
+                }),
+                setPictures: sinon.mock().returnsArg(0)
             };
         });
 
         // Replace query for name
         const name = 'foo';
-        sandbox.replace(models.User, 'scope', (scope: string) => {
-            if (scope === 'name') {
-                return {
-                    findById: (_: number) => {
-                        return { name };
-                    }
-                };
-            }
+        sandbox.replace(models.User, 'scope', (scope: string) =>  {
+            return {
+                findById: (_: number) => {
+                    return { name };
+                }
+            };
         });
 
         // Should get message with ID back and an array of pictures
         // @ts-ignore
-        const result = await chat_picture.createPictureMessage(req, res, next);
+        const result = await chatPicture.createPictureMessage(req, res, next);
         expect(result.id).to.equal(createdMessageID);
         expect(result.authorId).to.equal(req.userID);
         expect(result.associationId).to.equal(req.params.associationID);
@@ -90,17 +92,10 @@ describe('Unit - Chat - Create Picture message', () => {
 
         // Check send message spy
         expect(sendSpy.calledOnce).to.equal(true);
-        expect(
-            sendSpy.alwaysCalledWith(
-                name,
-                partnerID,
-                req.params.associationID,
-                'Picture message'
-            )
-        ).to.equal(true);
-    });
-
-    afterEach(async () => {
-        sandbox.restore();
+        expect(sendSpy.lastCall.args).to.have.lengthOf(4);
+        expect(sendSpy.lastCall.args[0]).to.equal(name);
+        expect(sendSpy.lastCall.args[1]).to.equal(partnerID);
+        expect(sendSpy.lastCall.args[2]).to.equal(req.params.associationID);
+        expect(sendSpy.lastCall.args[3]).to.equal('Picture message');
     });
 });

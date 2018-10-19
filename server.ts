@@ -22,12 +22,12 @@ const server: Server = http.createServer(app);
 export default (async () => {
     try {
         // Get database information
-        const db_port = models.sequelize.config.port;
-        const db_host = models.sequelize.config.host;
+        const dbPort = models.sequelize.config.port;
+        const dbHost = models.sequelize.config.host;
 
         // Test connection by trying to authenticate
         await models.sequelize.authenticate();
-        console.log(`Database running on port ${db_port} of host ${db_host}`);
+        console.info(`Database running on port ${dbPort} of host ${dbHost}`);
 
         // Sync defined models
         await models.sequelize.sync();
@@ -44,29 +44,29 @@ export default (async () => {
 })();
 
 // Event listener for HTTP server "listening" event
-server.on('listening', function() {
+server.on('listening', () => {
     const addr = server.address();
     const bind =
         typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
-    console.log(`Express listening on ${bind} in ${app.get('env')} mode`);
+    console.info(`Express listening on ${bind} in ${app.get('env')} mode`);
 });
 
 // Event listener for HTTP server "error" event
 // istanbul ignore next
-server.on('error', function(err: any) {
+server.on('error', (err: any) => {
     if (err.syscall !== 'listen') {
         throw err;
     }
-    const bind: string = 'Port ' + port;
+    const bind = `Port ${port}`;
 
     // Handle specific errors with friendly messages
     switch (err.code) {
         case 'EACCES':
-            console.error(bind + ' requires elevated privileges');
+            console.error(`${bind} requires elevated privileges`);
             process.exit(1);
             break;
         case 'EADDRINUSE':
-            console.error(bind + ' is already in use');
+            console.error(`${bind} is already in use`);
             process.exit(1);
             break;
         default:

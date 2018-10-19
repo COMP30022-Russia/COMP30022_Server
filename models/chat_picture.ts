@@ -29,7 +29,7 @@ const chatPictureSchema = {
 export default class ChatPicture extends Sequelize.Model {
     /**
      * Initalises the model with the specified attributes and options.
-     * @param {sequelize} sequelize Sequelize instance.
+     * @param sequelize Sequelize instance.
      */
     static init(sequelize: Sequelize.Sequelize) {
         return super.init(chatPictureSchema, { sequelize });

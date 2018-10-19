@@ -1,12 +1,16 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
-import { res, next } from '../index';
+import { res, next, wrapToJSON } from '../index';
 
 import { getSelfDetails } from '../../../controllers/user';
 import models from '../../../models';
 
-describe('Unit - User Details', () => {
+describe('User Details', () => {
     const sandbox = sinon.createSandbox();
+
+    afterEach(async () => {
+        sandbox.restore();
+    });
 
     it('Get Self Details', async () => {
         // Params should have userID
@@ -17,16 +21,11 @@ describe('Unit - User Details', () => {
         sandbox.replace(
             models.User,
             'findById',
-            sinon.fake.returns({ ...user, toJSON: () => user })
+            sinon.fake.returns(wrapToJSON(user))
         );
 
         // @ts-ignore
         const result = await getSelfDetails(req, res, next);
-        expect(result).to.have.property('id');
-        expect(result.id).to.equal(req.userID);
-    });
-
-    afterEach(async () => {
-        sandbox.restore();
+        expect(result).to.deep.equal(user);
     });
 });

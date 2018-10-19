@@ -1,10 +1,10 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import { res, next } from '../index';
 import models from '../../../models';
 import { ensureRequestedUserIsAssociated } from '../../../middleware/association';
 
-describe('Unit - Middleware - Ensure Requested User is Associated', () => {
+describe('Middleware - Ensure Requested User is Associated', () => {
     const sandbox = sinon.createSandbox();
 
     // Request with valid param
@@ -15,12 +15,19 @@ describe('Unit - Middleware - Ensure Requested User is Associated', () => {
         }
     };
 
+    afterEach(async () => {
+        sandbox.restore();
+    });
+
     it('Is associated', async () => {
         // Fake DB find
-        const dbFake = sinon.fake.returns({
-            id: 1
-        });
-        sandbox.replace(models.Association, 'findOne', dbFake);
+        sandbox.replace(
+            models.Association,
+            'findOne',
+            sinon.fake.returns({
+                id: 1
+            })
+        );
 
         // Define spy for next()
         const nextSpy = sinon.spy();
@@ -33,10 +40,13 @@ describe('Unit - Middleware - Ensure Requested User is Associated', () => {
 
     it('Is same user', async () => {
         // Fake DB find
-        const dbFake = sinon.fake.returns({
-            id: 1
-        });
-        sandbox.replace(models.Association, 'findOne', dbFake);
+        sandbox.replace(
+            models.Association,
+            'findOne',
+            sinon.fake.returns({
+                id: 1
+            })
+        );
 
         // Define spy for next()
         const nextSpy = sinon.spy();
@@ -54,17 +64,12 @@ describe('Unit - Middleware - Ensure Requested User is Associated', () => {
     it('Is not associated', async () => {
         // Fake DB find
         // tslint:disable:no-null-keyword / DB will return null here
-        const dbFake = sinon.fake.returns(null);
-        sandbox.replace(models.Association, 'findOne', dbFake);
+        sandbox.replace(models.Association, 'findOne', sinon.fake());
 
         // Call middleware, expect next(err) to be returned
         // @ts-ignore
         const result = await ensureRequestedUserIsAssociated(req, res, next);
         expect(result).to.be.an('error');
         expect(result.message).to.equal('User is not party of association');
-    });
-
-    afterEach(async () => {
-        sandbox.restore();
     });
 });

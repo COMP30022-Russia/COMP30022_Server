@@ -1,25 +1,33 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import { res, next, wrapToJSON } from '../index';
 import proxyquire from 'proxyquire';
 
 import models from '../../../models';
 
-describe('Unit - Emergency - Initiate emergency event', () => {
+describe('Emergency - Initiate emergency event', () => {
     const sandbox = sinon.createSandbox();
+
+    // Emergency controller
     let emergency: any;
+
+    // Message sending spy
     const messageSpy = sinon.spy();
 
+    const NO_CALL_AP = 1;
+    const CARER_INITIATOR = 0;
+
     before(async () => {
+        // Import controller with spy on message sending
         emergency = proxyquire('../../../controllers/emergency', {
             './notification/emergency': { sendEmergencyMessage: messageSpy }
         });
     });
 
-    const event = beforeEach(async () => {
+    beforeEach(async () => {
         // Replace get user call
         sandbox.replace(models.User, 'findOne', (properties: any) => {
-            if (properties.where.id === 0) {
+            if (properties.where.id === CARER_INITIATOR) {
                 return { type: 'carer', name: 'xyz', mobileNumber: 'foo' };
             } else {
                 return { type: 'AP', name: 'zyx', mobileNumber: 'bar' };
@@ -33,7 +41,7 @@ describe('Unit - Emergency - Initiate emergency event', () => {
 
         // Replace find emergency call
         sandbox.replace(models.Emergency, 'findOne', (properties: any) => {
-            if (properties.where.APId == 1) {
+            if (properties.where.APId === NO_CALL_AP) {
                 // tslint:disable:no-null-keyword / DB will return null here
                 return null;
             } else {
@@ -56,9 +64,8 @@ describe('Unit - Emergency - Initiate emergency event', () => {
     });
 
     it('Try to initiate as carer', async () => {
-        // Request should have userID
         const req: any = {
-            userID: 0
+            userID: CARER_INITIATOR
         };
 
         // @ts-ignore
@@ -68,9 +75,8 @@ describe('Unit - Emergency - Initiate emergency event', () => {
     });
 
     it('Create new event', async () => {
-        // Request should have userID
         const req: any = {
-            userID: 1
+            userID: NO_CALL_AP
         };
 
         // @ts-ignore
@@ -93,7 +99,6 @@ describe('Unit - Emergency - Initiate emergency event', () => {
     });
 
     it("Initiate when there's ongoing event", async () => {
-        // Request should have userID
         const req: any = {
             userID: 2
         };
@@ -115,9 +120,5 @@ describe('Unit - Emergency - Initiate emergency event', () => {
         expect(messageSpy.lastCall.args[2]).to.equal('zyx');
         expect(messageSpy.lastCall.args[3]).to.equal('bar');
         expect(messageSpy.lastCall.args[4]).to.deep.equal([5, 4]);
-    });
-
-    afterEach(async () => {
-        sandbox.restore();
     });
 });

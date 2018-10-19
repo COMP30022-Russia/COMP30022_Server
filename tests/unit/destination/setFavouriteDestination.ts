@@ -1,15 +1,15 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import { res, next } from '../index';
 
 import { setFavouriteDestination } from '../../../controllers/destination';
 import models from '../../../models';
 
-describe('Unit - Destination - Set favourite destination', () => {
+describe('Destination - Set favourite destination', () => {
     const sandbox = sinon.createSandbox();
 
     // ID for fail query
-    const FAIL_ID: number = 0;
+    const FAIL_ID = 0;
 
     // Temporaraily stores rearranged parameters of last DB call
     let callParameters: { favourite: boolean; id: number; userId: number };
@@ -34,6 +34,10 @@ describe('Unit - Destination - Set favourite destination', () => {
                 }
             }
         );
+    });
+
+    after(async () => {
+        sandbox.restore();
     });
 
     it('Non existant destination', async () => {
@@ -98,9 +102,5 @@ describe('Unit - Destination - Set favourite destination', () => {
         expect(callParameters.favourite).to.equal(false);
         expect(callParameters.id).to.equal(req.params.destinationID);
         expect(callParameters.userId).to.equal(req.params.userID);
-    });
-
-    after(async () => {
-        sandbox.restore();
     });
 });

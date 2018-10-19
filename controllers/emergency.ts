@@ -85,7 +85,6 @@ export const handleEmergencyEvent = async (
     next: NextFunction
 ) => {
     const userID = req.userID;
-    const emergencyID = req.params.emergencyID;
     const event = req.event;
 
     try {

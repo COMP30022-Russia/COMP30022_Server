@@ -1,12 +1,14 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import { res, next } from '../index';
 
 import models from '../../../models';
 import { logout } from '../../../controllers/auth';
 
-describe('Unit - User - Logout', () => {
+describe('User - Logout', () => {
     const sandbox = sinon.createSandbox();
+
+    // Spy for remove function
     const removeSpy = sinon.spy();
 
     before(async () => {
@@ -39,7 +41,7 @@ describe('Unit - User - Logout', () => {
         });
     });
 
-    it('Logout without instanceID passed', async () => {
+    it('Logout without instanceID', async () => {
         const req: any = {
             userID: 1,
             body: {}

@@ -1,11 +1,13 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import { res, next } from '../index';
 import models from '../../../models';
 import { retrieveEmergencyEvent } from '../../../middleware/emergency';
 
-describe('Unit - Middleware - Retrieve specified emergency session', () => {
+describe('Middleware - Retrieve specified emergency session', () => {
     const sandbox = sinon.createSandbox();
+
+    // Bad emergency ID
     const BAD_ID = 0;
 
     beforeEach(async () => {
@@ -43,13 +45,7 @@ describe('Unit - Middleware - Retrieve specified emergency session', () => {
         };
 
         // Non-existant association between user and AP
-        sandbox.replace(
-            models.Association,
-            'findOne',
-            (_: any): any => {
-                return null;
-            }
-        );
+        sandbox.replace(models.Association, 'findOne', sinon.fake());
 
         // @ts-ignore
         const result = await retrieveEmergencyEvent(req, res, next);
@@ -58,48 +54,38 @@ describe('Unit - Middleware - Retrieve specified emergency session', () => {
     });
 
     it('Retrieve event as self', async () => {
-        const nextSpy = sinon.spy();
-
         const req: any = {
             userID: 1,
             params: { eventID: 1 }
         };
 
         // Non-existant association between user and AP
-        sandbox.replace(
-            models.Association,
-            'findOne',
-            (_: any): any => {
-                return null;
-            }
-        );
+        sandbox.replace(models.Association, 'findOne', sinon.fake());
+
+        // Spy on next call
+        const nextSpy = sinon.spy();
 
         // @ts-ignore
         const result = await retrieveEmergencyEvent(req, res, nextSpy);
         expect(result).to.equal(undefined);
-        expect(nextSpy.calledOnce).to.equal(true);
+        expect(nextSpy.alwaysCalledWith()).to.equal(true);
     });
 
     it('Retrieve event as carer', async () => {
-        const nextSpy = sinon.spy();
-
         const req: any = {
             userID: 2,
             params: { eventID: 1 }
         };
 
         // Non-existant association between user and AP
-        sandbox.replace(
-            models.Association,
-            'findOne',
-            (_: any): any => {
-                return {};
-            }
-        );
+        sandbox.replace(models.Association, 'findOne', sinon.fake());
+
+        // Spy on next call
+        const nextSpy = sinon.spy();
 
         // @ts-ignore
         const result = await retrieveEmergencyEvent(req, res, nextSpy);
         expect(result).to.equal(undefined);
-        expect(nextSpy.calledOnce).to.equal(true);
+        expect(nextSpy.alwaysCalledWith()).to.equal(true);
     });
 });

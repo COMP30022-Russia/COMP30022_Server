@@ -1,12 +1,16 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import { res, next, wrapToJSON } from '../index';
 
 import { getSelfNavigationSession } from '../../../controllers/navigation';
 import models from '../../../models';
 
-describe('Unit - Navigation - Get self navigation session', () => {
+describe('Navigation - Get self navigation session', () => {
     const sandbox = sinon.createSandbox();
+
+    after(() => {
+        sandbox.restore();
+    });
 
     it('Get session', async () => {
         const req = {
@@ -25,9 +29,5 @@ describe('Unit - Navigation - Get self navigation session', () => {
         // @ts-ignore
         const result = await getSelfNavigationSession(req, res, next);
         expect(result).to.deep.equal(session);
-    });
-
-    afterEach(async () => {
-        sandbox.restore();
     });
 });

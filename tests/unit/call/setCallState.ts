@@ -1,14 +1,14 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
-import { res, next, wrapToJSON } from '../index';
+import { res, next } from '../index';
 
-import models from '../../../models';
-
-describe('Unit - Navigation call', () => {
-    const sandbox = sinon.createSandbox();
-    const sendSpy = sinon.spy();
+describe('Navigation call', () => {
+    // Call controller
     let call: any;
+
+    // Spy on message sending
+    const sendSpy = sinon.spy();
 
     before(async () => {
         // Spy on message sending
@@ -17,10 +17,6 @@ describe('Unit - Navigation call', () => {
                 sendNavigationCallStateChangeMessage: sendSpy
             }
         });
-    });
-
-    after(async () => {
-        sandbox.restore();
     });
 
     it('Invalid set call state', async () => {
@@ -61,7 +57,7 @@ describe('Unit - Navigation call', () => {
         const req: any = {
             call: {
                 id: 1,
-                sync: sync,
+                sync,
                 APId: 3,
                 carerId: 4,
                 sessionId: 5,

@@ -1,16 +1,17 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
 import { res, next } from '../index';
 
-import models from '../../../models';
-
-describe('Unit - Navigation call', () => {
-    const sandbox = sinon.createSandbox();
+describe('Navigation call', () => {
+    // Call controller
     let call: any;
+
+    // Spy on message sending
     const sendSpy = sinon.spy();
 
     before(async () => {
+        // Import controller with message spy
         call = proxyquire('../../../controllers/call', {
             './notification/call': {
                 sendCallStartedMessage: sendSpy
@@ -32,7 +33,6 @@ describe('Unit - Navigation call', () => {
             }
         };
 
-        // Should get success
         // @ts-ignore
         const result = await call.acceptCall(req, res, next);
         expect(result).to.be.an('error');
@@ -40,7 +40,6 @@ describe('Unit - Navigation call', () => {
     });
 
     it('Accept call as initiator', async () => {
-        const saveSpy = sinon.spy();
         const req: any = {
             userID: 4,
             call: {
@@ -54,7 +53,6 @@ describe('Unit - Navigation call', () => {
             }
         };
 
-        // Should get success
         // @ts-ignore
         const result = await call.acceptCall(req, res, next);
         expect(result).to.be.an('error');
@@ -78,7 +76,6 @@ describe('Unit - Navigation call', () => {
             }
         };
 
-        // Should get success
         // @ts-ignore
         const result = await call.acceptCall(req, res, next);
         expect(result).to.deep.equal({ status: 'success' });

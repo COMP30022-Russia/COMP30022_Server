@@ -1,45 +1,63 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
 import { res, next, wrapToJSON } from '../index';
 
 import models from '../../../models';
 
-describe('Unit - Association - Create association', () => {
-    let association: any;
+describe('Association - Create association', () => {
     const sandbox = sinon.createSandbox();
 
-    // Fake association tokens
-    const GOOD_TOKEN = '42';
-    const NON_ASSOC_TOKEN = 'non_assoc_token';
-    const BAD_TOKEN = 'bad_token';
-    const REQUEST_USER_ID: number = 1;
+    // Association controller
+    let association: any;
 
     // Spy for Firebase send message call
     const sendSpy = sinon.spy();
 
+    const GOOD_TOKEN = '42';
+    const NON_ASSOC_TOKEN = 'non_assoc_token';
+    const BAD_TOKEN = 'bad_token';
+    const REQUEST_USER_ID = 1;
+    const CREATED_ASSOCIATION_ID = 99;
+
     before(async () => {
         // Stub JWT sign function to return '1234'
-        const JWTVerifyStub = sandbox.stub();
-        JWTVerifyStub.withArgs(GOOD_TOKEN).returns({
+        const jwtVerifyStub = sandbox.stub();
+        jwtVerifyStub.withArgs(GOOD_TOKEN).returns({
             type: 'Association',
             userID: REQUEST_USER_ID
         });
-        JWTVerifyStub.withArgs(NON_ASSOC_TOKEN).returns({
+        jwtVerifyStub.withArgs(NON_ASSOC_TOKEN).returns({
             userID: REQUEST_USER_ID
         });
-        JWTVerifyStub.withArgs(BAD_TOKEN).throws('Invalid token error');
+        jwtVerifyStub.withArgs(BAD_TOKEN).throws('Invalid token error');
 
-        // Import the association controllers with the jwt_sign function stubbed
+        // Import the association controllers with the jwtSign function stubbed
         // and a spy on the notification sending function
         association = proxyquire('../../../controllers/association', {
-            '../helpers/jwt': { jwt_verify: JWTVerifyStub },
-            './notification/association': { default: sendSpy }
+            '../helpers/jwt': { jwtVerify: jwtVerifyStub },
+            './notification/association': { sendAssociationMessage: sendSpy }
         });
     });
 
+    beforeEach(async () => {
+        // Fake association find
+        sandbox.replace(models.Association, 'find', sinon.fake());
+
+        // Replace association creation function
+        sandbox.replace(
+            models.Association,
+            'create',
+            sinon.stub().returns(wrapToJSON({ id: CREATED_ASSOCIATION_ID }))
+        );
+    });
+
+    afterEach(async () => {
+        sandbox.restore();
+    });
+
     it('Create association as AP', async () => {
-        // Association requests have association tokens
+        // Association requests have association token in body
         const req = {
             body: {
                 token: GOOD_TOKEN
@@ -55,20 +73,10 @@ describe('Unit - Association - Create association', () => {
             return { findById: dbFindTypeFake };
         });
 
-        // Fake association find
-        sandbox.replace(models.Association, 'find', sinon.fake());
-
-        // Replace association creation function
-        const associationID = 1;
-        sandbox.replace(
-            models.Association,
-            'create',
-            sinon.stub().returns(wrapToJSON({ id: associationID }))
-        );
-
+        // Create association
         const result = await association.createAssociation(req, res, next);
         expect(result).to.have.property('id');
-        expect(result.id).to.equal(associationID);
+        expect(result.id).to.equal(CREATED_ASSOCIATION_ID);
 
         // Expect the send message spy to be called with REQUEST_USER_ID
         expect(sendSpy.calledOnce).to.equal(true);
@@ -76,7 +84,6 @@ describe('Unit - Association - Create association', () => {
     });
 
     it('Create association as Carer', async () => {
-        // Association requests have association tokens
         const req = {
             body: {
                 token: GOOD_TOKEN
@@ -92,46 +99,10 @@ describe('Unit - Association - Create association', () => {
             return { findById: dbFindTypeFake };
         });
 
-        // Fake association find
-        sandbox.replace(models.Association, 'find', sinon.fake());
-
-        // Replace association creation function
-        const associationID = 1;
-        sandbox.replace(
-            models.Association,
-            'create',
-            sinon.stub().returns(wrapToJSON({ id: associationID }))
-        );
-
+        // Create association
         const result = await association.createAssociation(req, res, next);
         expect(result).to.have.property('id');
-        expect(result.id).to.equal(associationID);
-    });
-
-    it('Bad token', async () => {
-        // Perform request with bad/invalid token
-        const req = {
-            body: {
-                token: 'bad_token'
-            }
-        };
-
-        const result = await association.createAssociation(req, res, next);
-        expect(result).to.be.an('error');
-        expect(result.message).to.equal('Token is invalid or expired');
-    });
-
-    it('Non-association token', async () => {
-        // Perform request with token that should not be used for association
-        const req = {
-            body: {
-                token: 'non_assoc_token'
-            }
-        };
-
-        const result = await association.createAssociation(req, res, next);
-        expect(result).to.be.an('error');
-        expect(result.message).to.equal('Token is invalid');
+        expect(result.id).to.equal(CREATED_ASSOCIATION_ID);
     });
 
     it('Create association with account of same type', async () => {
@@ -158,7 +129,27 @@ describe('Unit - Association - Create association', () => {
         );
     });
 
-    afterEach(async () => {
-        sandbox.restore();
+    it('Bad token', async () => {
+        // Perform request with bad/invalid token
+        const req = {
+            body: {
+                token: 'bad_token'
+            }
+        };
+        const result = await association.createAssociation(req, res, next);
+        expect(result).to.be.an('error');
+        expect(result.message).to.equal('Token is invalid or expired');
+    });
+
+    it('Non-association token', async () => {
+        // Perform request with token that should not be used for association
+        const req = {
+            body: {
+                token: 'non_assoc_token'
+            }
+        };
+        const result = await association.createAssociation(req, res, next);
+        expect(result).to.be.an('error');
+        expect(result.message).to.equal('Token is invalid');
     });
 });

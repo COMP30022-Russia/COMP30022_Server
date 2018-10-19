@@ -1,18 +1,21 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import { res, next } from '../index';
 import models from '../../../models';
 import { retrieveCall } from '../../../middleware/call';
 
-describe('Unit - Middleware - Call', () => {
+describe('Middleware - Call', () => {
     const sandbox = sinon.createSandbox();
+
+    const NO_CALL = 0;
+    const TERMINATED_CALL = 1;
 
     before(async () => {
         sandbox.replace(models.Call, 'findOne', (properties: any) => {
-            if (properties.where.id === 0) {
+            if (properties.where.id === NO_CALL) {
                 // tslint:disable:no-null-keyword / DB will return null here
                 return null;
-            } else if (properties.where.id === 1) {
+            } else if (properties.where.id === TERMINATED_CALL) {
                 return { state: 'Terminated' };
             } else {
                 return { state: 'Ongoing' };
@@ -20,8 +23,12 @@ describe('Unit - Middleware - Call', () => {
         });
     });
 
+    after(async () => {
+        sandbox.restore();
+    });
+
     it('Bad call - User is not party of call', async () => {
-        const req = { userID: 0, params: { callID: 0 } };
+        const req = { userID: 0, params: { callID: NO_CALL } };
         // @ts-ignore
         const result = await retrieveCall()(req, res, next);
         expect(result).to.be.an('error');
@@ -29,7 +36,7 @@ describe('Unit - Middleware - Call', () => {
     });
 
     it('Get terminated call', async () => {
-        const req = { userID: 1, params: { callID: 1 } };
+        const req = { userID: 1, params: { callID: TERMINATED_CALL } };
         // @ts-ignore
         const result = await retrieveCall()(req, res, next);
         expect(result).to.be.an('error');
@@ -50,9 +57,5 @@ describe('Unit - Middleware - Call', () => {
         // @ts-ignore
         await retrieveCall()(req, res, nextSpy);
         expect(nextSpy.calledOnce).to.equal(true);
-    });
-
-    after(async () => {
-        sandbox.restore();
     });
 });

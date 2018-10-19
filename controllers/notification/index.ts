@@ -8,9 +8,9 @@ export { updateFirebaseToken, getFirebaseTokens } from './actions';
 
 /**
  * Builds an Firebase android notification message.
- * @param {string} title Title of message.
- * @param {string} body Body of message.
- * @param {string} [priority] Priority of message.
+ * @param title Title of message.
+ * @param body Body of message.
+ * @param [priority] Priority of message.
  */
 export const buildAndroidNotificationMessage = (
     title: string,
@@ -27,9 +27,9 @@ export const buildAndroidNotificationMessage = (
 
 /**
  * Builds a Firebase data message.
- * @param {string} type The type of the message.
- * @param {Object} content Content of message.
- * @param {string} [priority] Priority of message.
+ * @param type The type of the message.
+ * @param content Content of message.
+ * @param [priority] Priority of message.
  */
 export const buildDataMessage = (
     type: string,
@@ -46,15 +46,15 @@ export const buildDataMessage = (
 
 /**
  * Sends a message to the specified recipient.
- * @param {Object} message The message to be sent.
- * @param {number|[number]} userID The ID(s) of the recipient.
+ * @param message The message to be sent.
+ * @param userID The ID(s) of the recipient.
  */
 export const sendMessage = async (message: any, userID: number | number[]) => {
     // Only send in production environment
     if (process.env.NODE_ENV !== 'production') {
         // Output message to console if in development environment
         if (process.env.NODE_ENV === 'development') {
-            console.log(message);
+            console.info(message);
         }
         return;
     }
@@ -68,7 +68,7 @@ export const sendMessage = async (message: any, userID: number | number[]) => {
         }
     } else {
         // One user only
-        tokens = await getFirebaseTokensHelper(<number>userID);
+        tokens = await getFirebaseTokensHelper(userID as number);
     }
 
     // Stop if there are no tokens
@@ -82,10 +82,7 @@ export const sendMessage = async (message: any, userID: number | number[]) => {
 
         // If there are errors
         if (response.failureCount !== 0) {
-            for (const i in response.results) {
-                // Get current result
-                const result = response.results[i];
-
+            response.results.map(async (result, i) => {
                 // Replace token, if applicable
                 if (result.canonicalRegistrationToken) {
                     await replaceFirebaseToken(
@@ -105,7 +102,7 @@ export const sendMessage = async (message: any, userID: number | number[]) => {
                         console.error(result.error);
                     }
                 }
-            }
+            });
         }
     } catch (err) {
         console.error(err);

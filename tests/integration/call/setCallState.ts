@@ -9,20 +9,19 @@ import {
 describe('Navigation call', () => {
     const agent = request.agent(app);
 
-    // Tokens
     let carerToken: string;
-    let APToken: string;
+    let apToken: string;
     let callID: number;
     let navSessionID: number;
 
     before(async () => {
         // Register as carers/APs and get login token
         carerToken = (await createCarer('nav_call_state_carer')).token;
-        APToken = (await createAP('nav_call_state_ap')).token;
+        apToken = (await createAP('nav_call_state_ap')).token;
         // Associate AP with carer
-        const association = await createAssociation(carerToken, APToken);
+        const association = await createAssociation(carerToken, apToken);
         // Create navigation session for association
-        const session = await createNavigationSession(APToken, association.id);
+        const session = await createNavigationSession(apToken, association.id);
         navSessionID = session.id;
 
         // Create call
@@ -30,9 +29,9 @@ describe('Navigation call', () => {
         callID = call.id;
 
         // Accept call
-        const accept = await agent
+        await agent
             .post(`/call/${callID}/accept`)
-            .set('Authorization', 'Bearer ' + APToken);
+            .set('Authorization', `Bearer ${apToken}`);
     });
 
     it('Set state', async () => {
@@ -40,7 +39,7 @@ describe('Navigation call', () => {
         const res = await agent
             .post(`/call/${callID}/state`)
             .send({ state: newState })
-            .set('Authorization', 'Bearer ' + APToken);
+            .set('Authorization', `Bearer ${apToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res.body).to.have.property('id');
@@ -55,7 +54,7 @@ describe('Navigation call', () => {
         const res = await agent
             .post(`/call/${callID}/state`)
             .send({ state: newState })
-            .set('Authorization', 'Bearer ' + APToken);
+            .set('Authorization', `Bearer ${apToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(400);
     });
@@ -65,7 +64,7 @@ describe('Navigation call', () => {
         const res = await agent
             .post(`/call/${callID}/state`)
             .send({ state: newState })
-            .set('Authorization', 'Bearer ' + APToken);
+            .set('Authorization', `Bearer ${apToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(400);
     });

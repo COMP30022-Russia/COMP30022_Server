@@ -1,11 +1,11 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import rewire from 'rewire';
 import { res, next } from '../index';
 
 import models from '../../../models';
 
-describe('Unit - Navigation', () => {
+describe('Navigation', () => {
     const sandbox = sinon.createSandbox();
 
     // Navigation controller
@@ -38,6 +38,10 @@ describe('Unit - Navigation', () => {
         navigation.__set__('sendRouteMessage', sendSpy);
     });
 
+    afterEach(async () => {
+        sandbox.restore();
+    });
+
     it('Try to set destination without lon/lat', async () => {
         const req = {
             userID: 2,
@@ -48,7 +52,6 @@ describe('Unit - Navigation', () => {
             body: {}
         };
 
-        // Expect error
         // @ts-ignore
         const result = await navigation.setDestination(req, res, next);
         expect(result).be.an('error');
@@ -65,7 +68,6 @@ describe('Unit - Navigation', () => {
             body: location
         };
 
-        // Expect error
         // @ts-ignore
         const result = await navigation.setDestination(req, res, next);
         expect(result).be.an('error');
@@ -82,7 +84,6 @@ describe('Unit - Navigation', () => {
             body: { ...location, name: 'Hi', placeID: '1234' }
         };
 
-        // Expect error
         // @ts-ignore
         const result = await navigation.setDestination(req, res, next);
         expect(result).be.an('error');
@@ -120,7 +121,6 @@ describe('Unit - Navigation', () => {
             sinon.stub().returnsArg(0)
         );
 
-        // Expect error
         // @ts-ignore
         const result = await navigation.setDestination(req, res, next);
         expect(result).to.have.property('status');
@@ -190,7 +190,6 @@ describe('Unit - Navigation', () => {
             sinon.stub().returnsArg(0)
         );
 
-        // Expect error
         // @ts-ignore
         const result = await navigation.setDestination(req, res, next);
         expect(result).to.have.property('status');
@@ -223,9 +222,5 @@ describe('Unit - Navigation', () => {
         expect(sendSpy.lastCall.args[1]).to.equal(req.session.carerId);
         expect(sendSpy.lastCall.args[2]).to.equal(req.session.id);
         expect(sendSpy.lastCall.args[3]).to.equal(sync + 1);
-    });
-
-    afterEach(async () => {
-        sandbox.restore();
     });
 });

@@ -1,11 +1,11 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import { res, next } from '../index';
 
 import { register } from '../../../controllers/auth';
 import models from '../../../models';
 
-describe('Unit - User - Register', () => {
+describe('User - Register', () => {
     const sandbox = sinon.createSandbox();
     const defaultReturnVal = { cool: 'object' };
 
@@ -18,6 +18,10 @@ describe('Unit - User - Register', () => {
             }
         });
         sandbox.replace(models.User, 'create', dbFake);
+    });
+
+    after(async () => {
+        sandbox.restore();
     });
 
     it('Carer', async () => {
@@ -75,12 +79,6 @@ describe('Unit - User - Register', () => {
     });
 
     it('Without required fields', async () => {
-        sandbox.restore();
-
-        // Fake DB call
-        const dbFake = sinon.fake.throws('DB validation failure');
-        sandbox.replace(models.User, 'create', dbFake);
-
         // If there are missing fields, ORM should reject promise
         const req: any = {
             body: {
@@ -88,13 +86,18 @@ describe('Unit - User - Register', () => {
             }
         };
 
+        sandbox.restore();
+
+        // Fake DB call
+        sandbox.replace(
+            models.User,
+            'create',
+            sinon.fake.throws('DB validation failure')
+        );
+
         // @ts-ignore
         const result = await register(req, res, next);
         expect(result).to.be.an('error');
         expect(result.message).to.be.equal('DB validation failure');
-    });
-
-    after(async () => {
-        sandbox.restore();
     });
 });

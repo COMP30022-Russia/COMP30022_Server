@@ -1,34 +1,39 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
 
 import { res } from '../index';
-import models from '../../../models';
 
-describe('Unit - Middleware - Authenticate', () => {
+describe('Middleware - Authenticate', () => {
     const sandbox = sinon.createSandbox();
+
+    // Auth controller
     let auth: any;
 
     before(async () => {
-        // Stub JWT sign function to return '1234'
-        const JWTVerifyStub = sandbox.stub();
-        JWTVerifyStub.withArgs('1234').returns({ id: 1 });
-        JWTVerifyStub.throws();
-        // Import the user controllers with the jwt_sign function stubbed
+        // Stub JWT verify function to return { id: 1 }
+        const jwtVerifyStub = sandbox.stub();
+        jwtVerifyStub.withArgs('1234').returns({ id: 1 });
+        jwtVerifyStub.throws();
+        // Import the user controllers with the jwtVerify function stubbed
         auth = proxyquire('../../../middleware/authenticate', {
-            '../helpers/jwt': { jwt_verify: JWTVerifyStub }
+            '../helpers/jwt': { jwtVerify: jwtVerifyStub }
         });
     });
 
-    it('Valid', async () => {
-        // Define spy for next()
-        const nextSpy = sinon.spy();
+    afterEach(async () => {
+        sandbox.restore();
+    });
 
+    it('Valid', async () => {
         const req = {
             headers: {
                 authorization: 'Bearer 1234'
             }
         };
+
+        // Define spy for next()
+        const nextSpy = sinon.spy();
 
         // Call middleware, with a valid authorization header
         // @ts-ignore
@@ -37,64 +42,61 @@ describe('Unit - Middleware - Authenticate', () => {
     });
 
     it('Header missing', async () => {
+        const req = { headers: {} };
+
         // Define spy for next()
         const nextSpy = sinon.spy();
-
-        const req = {
-            headers: {}
-        };
 
         // Call middleware, with a missing authorization header
         // @ts-ignore
         await auth.authenticate(req, res, nextSpy);
-        expect(nextSpy.getCall(0).args).to.have.lengthOf(1);
-        expect(nextSpy.getCall(0).args[0]).to.be.an('error');
-        expect(nextSpy.getCall(0).args[0].message).to.equal(
+        expect(nextSpy.calledOnce).to.equal(true);
+        expect(nextSpy.lastCall.args).to.have.lengthOf(1);
+        expect(nextSpy.lastCall.args[0]).to.be.an('error');
+        expect(nextSpy.lastCall.args[0].message).to.equal(
             'Authorization header missing or incorrect'
         );
     });
 
     it('Header invalid', async () => {
-        // Define spy for next()
-        const nextSpy = sinon.spy();
-
         const req = {
             headers: {
                 authorization: '1234'
             }
         };
 
+        // Define spy for next()
+        const nextSpy = sinon.spy();
+
         // Call middleware, with an invalid authorization header
         // @ts-ignore
         await auth.authenticate(req, res, nextSpy);
-        expect(nextSpy.getCall(0).args).to.have.lengthOf(1);
-        expect(nextSpy.getCall(0).args[0]).to.be.an('error');
-        expect(nextSpy.getCall(0).args[0].message).to.equal(
+        expect(nextSpy.calledOnce).to.equal(true);
+        expect(nextSpy.lastCall.args).to.have.lengthOf(1);
+        expect(nextSpy.lastCall.args[0]).to.be.an('error');
+        expect(nextSpy.lastCall.args[0].message).to.equal(
             'Authorization header missing or incorrect'
         );
     });
 
     it('Header token incorrect', async () => {
-        // Define spy for next()
-        const nextSpy = sinon.spy();
-
         const req = {
             headers: {
                 authorization: 'Bearer 12345'
             }
         };
 
+        // Define spy for next()
+        const nextSpy = sinon.spy();
+
         // Call middleware, with an invalid token
         // @ts-ignore
         await auth.authenticate(req, res, nextSpy);
-        expect(nextSpy.getCall(0).args).to.have.lengthOf(1);
-        expect(nextSpy.getCall(0).args[0]).to.be.an('error');
-        expect(nextSpy.getCall(0).args[0].message).to.equal(
+        expect(nextSpy.calledOnce).to.equal(true);
+        expect(nextSpy.lastCall.args).to.have.lengthOf(1);
+        expect(nextSpy.lastCall.args[0]).to.be.an('error');
+        expect(nextSpy.lastCall.args[0].message).to.equal(
             'Token could not be verified'
         );
-    });
-
-    afterEach(async () => {
-        sandbox.restore();
     });
 });

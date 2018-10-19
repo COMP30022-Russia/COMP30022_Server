@@ -27,6 +27,7 @@ const sequelize: Sequelize.Sequelize = new Sequelize(
 );
 
 // Initiate and associate models
+// tslint:disable:variable-name
 const User = userModel.init(sequelize);
 const Association = associationModel.init(sequelize);
 const Message = messageModel.init(sequelize);
@@ -38,6 +39,7 @@ const ChatPicture = chatPictureModel.init(sequelize);
 const FirebaseToken = firebaseTokenModel.init(sequelize);
 const ProfilePicture = profilePictureModel.init(sequelize);
 const Call = callModel.init(sequelize);
+// tslint:enable:variable-name
 
 // User-User through Association table
 User.belongsToMany(User, {

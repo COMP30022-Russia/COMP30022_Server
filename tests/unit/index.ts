@@ -1,4 +1,4 @@
-import sinon, { SinonStub, SinonSpy, SinonFake } from 'sinon';
+import sinon from 'sinon';
 
 // Import tests
 import './models/user';
@@ -82,7 +82,7 @@ const next = sinon.stub().returnsArg(0);
 
 /**
  * Wraps object with toJSON function.
- * @param {Object} obj An object.
+ * @param obj An object.
  * @return Object with toJSON function which returns object.
  */
 const wrapToJSON = (obj: any) => {

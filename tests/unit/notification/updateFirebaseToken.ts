@@ -1,23 +1,24 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon, { SinonSpy } from 'sinon';
 import { res, next } from '../index';
 
 import { updateFirebaseToken } from '../../../controllers/notification';
 import models from '../../../models';
 
-describe('Unit - Notification - Update Firebase token', () => {
+describe('Notification - Update Firebase token', () => {
     const sandbox = sinon.createSandbox();
 
     // Declare spies
     let addTokenSpy: SinonSpy;
-    let destroyCallSpy: SinonSpy;
+    const destroyCallSpy: SinonSpy = sinon.spy();
 
-    beforeEach(async () => {
+    before(async () => {
         // Fake get user call
         const fakeUser = {
             id: 1,
             // Fake addFirebaseToken call of user
-            addFirebaseToken: function() {}
+            // tslint:disable:no-empty
+            addFirebaseToken: () => {}
         };
         addTokenSpy = sinon.spy(fakeUser, 'addFirebaseToken');
 
@@ -34,7 +35,6 @@ describe('Unit - Notification - Update Firebase token', () => {
         );
 
         // Fake destroy call
-        destroyCallSpy = sinon.spy();
         sandbox.replace(models.FirebaseToken, 'destroy', destroyCallSpy);
     });
 
@@ -43,7 +43,6 @@ describe('Unit - Notification - Update Firebase token', () => {
     });
 
     it('Update token', async () => {
-        // Request should have userID (user should be authenticated)
         const req: any = {
             userID: 1,
             body: {
@@ -72,9 +71,5 @@ describe('Unit - Notification - Update Firebase token', () => {
             token: req.body.token,
             instanceID: req.body.instanceID
         });
-    });
-
-    afterEach(async () => {
-        sandbox.restore();
     });
 });

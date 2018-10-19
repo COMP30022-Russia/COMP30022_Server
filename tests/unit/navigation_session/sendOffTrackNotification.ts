@@ -1,11 +1,11 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
 import { res, next } from '../index';
 
 import models from '../../../models';
 
-describe('Unit - Navigation', () => {
+describe('Navigation', () => {
     const sandbox = sinon.createSandbox();
 
     // Navigation session controller
@@ -27,7 +27,7 @@ describe('Unit - Navigation', () => {
         // Replace find name call
         sandbox.replace(models.User, 'scope', (_: string) => {
             return {
-                findById: (_: number) => {
+                findById: (__: number) => {
                     return { name: AP_NAME };
                 }
             };
@@ -51,7 +51,6 @@ describe('Unit - Navigation', () => {
             }
         };
 
-        // Expect error
         // @ts-ignore
         const result = await navigation.sendOffTrackNotification(
             req,
@@ -66,7 +65,6 @@ describe('Unit - Navigation', () => {
 
     it('Off-track notification', async () => {
         const updateSpy = sinon.spy(() => req.session.sync++);
-        const session = {};
         const sync = 8;
         const req = {
             userID: 2,
@@ -101,6 +99,7 @@ describe('Unit - Navigation', () => {
         // First argument: ID of carer
         // Second argument: ID of session
         // Third argument: name of AP
+        // Fourth argument: sync
         expect(sendSpy.calledOnce).to.equal(true);
         expect(sendSpy.lastCall.args).to.have.lengthOf(4);
         expect(sendSpy.lastCall.args[0]).to.equal(req.session.carerId);

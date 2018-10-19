@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { jwt_sign, jwt_verify } from '../helpers/jwt';
+import { jwtSign, jwtVerify } from '../helpers/jwt';
 import { Op } from 'sequelize';
 import models from '../models';
-import sendMessage from './notification/association';
+import { sendAssociationMessage } from './notification/association';
 
 // Get association token of authenticated user
 export const getAssociationToken = async (
@@ -16,7 +16,7 @@ export const getAssociationToken = async (
             type: 'Association',
             userID: req.userID
         };
-        const token = await jwt_sign(payload, '1h');
+        const token = await jwtSign(payload, '1h');
 
         // Return signed token
         return res.json({ token });
@@ -27,14 +27,14 @@ export const getAssociationToken = async (
 
 /**
  * Decodes a signed association token and returns the ID of the target user.
- * @param {string} token Signed association token.
- * @return {Promise} Promise for decoded ID of target user.
+ * @param token Signed association token.
+ * @return Promise for decoded ID of target user.
  */
 const decodeAssociationToken = async (token: string): Promise<number> => {
     // Decode token
     let decodedRequest;
     try {
-        decodedRequest = await jwt_verify(token);
+        decodedRequest = await jwtVerify(token);
     } catch (err) {
         throw new Error('Token is invalid or expired');
     }
@@ -75,12 +75,12 @@ export const createAssociation = async (
         }
 
         // Assign IDs depending on account type of initiator/target
-        const APId = initiator.type === 'AP' ? initiatorID : targetID;
+        const apId = initiator.type === 'AP' ? initiatorID : targetID;
         const carerId = initiator.type === 'Carer' ? initiatorID : targetID;
 
         // If an existing association exists
         const existing = await models.Association.find({
-            where: { carerId, APId }
+            where: { carerId, APId: apId }
         });
         if (existing) {
             if (existing.active) {
@@ -94,10 +94,13 @@ export const createAssociation = async (
         }
 
         // Create association
-        const created = await models.Association.create({ carerId, APId });
+        const created = await models.Association.create({
+            carerId,
+            APId: apId
+        });
 
         // Send data message to notify target
-        await sendMessage(targetID);
+        await sendAssociationMessage(targetID);
 
         return res.json(created.toJSON());
     } catch (err) {
@@ -108,8 +111,8 @@ export const createAssociation = async (
 
 /**
  * Finds the current type of the user and returns the opposite type.
- * @param {number} id ID of user.
- * @return {Promise} Promise for the opposite type as a string.
+ * @param id ID of user.
+ * @return Promise for the opposite type as a string.
  */
 const findOppositeUserType = async (id: number): Promise<string> => {
     const type = (await models.User.scope('type').findById(id)).type;

@@ -1,23 +1,28 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
 import { res, next, wrapToJSON } from '../index';
 
 import models from '../../../models';
-import { uploadPicture } from '../../../controllers/chat_picture';
 
-describe('Unit - Chat - Upload message picture', () => {
+describe('Chat - Upload message picture', () => {
     const sandbox = sinon.createSandbox();
 
     // Spy for message sending
     const sendSpy = sinon.spy();
 
-    let chat_picture: any;
+    // Chat picture controller
+    let chatPicture: any;
+
     before(async () => {
         // Import the controller with a spy on the notification function
-        chat_picture = proxyquire('../../../controllers/chat_picture', {
+        chatPicture = proxyquire('../../../controllers/chat_picture', {
             './notification/chat': { sendChatPictureUploadMessage: sendSpy }
         });
+    });
+
+    afterEach(async () => {
+        sandbox.restore();
     });
 
     it('Set picture', async () => {
@@ -35,17 +40,13 @@ describe('Unit - Chat - Upload message picture', () => {
             association: { getPartnerID: (_: number) => partnerID }
         };
 
-        // Fake retrieval function to return a partial picture object
+        // Fake retrieval function to return a sending picture
         const picture: any = {
             id: 3,
             status: 'Sending'
         };
-        picture.updateAttributes = (attributes: any) => {
-            return wrapToJSON({
-                ...picture,
-                ...attributes
-            });
-        };
+        picture.updateAttributes = (attributes: any) =>
+            wrapToJSON({ ...picture, ...attributes });
         sandbox.replace(
             models.ChatPicture,
             'findOne',
@@ -54,7 +55,7 @@ describe('Unit - Chat - Upload message picture', () => {
 
         // Expect to get picture with mime and filename back
         // @ts-ignore
-        const result = await chat_picture.uploadPicture(req, res, next);
+        const result = await chatPicture.uploadPicture(req, res, next);
         expect(result).to.have.property('id');
         expect(result).to.have.property('mime');
         expect(result).to.have.property('filename');
@@ -66,13 +67,10 @@ describe('Unit - Chat - Upload message picture', () => {
 
         // Check send message spy
         expect(sendSpy.calledOnce).to.equal(true);
-        expect(
-            sendSpy.alwaysCalledWith(
-                partnerID,
-                req.params.associationID,
-                picture.id
-            )
-        ).to.equal(true);
+        expect(sendSpy.lastCall.args).to.have.lengthOf(3);
+        expect(sendSpy.lastCall.args[0]).to.equal(partnerID);
+        expect(sendSpy.lastCall.args[1]).to.equal(req.params.associationID);
+        expect(sendSpy.lastCall.args[2]).to.equal(picture.id);
     });
 
     it('Set invalid picture', async () => {
@@ -88,7 +86,7 @@ describe('Unit - Chat - Upload message picture', () => {
         sandbox.replace(models.ChatPicture, 'findOne', sinon.fake());
 
         // @ts-ignore
-        const result = await chat_picture.uploadPicture(req, res, next);
+        const result = await chatPicture.uploadPicture(req, res, next);
         expect(result).to.be.an('Error');
         expect(result.message).to.equal('Picture cannot be set');
     });
@@ -102,7 +100,7 @@ describe('Unit - Chat - Upload message picture', () => {
             }
         };
 
-        // Fake retrieval function to return a partial picture object
+        // Fake retrieval function to return a received picture
         const picture = {
             id: 3,
             status: 'Received',
@@ -115,12 +113,8 @@ describe('Unit - Chat - Upload message picture', () => {
         );
 
         // @ts-ignore
-        const result = await chat_picture.uploadPicture(req, res, next);
+        const result = await chatPicture.uploadPicture(req, res, next);
         expect(result).to.be.an('Error');
         expect(result.message).to.equal('Picture has already been received');
-    });
-
-    afterEach(async () => {
-        sandbox.restore();
     });
 });

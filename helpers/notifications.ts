@@ -19,9 +19,9 @@ const DEFAULT_PRIORITY = 'high';
 
 /**
  * Sends a message to the socket service and FCM.
- * @param {Object} message The payload to be sent.
- * @param {string[]} tokens List of device tokens.
- * @return {Promise} Promise object representing the response.
+ * @param message The payload to be sent.
+ * @param tokens List of device tokens.
+ * @return Promise object representing the response.
  */
 export default async function(
     message: any,

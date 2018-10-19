@@ -1,11 +1,9 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
-import { res, next, wrapToJSON } from '../index';
+import { res, next } from '../index';
 
-import models from '../../../models';
-
-describe('Unit - Navigation', () => {
+describe('Navigation', () => {
     const sandbox = sinon.createSandbox();
 
     // Navigation session controller
@@ -21,6 +19,10 @@ describe('Unit - Navigation', () => {
                 sendNavigationControlSwitchedMessage: sendSpy
             }
         });
+    });
+
+    afterEach(async () => {
+        sandbox.restore();
     });
 
     it('Switch control', async () => {
@@ -59,18 +61,12 @@ describe('Unit - Navigation', () => {
         // First argument: ID of opposite party
         // Second argument: ID of session
         // Third argument: carerHasControl
+        // Fourth argument: sync
         expect(sendSpy.calledOnce).to.equal(true);
-        expect(
-            sendSpy.alwaysCalledWith(
-                req.session.carerId,
-                req.session.id,
-                false,
-                sync + 1
-            )
-        ).to.equal(true);
-    });
-
-    afterEach(async () => {
-        sandbox.restore();
+        expect(sendSpy.lastCall.args).to.have.lengthOf(4);
+        expect(sendSpy.lastCall.args[0]).to.equal(req.session.carerId);
+        expect(sendSpy.lastCall.args[1]).to.equal(req.session.id);
+        expect(sendSpy.lastCall.args[2]).to.equal(false);
+        expect(sendSpy.lastCall.args[3]).to.equal(sync + 1);
     });
 });

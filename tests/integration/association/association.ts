@@ -6,19 +6,19 @@ describe('Association', () => {
     const agent = request.agent(app);
     let carer1Token: string;
     let carer2Token: string;
-    let AP1Token: string;
-    let AP2Token: string;
+    let ap1Token: string;
+    let ap2Token: string;
 
     before(async () => {
         // Register as carers/APs and get login token
         carer1Token = (await createCarer('atc1')).token;
         carer2Token = (await createCarer('atc2')).token;
-        AP1Token = (await createAP('ata1')).token;
-        AP2Token = (await createAP('ata2')).token;
+        ap1Token = (await createAP('ata1')).token;
+        ap2Token = (await createAP('ata2')).token;
     });
 
     // Test user authentication via JWT token in header
-    it('Get association token without login token in Authorization header', async () => {
+    it('Get association token without auth token', async () => {
         const res = await agent.get('/me/association_token');
         expect(res).to.be.json;
         expect(res).to.have.status(401);
@@ -26,10 +26,11 @@ describe('Association', () => {
             'Authorization header missing or incorrect'
         );
     });
-    it('Get association token with wrong login token in Authorization header', async () => {
+
+    it('Get association token with wrong auth token', async () => {
         const res = await agent
             .get('/me/association_token')
-            .set('Authorization', 'Bearer ' + carer1Token.slice(0, -1));
+            .set('Authorization', `Bearer ${carer1Token}`.slice(0, -1));
         expect(res).to.be.json;
         expect(res).to.have.status(401);
         expect(res.body.message).to.equal('Token could not be verified');
@@ -38,55 +39,55 @@ describe('Association', () => {
     it('Get association token', async () => {
         const res = await agent
             .get('/me/association_token')
-            .set('Authorization', 'Bearer ' + carer1Token);
+            .set('Authorization', `Bearer ${carer1Token}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res.body).to.have.property('token');
     });
 
-    it('Try to create association between accounts of same type', async () => {
+    it('Create association between accounts of same type', async () => {
         // Try to create carer/carer association
         // First, get the association token of a carer
-        const carer_token = await agent
+        const carerTokenRes = await agent
             .get('/me/association_token')
-            .set('Authorization', 'Bearer ' + carer1Token);
+            .set('Authorization', `Bearer ${carer1Token}`);
         // Then, try to get the other carer to associate with the first carer
-        const associationRes1 = await agent
+        const res1 = await agent
             .post('/me/associate')
-            .set('Authorization', 'Bearer ' + carer2Token)
-            .send({ token: carer_token.body.token });
-        expect(associationRes1).to.be.json;
-        expect(associationRes1).to.have.status(400);
-        expect(associationRes1.body.message).to.equal(
+            .set('Authorization', `Bearer ${carer2Token}`)
+            .send({ token: carerTokenRes.body.token });
+        expect(res1).to.be.json;
+        expect(res1).to.have.status(400);
+        expect(res1.body.message).to.equal(
             'Accounts of the same type cannot be associated'
         );
 
         // Try to create AP/AP association
-        const AP_token = await agent
+        const apTokenRes = await agent
             .get('/me/association_token')
-            .set('Authorization', 'Bearer ' + AP1Token);
-        const associationRes2 = await agent
+            .set('Authorization', `Bearer ${ap1Token}`);
+        const res2 = await agent
             .post('/me/associate')
-            .set('Authorization', 'Bearer ' + AP2Token)
-            .send({ token: AP_token.body.token });
-        expect(associationRes2).to.be.json;
-        expect(associationRes2).to.have.status(400);
-        expect(associationRes2.body.message).to.equal(
+            .set('Authorization', `Bearer ${ap2Token}`)
+            .send({ token: apTokenRes.body.token });
+        expect(res2).to.be.json;
+        expect(res2).to.have.status(400);
+        expect(res2.body.message).to.equal(
             'Accounts of the same type cannot be associated'
         );
     });
 
-    it('Create association - AP -> Carer', async () => {
+    it('Create association - AP -> Carers', async () => {
         // Get association token of AP
-        const token = await agent
+        const tokenRes = await agent
             .get('/me/association_token')
-            .set('Authorization', 'Bearer ' + AP1Token);
+            .set('Authorization', `Bearer ${ap1Token}`);
 
         // Get carer1 to initiate association request
         const res = await agent
             .post('/me/associate')
-            .set('Authorization', 'Bearer ' + carer1Token)
-            .send({ token: token.body.token });
+            .set('Authorization', `Bearer ${carer1Token}`)
+            .send({ token: tokenRes.body.token });
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res).to.have.property('status');
@@ -95,25 +96,25 @@ describe('Association', () => {
         // Get carer2 to initiate association request
         const res2 = await agent
             .post('/me/associate')
-            .set('Authorization', 'Bearer ' + carer2Token)
-            .send({ token: token.body.token });
+            .set('Authorization', `Bearer ${carer2Token}`)
+            .send({ token: tokenRes.body.token });
         expect(res2).to.be.json;
         expect(res2).to.have.status(200);
         expect(res2).to.have.property('status');
         expect(res2.body).to.have.property('id');
     });
 
-    it('Create association - Carer -> AP', async () => {
+    it('Create association - Carer -> APs', async () => {
         // Get association token of carer
-        const token = await agent
+        const tokenRes = await agent
             .get('/me/association_token')
-            .set('Authorization', 'Bearer ' + carer1Token);
+            .set('Authorization', `Bearer ${carer1Token}`);
 
         // Get AP2 to initiate association request
         const res = await agent
             .post('/me/associate')
-            .set('Authorization', 'Bearer ' + AP2Token)
-            .send({ token: token.body.token });
+            .set('Authorization', `Bearer ${ap2Token}`)
+            .send({ token: tokenRes.body.token });
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res).to.have.property('status');
@@ -124,12 +125,12 @@ describe('Association', () => {
         // Get association token of carer
         const token = await agent
             .get('/me/association_token')
-            .set('Authorization', 'Bearer ' + carer1Token);
+            .set('Authorization', `Bearer ${carer1Token}`);
 
         // Get AP2 to initiate association request
         const res = await agent
             .post('/me/associate')
-            .set('Authorization', 'Bearer ' + AP2Token)
+            .set('Authorization', `Bearer ${ap2Token}`)
             .send({ token: token.body.token });
         expect(res).to.be.json;
         expect(res).to.have.status(400);
@@ -141,7 +142,7 @@ describe('Association', () => {
         // AP 1 and AP 2
         const res = await agent
             .get('/me/associations')
-            .set('Authorization', 'Bearer ' + carer1Token);
+            .set('Authorization', `Bearer ${carer1Token}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res.body).to.have.lengthOf(2);
@@ -155,7 +156,7 @@ describe('Association', () => {
         // Get associations of AP 2, AP 2 should be associated with Carer 1
         const res2 = await agent
             .get('/me/associations')
-            .set('Authorization', 'Bearer ' + AP2Token);
+            .set('Authorization', `Bearer ${ap2Token}`);
         expect(res2).to.be.json;
         expect(res2).to.have.status(200);
         expect(res2.body).to.have.lengthOf(1);
@@ -166,12 +167,12 @@ describe('Association', () => {
     it('Get specific association', async () => {
         const multiple = await agent
             .get('/me/associations')
-            .set('Authorization', 'Bearer ' + AP2Token);
+            .set('Authorization', `Bearer ${ap2Token}`);
         const associationID = multiple.body[0].id;
 
         const single = await agent
-            .get('/associations/' + associationID)
-            .set('Authorization', 'Bearer ' + AP2Token);
+            .get(`/associations/${associationID}`)
+            .set('Authorization', `Bearer ${ap2Token}`);
         expect(single).to.be.json;
         expect(single).to.have.status(200);
         expect(single.body).to.have.property('user');
@@ -182,15 +183,15 @@ describe('Association', () => {
     });
 
     it('Get incorrect association', async () => {
-        const res = await agent
+        const res1 = await agent
             .get('/associations/1')
-            .set('Authorization', 'Bearer ' + AP2Token);
-        expect(res).to.be.json;
-        expect(res).to.have.status(403);
+            .set('Authorization', `Bearer ${ap2Token}`);
+        expect(res1).to.be.json;
+        expect(res1).to.have.status(403);
 
         const res2 = await agent
             .get('/associations/a')
-            .set('Authorization', 'Bearer ' + AP2Token);
+            .set('Authorization', `Bearer ${ap2Token}`);
         expect(res2).to.be.json;
         expect(res2).to.have.status(400);
     });

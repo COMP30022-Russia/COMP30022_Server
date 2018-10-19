@@ -3,7 +3,7 @@ import sequelize from 'sequelize';
 import models from '../models';
 
 // Default limit for recents
-const DEFAULT_LIMIT: number = 5;
+const DEFAULT_LIMIT = 5;
 
 // Get the requested user's recents and favourites
 export const getDestinations = async (

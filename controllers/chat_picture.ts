@@ -26,9 +26,9 @@ export const createPictureMessage = async (
 
     try {
         // Create the empty pictures
-        const picture_array = [];
-        for (const n of Array(count).keys()) {
-            picture_array.push(
+        const pictureArray = [];
+        for (const _ of Array(count).keys()) {
+            pictureArray.push(
                 await models.ChatPicture.create({
                     associationId: associationID
                 })
@@ -41,7 +41,7 @@ export const createPictureMessage = async (
             authorId: userID,
             associationId: associationID
         });
-        await message.setPictures(picture_array);
+        await message.setPictures(pictureArray);
 
         // Get ID and name of target user
         const targetID = await association.getPartnerID(userID);
@@ -56,7 +56,7 @@ export const createPictureMessage = async (
         );
 
         // Return message with pictures
-        const pictures = picture_array.map((p: any) => {
+        const pictures = pictureArray.map((p: any) => {
             return { ...p.toJSON(), messageId: message.id };
         });
         return res.json({

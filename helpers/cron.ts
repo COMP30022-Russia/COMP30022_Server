@@ -3,7 +3,7 @@ import { cleanUpNavigationCalls } from '../controllers/navigation';
 import { terminateIdlePendingCalls } from '../controllers/call';
 
 // Default timezone
-const TIMEZONE: string = 'Australia/Melbourne';
+const TIMEZONE = 'Australia/Melbourne';
 
 // Define cron job for cleaning up idle navigation calls
 // Run every day, at 11:59:99

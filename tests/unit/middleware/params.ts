@@ -1,20 +1,16 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import { res } from '../index';
 
 import { verifyIDParam } from '../../../middleware/params';
 
-describe('Unit - Middleware - Params', () => {
-    it('Correct', async () => {
+describe('Middleware - Params', () => {
+    it('Correct ID', async () => {
+        // Request with valid param
+        const req = { params: { id: 1 } };
+
         // Define next
         const next = sinon.spy();
-
-        // Request with valid param
-        const req = {
-            params: {
-                id: 1
-            }
-        };
 
         // Expect next() to be called with no arguments
         // @ts-ignore
@@ -22,15 +18,12 @@ describe('Unit - Middleware - Params', () => {
         expect(next.calledWithExactly()).to.equal(true);
     });
 
-    it('Null', async () => {
-        // Define next to return first argument
-        const next = sinon.stub();
-        next.returnsArg(0);
-
+    it('Null ID', async () => {
         // Request with invalid param
-        const req = {
-            params: {}
-        };
+        const req = { params: {} };
+
+        // Define next to return first argument
+        const next = sinon.stub().returnsArg(0);
 
         // @ts-ignore
         const result = await verifyIDParam('id')(req, res, next);
@@ -38,17 +31,13 @@ describe('Unit - Middleware - Params', () => {
         expect(result.message).to.equal('Invalid param id');
     });
 
-    it('Invalid', async () => {
+    it('Invalid ID', async () => {
         // Define next to return first argument
         const next = sinon.stub();
         next.returnsArg(0);
 
         // Request with invalid param
-        const req = {
-            params: {
-                id: 'a'
-            }
-        };
+        const req = { params: { id: 'a' } };
 
         // @ts-ignore
         const result = await verifyIDParam('id')(req, res, next);

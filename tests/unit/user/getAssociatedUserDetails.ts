@@ -1,12 +1,16 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
-import { res, next } from '../index';
+import { res, next, wrapToJSON } from '../index';
 
 import { getAssociatedUserDetails } from '../../../controllers/user';
 import models from '../../../models';
 
-describe('Unit - User Details', () => {
+describe('User Details', () => {
     const sandbox = sinon.createSandbox();
+
+    afterEach(async () => {
+        sandbox.restore();
+    });
 
     it('Get AP Details', async () => {
         // Define arbitary location
@@ -29,13 +33,10 @@ describe('Unit - User Details', () => {
 
         // Fake DB call to return user info and getCurrentLocation() function
         const dbFake = sinon.fake.returns({
-            ...userInfo,
             getCurrentLocation: () => {
                 return location;
             },
-            toJSON: () => {
-                return userInfo;
-            }
+            ...wrapToJSON(userInfo)
         });
         sandbox.replace(models.User, 'scope', (scopeName: string) => {
             return { findById: dbFake };
@@ -51,7 +52,7 @@ describe('Unit - User Details', () => {
         expect(result.location).to.deep.equal(location);
     });
 
-    it('Get Carer Details', async () => {
+    it('Get carer Details', async () => {
         // Params should have target userID
         const req: any = {
             params: {
@@ -65,14 +66,8 @@ describe('Unit - User Details', () => {
             type: 'Carer'
         };
         // Fake DB call to return the fake info
-        const dbFake = sinon.fake.returns({
-            ...userInfo,
-            toJSON: () => {
-                return userInfo;
-            }
-        });
         sandbox.replace(models.User, 'scope', (scopeName: string) => {
-            return { findById: dbFake };
+            return { findById: sinon.fake.returns(wrapToJSON(userInfo)) };
         });
 
         // @ts-ignore
@@ -81,9 +76,5 @@ describe('Unit - User Details', () => {
         expect(result).to.have.property('type');
         expect(result.id).to.equal(req.params.userID);
         expect(result.type).to.equal(userInfo.type);
-    });
-
-    afterEach(async () => {
-        sandbox.restore();
     });
 });

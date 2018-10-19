@@ -1,12 +1,11 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
-import proxyquire from 'proxyquire';
-import { res, next } from '../index';
+import { res, next, wrapToJSON } from '../index';
 
 import models from '../../../models';
 import { getAssociations } from '../../../controllers/association';
 
-describe('Unit - Association - Get associations', () => {
+describe('Association - Get associations', () => {
     const sandbox = sinon.createSandbox();
 
     // Fake DB find type of user call
@@ -19,11 +18,12 @@ describe('Unit - Association - Get associations', () => {
         type: 'Carer'
     });
 
+    afterEach(async () => {
+        sandbox.restore();
+    });
+
     it('Retrieve as AP', async () => {
-        // Request should have userID (user should be authenticated)
-        const req: any = {
-            userID: 1
-        };
+        const req: any = { userID: 1 };
 
         // Fake query for finding type of user
         sandbox.replace(models.User, 'scope', (scopeName: string) => {
@@ -45,20 +45,14 @@ describe('Unit - Association - Get associations', () => {
                 foo: 'bar2'
             }
         };
-        const associations = [
-            Object.assign(association1, {
-                toJSON: () => {
-                    return association1;
-                }
-            }),
-            Object.assign(association2, {
-                toJSON: () => {
-                    return association2;
-                }
-            })
-        ];
-        const dbGetAssociationFake = sinon.fake.returns(associations);
-        sandbox.replace(models.Association, 'findAll', dbGetAssociationFake);
+        sandbox.replace(
+            models.Association,
+            'findAll',
+            sinon.fake.returns([
+                wrapToJSON(association1),
+                wrapToJSON(association2)
+            ])
+        );
 
         // Should get array of associations
         // @ts-ignore
@@ -75,10 +69,7 @@ describe('Unit - Association - Get associations', () => {
     });
 
     it('Retrieve as Carer', async () => {
-        // Request should have userID (user should be authenticated)
-        const req: any = {
-            userID: 1
-        };
+        const req: any = { userID: 1 };
 
         // Fake query for finding type of user
         sandbox.replace(models.User, 'scope', (scopeName: string) => {
@@ -100,20 +91,14 @@ describe('Unit - Association - Get associations', () => {
                 foo: 'bar2'
             }
         };
-        const associations = [
-            Object.assign(association1, {
-                toJSON: () => {
-                    return association1;
-                }
-            }),
-            Object.assign(association2, {
-                toJSON: () => {
-                    return association2;
-                }
-            })
-        ];
-        const dbGetAssociationFake = sinon.fake.returns(associations);
-        sandbox.replace(models.Association, 'findAll', dbGetAssociationFake);
+        sandbox.replace(
+            models.Association,
+            'findAll',
+            sinon.fake.returns([
+                wrapToJSON(association1),
+                wrapToJSON(association2)
+            ])
+        );
 
         // Should get array of associations
         // @ts-ignore
@@ -130,7 +115,6 @@ describe('Unit - Association - Get associations', () => {
     });
 
     it('Retrieve as Carer with no associations', async () => {
-        // Request should have userID (user should be authenticated)
         const req: any = {
             userID: 2,
             params: { associationID: 1 }
@@ -151,9 +135,5 @@ describe('Unit - Association - Get associations', () => {
         const result = await getAssociations(req, res, next);
         expect(result).to.be.an('array');
         expect(result).to.have.lengthOf(0);
-    });
-
-    afterEach(async () => {
-        sandbox.restore();
     });
 });

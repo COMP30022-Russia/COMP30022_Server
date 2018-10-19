@@ -1,10 +1,10 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import { res, next } from '../index';
 import models from '../../../models';
 import { retrieveAssociation } from '../../../middleware/association';
 
-describe('Unit - Middleware - Ensure user is in requested association', () => {
+describe('Middleware - Ensure user is in requested association', () => {
     const sandbox = sinon.createSandbox();
 
     // Request with valid param
@@ -15,12 +15,19 @@ describe('Unit - Middleware - Ensure user is in requested association', () => {
         }
     };
 
+    afterEach(async () => {
+        sandbox.restore();
+    });
+
     it('Is in association', async () => {
         // Fake DB find
-        const dbFake = sinon.fake.returns({
-            id: 1
-        });
-        sandbox.replace(models.Association, 'findOne', dbFake);
+        sandbox.replace(
+            models.Association,
+            'findOne',
+            sinon.fake.returns({
+                id: 1
+            })
+        );
 
         // Define spy for next()
         const nextSpy = sinon.spy();
@@ -34,8 +41,7 @@ describe('Unit - Middleware - Ensure user is in requested association', () => {
     it('Is not in association', async () => {
         // Fake DB find
         // tslint:disable:no-null-keyword / DB will return null here
-        const dbFake = sinon.fake.returns(null);
-        sandbox.replace(models.Association, 'findOne', dbFake);
+        sandbox.replace(models.Association, 'findOne', sinon.fake());
 
         // Call middleware, expect next(err) to be returned
         // @ts-ignore
@@ -44,9 +50,5 @@ describe('Unit - Middleware - Ensure user is in requested association', () => {
         expect(result.message).to.equal(
             'User is not party of requested association'
         );
-    });
-
-    afterEach(async () => {
-        sandbox.restore();
     });
 });

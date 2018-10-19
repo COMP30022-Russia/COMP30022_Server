@@ -1,14 +1,14 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
 import { res, next } from '../index';
 
-import models from '../../../models';
-
-describe('Unit - Navigation call', () => {
-    const sandbox = sinon.createSandbox();
-    const sendSpy = sinon.spy();
+describe('Navigation call', () => {
+    // Call controller
     let call: any;
+
+    // Spy on message sending
+    const sendSpy = sinon.spy();
 
     before(async () => {
         call = proxyquire('../../../controllers/call', {
@@ -65,7 +65,7 @@ describe('Unit - Navigation call', () => {
         // Expect call to be saved (to modify state to 'Terminated')
         expect(saveSpy.calledOnce).to.equal(true);
 
-        // Check terminate call
+        // Check terminate call message
         expect(sendSpy.calledOnce).to.equal(true);
         expect(sendSpy.lastCall.args).to.have.lengthOf(5);
         expect(sendSpy.lastCall.args[0]).to.equal(req.call.id);

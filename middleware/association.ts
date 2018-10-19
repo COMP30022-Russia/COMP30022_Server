@@ -57,7 +57,7 @@ export let retrieveAssociation = async (
             where: {
                 id: associationId,
                 active: true,
-                [Op.or]: [{ APId: req.userID }, { carerId: req.userID }]
+                [Op.or]: [{ APId: userID }, { carerId: userID }]
             }
         });
         // Ensure that association exists

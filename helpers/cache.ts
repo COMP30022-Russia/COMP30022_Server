@@ -8,8 +8,8 @@ import { NodeCache } from 'node-cache';
 export default (provider: NodeCache) => {
     /**
      * Saves an item to the cache.
-     * @param {string} key Key of item.
-     * @param {any} value Value of item.
+     * @param key Key of item.
+     * @param value Value of item.
      */
     const setItem = (key: string, value: any) => {
         return provider.set(key, value);
@@ -17,8 +17,8 @@ export default (provider: NodeCache) => {
 
     /**
      * Retrieves an item from the cache.
-     * @param {string} key Key of item.
-     * @return {any} Value of item.
+     * @param key Key of item.
+     * @return Value of item.
      */
     const getItem = (key: string) => {
         return provider.get(key);
@@ -26,7 +26,7 @@ export default (provider: NodeCache) => {
 
     /**
      * Deletes an item from the cache.
-     * @param {string} key Key of item.
+     * @param key Key of item.
      */
     const deleteItem = (key: string) => {
         return provider.del(key);

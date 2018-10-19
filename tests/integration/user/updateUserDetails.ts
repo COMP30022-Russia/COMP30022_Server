@@ -8,40 +8,38 @@ describe('Edit user details', () => {
     // Tokens
     const CARER_USERNAME = 'update_carer';
     let carerToken: string;
-    let APToken: string;
+    let apToken: string;
 
     before(async () => {
-        // Create carer
+        // Create users
         carerToken = (await createCarer(CARER_USERNAME)).token;
-        // Create AP
-        APToken = (await createAP('update_ap')).token;
+        apToken = (await createAP('update_ap')).token;
     });
 
     it('Edit password', async () => {
-        // Old password is same as username
         // Edit password
         const res = await agent
             .patch('/me/profile')
             .send({ password: 'new' })
-            .set('Authorization', 'Bearer ' + carerToken);
+            .set('Authorization', `Bearer ${carerToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res.body).to.have.property('id');
 
         // Try to log in with new password
-        const logIn = await agent
+        const logInRes = await agent
             .post('/users/login')
             .send({ username: CARER_USERNAME, password: 'new' });
-        expect(logIn).to.be.json;
-        expect(logIn).to.have.status(200);
-        expect(logIn.body).to.have.property('id');
+        expect(logInRes).to.be.json;
+        expect(logInRes).to.have.status(200);
+        expect(logInRes.body).to.have.property('id');
     });
 
     it('Attempt to edit type', async () => {
         const res = await agent
             .patch('/me/profile')
             .send({ type: 'AP' })
-            .set('Authorization', 'Bearer ' + carerToken);
+            .set('Authorization', `Bearer ${carerToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res.body).to.have.property('id');
@@ -53,7 +51,7 @@ describe('Edit user details', () => {
         const res = await agent
             .patch('/me/profile')
             .send({ username: 'cool' })
-            .set('Authorization', 'Bearer ' + carerToken);
+            .set('Authorization', `Bearer ${carerToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res.body).to.have.property('id');
@@ -61,18 +59,18 @@ describe('Edit user details', () => {
         expect(res.body.username).to.equal(CARER_USERNAME);
     });
 
-    it('AP - try to blank emergencyContactName', async () => {
+    it('Try to blank AP emergencyContactName', async () => {
         const res = await agent
             .patch('/me/profile')
             .send({ emergencyContactName: '' })
-            .set('Authorization', 'Bearer ' + APToken);
+            .set('Authorization', `Bearer ${apToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(422);
         expect(res.body).to.have.property('message');
         expect(res.body.message).to.equal('Required fields cannot be deleted');
     });
 
-    it('AP - update all fields (except password)', async () => {
+    it('Update all AP fields (except password)', async () => {
         const modifications: any = {
             name: 'foo',
             mobileNumber: '20',
@@ -81,11 +79,11 @@ describe('Edit user details', () => {
             emergencyContactNumber: '25'
         };
 
+        // Check updated attributes
         const res = await agent
             .patch('/me/profile')
             .send(modifications)
-            .set('Authorization', 'Bearer ' + APToken);
-        // Check each attribute
+            .set('Authorization', `Bearer ${apToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res.body).to.have.property('id');

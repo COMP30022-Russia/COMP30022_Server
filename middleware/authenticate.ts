@@ -1,7 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Op } from 'sequelize';
-import { jwt_verify } from '../helpers/jwt';
-import models from '../models';
+import { jwtVerify } from '../helpers/jwt';
 
 // Extend express Request type
 // Adapted from: https://stackoverflow.com/questions/44383387
@@ -23,8 +21,8 @@ export let authenticate = async (
     next: NextFunction
 ) => {
     // Ensure that header exists and starts with Bearer
-    const auth_header = req.headers.authorization;
-    if (!auth_header || !auth_header.startsWith('Bearer')) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer')) {
         const err = new Error('Authorization header missing or incorrect');
         res.status(401);
         return next(err);
@@ -32,8 +30,8 @@ export let authenticate = async (
 
     try {
         // Decode JWT token
-        const header_token = req.headers.authorization.split(' ')[1];
-        const token = await jwt_verify(header_token);
+        const headerToken = req.headers.authorization.split(' ')[1];
+        const token = await jwtVerify(headerToken);
 
         req.token = token;
         req.userID = token.id;

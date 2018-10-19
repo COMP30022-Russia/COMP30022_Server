@@ -1,12 +1,16 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
-import { res, next } from '../index';
+import { next, res } from '../index';
 
 import models from '../../../models';
 import { getProfilePicture } from '../../../controllers/user_picture';
 
-describe('Unit - User Profile - Get profile picture', () => {
+describe('User Profile - Get profile picture', () => {
     const sandbox = sinon.createSandbox();
+
+    afterEach(async () => {
+        sandbox.restore();
+    });
 
     // When picture has not been set yet
     it('Get invalid/missing picture', async () => {
@@ -33,7 +37,7 @@ describe('Unit - User Profile - Get profile picture', () => {
         // Redefine res to have setHeader and sendFile
         const setHeaderSpy = sinon.spy();
         const sendFileSpy = sinon.spy();
-        const res: any = {
+        const resFile: any = {
             setHeader: setHeaderSpy,
             sendFile: sendFileSpy,
             status: sinon.spy()
@@ -52,7 +56,7 @@ describe('Unit - User Profile - Get profile picture', () => {
         );
 
         // @ts-ignore
-        const result = await getProfilePicture(req, res, next);
+        const result = await getProfilePicture(req, resFile, next);
 
         // Check spies
         expect(setHeaderSpy.calledOnce).to.equal(true);
@@ -64,9 +68,5 @@ describe('Unit - User Profile - Get profile picture', () => {
                 root: 'uploads/chat'
             })
         );
-    });
-
-    afterEach(async () => {
-        sandbox.restore();
     });
 });

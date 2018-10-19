@@ -1,31 +1,34 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
-import { res, next, wrapToJSON } from '../index';
+import { res, next } from '../index';
 import proxyquire from 'proxyquire';
 
 import models from '../../../models';
 
-describe('Unit - Emergency - Handle emergency event', () => {
+describe('Emergency - Handle emergency event', () => {
     const sandbox = sinon.createSandbox();
+
+    // Emergency controller
     let emergency: any;
+
+    // Spy on message sending
     const messageSpy = sinon.spy();
 
     before(async () => {
+        // Import emergency controller with message sending spy
         emergency = proxyquire('../../../controllers/emergency', {
             './notification/emergency': {
                 sendEmergencyHandledMessage: messageSpy
             }
         });
-    });
 
-    const event = beforeEach(async () => {
         // Replace find association call
         sandbox.replace(models.Association, 'findAll', (_: any) => {
             return [{ carerId: 5 }, { carerId: 4 }];
         });
     });
 
-    afterEach(async () => {
+    after(async () => {
         sandbox.restore();
     });
 
@@ -49,9 +52,9 @@ describe('Unit - Emergency - Handle emergency event', () => {
         const req: any = {
             userID: 0,
             event: {
+                save: saveSpy,
                 handled: false,
                 id: 1,
-                save: saveSpy,
                 toJSON: () => req.event
             },
             params: {}
@@ -71,9 +74,5 @@ describe('Unit - Emergency - Handle emergency event', () => {
         expect(messageSpy.lastCall.args).to.have.lengthOf(2);
         expect(messageSpy.lastCall.args[0]).to.equal(req.event.id);
         expect(messageSpy.lastCall.args[1]).to.deep.equal([5, 4]);
-    });
-
-    afterEach(async () => {
-        sandbox.restore();
     });
 });

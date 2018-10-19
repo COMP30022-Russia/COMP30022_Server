@@ -9,22 +9,20 @@ import {
 describe('Navigation call', () => {
     const agent = request.agent(app);
 
-    // Tokens
     let carerToken: string;
-    let APToken: string;
+    let apToken: string;
     let navSessionID: number;
-
     let callID: number;
 
     before(async () => {
         // Register as carers/APs and get login token
         carerToken = (await createCarer('nav_call_accept_carer')).token;
-        APToken = (await createAP('nav_call_accept_ap')).token;
+        apToken = (await createAP('nav_call_accept_ap')).token;
         // Associate AP with carer
-        const association = await createAssociation(carerToken, APToken);
+        const association = await createAssociation(carerToken, apToken);
         // Create navigation session for association
         const navSession = await createNavigationSession(
-            APToken,
+            apToken,
             association.id
         );
         navSessionID = navSession.id;
@@ -37,7 +35,7 @@ describe('Navigation call', () => {
     it('Accept call as initiator (Bad)', async () => {
         const res = await agent
             .post(`/call/${callID}/accept`)
-            .set('Authorization', 'Bearer ' + carerToken);
+            .set('Authorization', `Bearer ${carerToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(400);
     });
@@ -45,7 +43,7 @@ describe('Navigation call', () => {
     it('Accept call as receiver', async () => {
         const res = await agent
             .post(`/call/${callID}/accept`)
-            .set('Authorization', 'Bearer ' + APToken);
+            .set('Authorization', `Bearer ${apToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res.body).to.have.property('status');

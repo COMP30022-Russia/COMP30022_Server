@@ -2,10 +2,10 @@ import { buildDataMessage, sendMessage } from './';
 
 /**
  * Builds and sends an association message.
- * @param {string} currentUserName Name of current user.
- * @param {number} targetID ID of target.
+ * @param currentUserName Name of current user.
+ * @param targetID ID of target.
  */
-export default async (targetID: number) => {
+export const sendAssociationMessage = async (targetID: number) => {
     const message = buildDataMessage('association', {});
     await sendMessage(message, targetID);
 };

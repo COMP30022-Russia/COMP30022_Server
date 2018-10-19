@@ -1,5 +1,5 @@
 // Import controller functions
-import { jwt_verify } from '../helpers/jwt';
+import { jwtVerify } from '../helpers/jwt';
 import { getFirebaseTokensHelper } from '../controllers/notification/actions';
 import { Server, Namespace } from 'socket.io';
 
@@ -11,10 +11,10 @@ let namespace: Namespace;
  * Initialises/configures socket.io.
  * @param socket_io Socket IO instance.
  */
-export default (socket_io: Server) => {
+export default (socketIO: Server) => {
     // Authorization for connection
     // Adapted from https://stackoverflow.com/questions/36788831
-    socket_io.of('/socket').use(async (socket, next) => {
+    socketIO.of('/socket').use(async (socket, next) => {
         // If query parameters are missing
         if (
             !socket.handshake.query ||
@@ -37,23 +37,23 @@ export default (socket_io: Server) => {
         }
     });
 
-    io = socket_io;
+    io = socketIO;
     namespace = io.of('/socket');
 };
 
 /**
  * Receives and resends/emits server/client data messages.
- * @param {string[]} tokens List of Firebase tokens
- * @param {string} data_message Data to send.
+ * @param tokens List of Firebase tokens
+ * @param dataMessage Data to send.
  */
-export const sendServerMessage = (tokens: string[], data_message: string) => {
+export const sendServerMessage = (tokens: string[], dataMessage: string) => {
     return new Promise((resolve, reject) => {
         if (!namespace || !namespace.sockets) {
             reject('Something wrong with socket.io');
         }
 
         // Extract instanceIDs
-        const instanceIDs = tokens.map((t: string) => extractInstanceID(t));
+        const instanceIDs = tokens.map(extractInstanceID);
 
         // Send message to sockets with same instanceIDs
         for (const instanceID of instanceIDs) {
@@ -66,7 +66,7 @@ export const sendServerMessage = (tokens: string[], data_message: string) => {
                 ) {
                     namespace.connected[socket].emit(
                         'data_message',
-                        data_message
+                        dataMessage
                     );
                     break;
                 }
@@ -78,7 +78,7 @@ export const sendServerMessage = (tokens: string[], data_message: string) => {
 
 /**
  * Extracts Firebase instanceID from token.
- * @param {string} token Firebase token.
+ * @param token Firebase token.
  * @return Corresponding instanceID.
  */
 const extractInstanceID = (token: string) => {
@@ -87,17 +87,17 @@ const extractInstanceID = (token: string) => {
 
 /**
  * Verify socket.io connection authentication.
- * @param {string} auth_token Server auth token.
- * @param {string} firebase_token Firebase auth token.
- * @return {Promise<boolean>} Promise for success/failure.
+ * @param auth_token Server auth token.
+ * @param firebase_token Firebase auth token.
+ * @return Promise for success/failure.
  */
 const verifyAuthentication = async (
-    auth_token: string,
-    firebase_token: string
+    authToken: string,
+    firebaseToken: string
 ) => {
     // Fake authentication on non-production environments
     if (process.env.NODE_ENV !== 'production') {
-        if (auth_token && firebase_token) {
+        if (authToken && firebaseToken) {
             return true;
         } else {
             throw new Error('Invalid tokens');
@@ -107,14 +107,14 @@ const verifyAuthentication = async (
     // Decode auth token to user ID
     let userID: number;
     try {
-        userID = (await jwt_verify(auth_token)).id;
+        userID = (await jwtVerify(authToken)).id;
     } catch (err) {
         throw new Error('Auth token is invalid');
     }
 
     // Verify that token is in list of user's tokens
     const tokens: string[] = await getFirebaseTokensHelper(userID);
-    if (!tokens.includes(firebase_token)) {
+    if (!tokens.includes(firebaseToken)) {
         throw new Error('Token is invalid');
     }
 };

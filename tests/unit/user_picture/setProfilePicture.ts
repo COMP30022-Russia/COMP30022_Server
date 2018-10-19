@@ -1,13 +1,16 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
-import proxyquire from 'proxyquire';
-import { res, next } from '../index';
+import { res, next, wrapToJSON } from '../index';
 
 import models from '../../../models';
 import { setProfilePicture } from '../../../controllers/user_picture';
 
-describe('Unit - User Profile - Upload profile picture', () => {
+describe('User Profile - Upload profile picture', () => {
     const sandbox = sinon.createSandbox();
+
+    after(async () => {
+        sandbox.restore();
+    });
 
     it('Set picture', async () => {
         const req: any = {
@@ -20,10 +23,7 @@ describe('Unit - User Profile - Upload profile picture', () => {
 
         // Stub create function to return its argument
         sandbox.replace(models.ProfilePicture, 'create', (properties: any) => {
-            return {
-                ...properties,
-                toJSON: () => properties
-            };
+            return wrapToJSON(properties);
         });
 
         // Expect to get picture with mime and filename back
@@ -35,9 +35,5 @@ describe('Unit - User Profile - Upload profile picture', () => {
         expect(result.userId).to.equal(req.userID);
         expect(result.mime).to.equal(req.file.mimetype);
         expect(result.filename).to.equal(req.file.filename);
-    });
-
-    afterEach(async () => {
-        sandbox.restore();
     });
 });

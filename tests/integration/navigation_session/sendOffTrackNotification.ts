@@ -6,30 +6,28 @@ import { createNavigationSession } from '../helpers/navigation';
 describe('Navigation session', () => {
     const agent = request.agent(app);
 
-    // Tokens
     let carerToken: string;
-    let APToken: string;
+    let apToken: string;
     let navSessionID: number;
 
     before(async () => {
         // Register as carers/APs and get login token
         carerToken = (await createCarer('nav_off_track_carer')).token;
-        APToken = (await createAP('nav_off_track_ap')).token;
+        apToken = (await createAP('nav_off_track_ap')).token;
         // Associate AP with carer
-        const association = await createAssociation(carerToken, APToken);
+        const association = await createAssociation(carerToken, apToken);
         // Create navigation session for association
         const navSession = await createNavigationSession(
-            APToken,
+            apToken,
             association.id
         );
         navSessionID = navSession.id;
     });
 
     it('Send off track notification', async () => {
-        // First end session, expect { status: 'success' }
         const res = await agent
             .post(`/navigation/${navSessionID}/off_track`)
-            .set('Authorization', 'Bearer ' + APToken);
+            .set('Authorization', `Bearer ${apToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res.body).to.have.property('status');

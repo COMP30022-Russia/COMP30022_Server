@@ -4,25 +4,27 @@ import { createAP, createCarer, createAssociation } from '../helpers/user';
 
 describe('User details', () => {
     const agent = request.agent(app);
-    let APToken: string, carerToken: string;
+
+    let apToken: string;
+    let carerToken: string;
     let maliciousCarerToken: string;
     let association: any;
 
     before(async () => {
         // Create AP, carer and association
-        APToken = (await createAP('da1')).token;
+        apToken = (await createAP('da1')).token;
         carerToken = (await createCarer('dc1')).token;
         maliciousCarerToken = (await createCarer('dmc1')).token;
 
         // Create association
-        association = await createAssociation(APToken, carerToken);
+        association = await createAssociation(apToken, carerToken);
     });
 
     // Get AP details when AP does not have a location yet
-    it('Get AP details without location', async () => {
+    it('Get AP profile without location', async () => {
         const res = await agent
-            .get('/users/' + association.APId)
-            .set('Authorization', 'Bearer ' + carerToken);
+            .get(`/users/${association.APId}`)
+            .set('Authorization', `Bearer ${carerToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res.body).to.have.property('id');
@@ -31,18 +33,18 @@ describe('User details', () => {
         expect(res.body.location).to.be.null;
     });
 
-    it('Get AP details with location', async () => {
+    it('Get AP profile with location', async () => {
         // Update AP location
         const location = { lat: 1.23, lon: 9.87 };
         await agent
             .post('/me/location')
             .send(location)
-            .set('Authorization', 'Bearer ' + APToken);
+            .set('Authorization', `Bearer ${apToken}`);
 
-        // Expect returned result to have location
+        // Expect returned response to have location
         const res = await agent
-            .get('/users/' + association.APId)
-            .set('Authorization', 'Bearer ' + carerToken);
+            .get(`/users/${association.APId}`)
+            .set('Authorization', `Bearer ${carerToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res.body).to.have.property('id');
@@ -54,10 +56,10 @@ describe('User details', () => {
         expect(res.body.location.lon).to.equal(String(location.lon));
     });
 
-    it('Get Carer details', async () => {
+    it('Get carer profile', async () => {
         const res = await agent
-            .get('/users/' + association.carerId)
-            .set('Authorization', 'Bearer ' + APToken);
+            .get(`/users/${association.carerId}`)
+            .set('Authorization', `Bearer ${apToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res.body).to.have.property('id');
@@ -66,10 +68,10 @@ describe('User details', () => {
     });
 
     // Where the malicious carer is not associated with the target AP
-    it('Get AP details as malicious carer', async () => {
+    it('Get AP profile as malicious carer', async () => {
         const res = await agent
-            .get('/users/' + association.APId)
-            .set('Authorization', 'Bearer ' + maliciousCarerToken);
+            .get(`/users/${association.APId}`)
+            .set('Authorization', `Bearer ${maliciousCarerToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(403);
     });

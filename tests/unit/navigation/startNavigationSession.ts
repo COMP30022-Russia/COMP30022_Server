@@ -1,11 +1,11 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
 import { res, next, wrapToJSON } from '../index';
 
 import models from '../../../models';
 
-describe('Unit - Navigation - Start navigation session', () => {
+describe('Navigation - Start navigation session', () => {
     const sandbox = sinon.createSandbox();
 
     // Navigation controller
@@ -30,6 +30,10 @@ describe('Unit - Navigation - Start navigation session', () => {
                 }
             };
         });
+    });
+
+    afterEach(async () => {
+        sandbox.restore();
     });
 
     it('Start session as AP', async () => {
@@ -164,9 +168,5 @@ describe('Unit - Navigation - Start navigation session', () => {
         expect(result.message).to.equal(
             'Cannot start navigation session, user(s) are in session'
         );
-    });
-
-    afterEach(async () => {
-        sandbox.restore();
     });
 });

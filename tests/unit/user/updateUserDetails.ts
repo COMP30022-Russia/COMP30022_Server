@@ -1,14 +1,14 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
-import { res, next } from '../index';
+import { res, next, wrapToJSON } from '../index';
 
 import { updateUserDetails } from '../../../controllers/user';
 import models from '../../../models';
 
-describe('Unit - User Details', () => {
+describe('User Details', () => {
     const sandbox = sinon.createSandbox();
 
-    beforeEach(async () => {
+    before(async () => {
         const user: any = {
             id: 1,
             type: 'AP'
@@ -17,16 +17,16 @@ describe('Unit - User Details', () => {
         // Fake DB call to return properties
         sandbox.replace(models.User, 'findById', (id: number) => {
             return {
-                ...user,
-                toJSON: () => user,
+                ...wrapToJSON(user),
                 updateAttributes: (attributes: any) => {
-                    return {
-                        ...attributes,
-                        toJSON: () => attributes
-                    };
+                    return wrapToJSON(attributes);
                 }
             };
         });
+    });
+
+    after(async () => {
+        sandbox.restore();
     });
 
     it('Update nothing', async () => {
@@ -76,9 +76,5 @@ describe('Unit - User Details', () => {
         // @ts-ignore
         const result = await updateUserDetails(req, res, next);
         expect(result).to.deep.equal(modifications);
-    });
-
-    afterEach(async () => {
-        sandbox.restore();
     });
 });

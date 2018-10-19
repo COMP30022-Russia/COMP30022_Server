@@ -1,10 +1,9 @@
-import { expect, request } from 'chai';
-import sinon from 'sinon';
+import { expect } from 'chai';
 
 import { cleanUpNavigationCalls } from '../../../controllers/navigation';
 import { terminateIdlePendingCalls } from '../../../controllers/call';
 
-describe('Unit - Cron', () => {
+describe('Cron', () => {
     it('Clean up navigation sessions', async () => {
         const result = await cleanUpNavigationCalls();
         expect(result).to.be.an('array');

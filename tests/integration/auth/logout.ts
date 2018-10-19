@@ -2,13 +2,13 @@ import { expect, request } from 'chai';
 import app from '../../';
 import { createCarer } from '../helpers/user';
 
-describe('User logout', () => {
+describe('Auth', () => {
     const agent = request.agent(app);
 
-    // Tokens
+    // Auth token
     let userToken: string;
 
-    // The tokens that are added
+    // Define Firebase tokens of user
     const payload1 = {
         token: 'tok1',
         instanceID: 'inst1'
@@ -22,21 +22,21 @@ describe('User logout', () => {
         // Register as user
         userToken = (await createCarer('logout')).token;
 
-        // Add some tokens
+        // Add Firebase tokens
         await agent
             .post('/me/token')
-            .set('Authorization', 'Bearer ' + userToken)
+            .set('Authorization', `Bearer ${userToken}`)
             .send(payload1);
         await agent
             .post('/me/token')
-            .set('Authorization', 'Bearer ' + userToken)
+            .set('Authorization', `Bearer ${userToken}`)
             .send(payload2);
     });
 
     it('Logout without instanceID', async () => {
         const res = await agent
             .post('/me/logout')
-            .set('Authorization', 'Bearer ' + userToken);
+            .set('Authorization', `Bearer ${userToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(400);
     });
@@ -46,21 +46,21 @@ describe('User logout', () => {
         const res = await agent
             .post('/me/logout')
             .send({ instanceID: payload1.instanceID })
-            .set('Authorization', 'Bearer ' + userToken);
+            .set('Authorization', `Bearer ${userToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res.body).to.have.property('status');
         expect(res.body.status).to.equal('success');
 
-        // Check the token that is left
-        const r = await agent
+        // Check tokens of user
+        const resToken = await agent
             .get('/me/token')
-            .set('Authorization', 'Bearer ' + userToken);
-        expect(r).to.be.json;
-        expect(r).to.have.status(200);
-        expect(r.body).to.have.property('id');
-        expect(r.body).to.have.property('tokens');
-        expect(r.body.tokens).to.have.lengthOf(1);
-        expect(r.body.tokens[0]).to.equal(payload2.token);
+            .set('Authorization', `Bearer ${userToken}`);
+        expect(resToken).to.be.json;
+        expect(resToken).to.have.status(200);
+        expect(resToken.body).to.have.property('id');
+        expect(resToken.body).to.have.property('tokens');
+        expect(resToken.body.tokens).to.have.lengthOf(1);
+        expect(resToken.body.tokens[0]).to.equal(payload2.token);
     });
 });

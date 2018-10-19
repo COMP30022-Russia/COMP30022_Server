@@ -1,12 +1,16 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
-import { res, next } from '../index';
+import { next, res } from '../index';
 
 import models from '../../../models';
 import { getMessagePicture } from '../../../controllers/chat_picture';
 
-describe('Unit - Chat - Get message picture', () => {
+describe('Chat - Get message picture', () => {
     const sandbox = sinon.createSandbox();
+
+    afterEach(async () => {
+        sandbox.restore();
+    });
 
     // When picture is not associated with association or when picture
     // id is not correct
@@ -40,7 +44,7 @@ describe('Unit - Chat - Get message picture', () => {
         // Redefine res to have setHeader and sendFile
         const setHeaderSpy = sinon.spy();
         const sendFileSpy = sinon.spy();
-        const res: any = {
+        const fileRes: any = {
             setHeader: setHeaderSpy,
             sendFile: sendFileSpy,
             status: sinon.spy()
@@ -60,7 +64,7 @@ describe('Unit - Chat - Get message picture', () => {
         );
 
         // @ts-ignore
-        const result = await getMessagePicture(req, res, next);
+        const result = await getMessagePicture(req, fileRes, next);
 
         // Check spies
         expect(setHeaderSpy.calledOnce).to.equal(true);
@@ -85,7 +89,7 @@ describe('Unit - Chat - Get message picture', () => {
 
         // Redefine res
         const statusSpy = sinon.spy();
-        const res: any = {
+        const fileRes: any = {
             status: statusSpy
         };
 
@@ -103,7 +107,7 @@ describe('Unit - Chat - Get message picture', () => {
         );
 
         // @ts-ignore
-        const result: any = await getMessagePicture(req, res, next);
+        const result: any = await getMessagePicture(req, fileRes, next);
         expect(result).to.be.an('error');
         expect(result.message).to.equal(
             'Picture has not been received by server yet'
@@ -111,9 +115,5 @@ describe('Unit - Chat - Get message picture', () => {
 
         // Check spies
         expect(statusSpy.calledOnce).to.equal(true);
-    });
-
-    afterEach(async () => {
-        sandbox.restore();
     });
 });

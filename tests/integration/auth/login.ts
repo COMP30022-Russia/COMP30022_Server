@@ -1,7 +1,7 @@
 import { expect, request } from 'chai';
 import app from '../../';
 
-describe('User login', () => {
+describe('Auth', () => {
     const agent = request.agent(app);
 
     // Define test user

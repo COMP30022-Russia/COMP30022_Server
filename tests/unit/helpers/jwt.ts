@@ -1,19 +1,19 @@
-import { expect, request } from 'chai';
-import { jwt_sign, jwt_verify } from '../../../helpers/jwt';
+import { expect } from 'chai';
+import { jwtSign, jwtVerify } from '../../../helpers/jwt';
 
-describe('Unit - Helpers - JWT', () => {
+describe('Helpers - JWT', () => {
     it('Sign', async () => {
         const payload = {
             foo: 'bar'
         };
 
         // Sign
-        const signed = await jwt_sign(payload);
+        const signed = await jwtSign(payload);
         expect(signed).to.be.a('string');
 
         // Sign timed token
-        const signed_timed = await jwt_sign(payload, '1m');
-        expect(signed).to.be.a('string');
+        const signedTimed = await jwtSign(payload, '1m');
+        expect(signedTimed).to.be.a('string');
     });
 
     it('Verify/Decode', async () => {
@@ -21,10 +21,9 @@ describe('Unit - Helpers - JWT', () => {
             foo: 'bar'
         };
 
-        // Sign
-        const signed = await jwt_sign(payload);
-
-        const decoded = await jwt_verify(signed);
+        // Sign and decode
+        const signed = await jwtSign(payload);
+        const decoded = await jwtVerify(signed);
         expect(decoded).to.have.property('foo');
         expect(decoded.foo).to.equal('bar');
     });
@@ -35,10 +34,9 @@ describe('Unit - Helpers - JWT', () => {
         };
 
         // Sign
-        const signed = await jwt_sign(payload, '-1s');
-
+        const signed = await jwtSign(payload, '-1s');
         // Try to decode expired token
-        const decoded = jwt_verify(signed);
+        const decoded = jwtVerify(signed);
         expect(decoded).to.be.rejectedWith(Error);
     });
 
@@ -48,10 +46,9 @@ describe('Unit - Helpers - JWT', () => {
         };
 
         // Sign
-        const signed = (await jwt_sign(payload)) + 'a';
-
-        // Try to decode expired token
-        const decoded = jwt_verify(signed);
+        const signed = `${await jwtSign(payload)}a`;
+        // Try to decode invalid token
+        const decoded = jwtVerify(signed);
         expect(decoded).to.be.rejectedWith(Error);
     });
 });

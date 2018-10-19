@@ -21,7 +21,7 @@ const associationSchema = {
 export default class Association extends Sequelize.Model {
     /**
      * Initalises the model with the specified attributes and options.
-     * @param {sequelize} sequelize Sequelize instance.
+     * @param sequelize Sequelize instance.
      */
     static init(sequelize: Sequelize.Sequelize) {
         return super.init(associationSchema, { sequelize });
@@ -29,8 +29,8 @@ export default class Association extends Sequelize.Model {
 
     /**
      * Retrieves the ID of the opposite party (partner).
-     * @param {number} myID The current user's ID.
-     * @return {Promise} Promise object for ID of opposite party.
+     * @param myID The current user's ID.
+     * @return Promise object for ID of opposite party.
      */
     getPartnerID = function(myID: number): Promise<number> {
         return new Promise((resolve, reject) => {

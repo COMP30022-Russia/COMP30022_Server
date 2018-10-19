@@ -1,18 +1,21 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
 import { res, next, wrapToJSON } from '../index';
-import { Op } from 'sequelize';
 
 import models from '../../../models';
 
-describe('Unit - Navigation call', () => {
+describe('Navigation call', () => {
     const sandbox = sinon.createSandbox();
-    const sendSpy = sinon.spy();
+
+    // Navigation controller
     let navigation: any;
 
+    // Spy on message sending
+    const sendSpy = sinon.spy();
+
     before(async () => {
-        // Spy on message sending
+        // Import navigation controller with spy
         navigation = proxyquire('../../../controllers/navigation', {
             './notification/call': {
                 sendNavigationCallRequestStartMessage: sendSpy
@@ -29,7 +32,7 @@ describe('Unit - Navigation call', () => {
         // Replace name call
         sandbox.replace(models.User, 'scope', (_: any) => {
             return {
-                findById: (_: number) => {
+                findById: (__: number) => {
                     return { name: 'foo' };
                 }
             };

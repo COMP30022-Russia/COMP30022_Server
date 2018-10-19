@@ -1,13 +1,13 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
 import { res, next } from '../index';
 
-import models from '../../../models';
-
-describe('Unit - Navigation call', () => {
-    const sandbox = sinon.createSandbox();
+describe('Navigation call', () => {
+    // Call controller
     let call: any;
+
+    // Spy on message sending
     const sendSpy = sinon.spy();
 
     before(async () => {

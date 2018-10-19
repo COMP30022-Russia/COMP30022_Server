@@ -1,11 +1,9 @@
-import { expect, request } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
 import { res, next } from '../index';
 
-import models from '../../../models';
-
-describe('Unit - Navigation - End navigation session', () => {
+describe('Navigation - End navigation session', () => {
     const sandbox = sinon.createSandbox();
 
     // Navigation controller
@@ -29,6 +27,10 @@ describe('Unit - Navigation - End navigation session', () => {
             },
             './call': { terminateCall: terminateSpy }
         });
+    });
+
+    afterEach(async () => {
+        sandbox.restore();
     });
 
     it('End session', async () => {
@@ -77,14 +79,14 @@ describe('Unit - Navigation - End navigation session', () => {
     });
 
     it('End session with call', async () => {
-        const updateSpy = sinon.spy();
+        const updateSpy = sinon.spy(() => session.sync++);
         const sync = 1;
         const session = {
             id: 1,
             APId: 2,
             carerId: 3,
             active: true,
-            updateAttributes: sinon.fake(),
+            updateAttributes: updateSpy,
             Call: { state: 'Ongoing' },
             sync
         };
@@ -108,9 +110,5 @@ describe('Unit - Navigation - End navigation session', () => {
             state: 'Ongoing'
         });
         expect(terminateSpy.lastCall.args[1]).to.equal('nav_session_end');
-    });
-
-    afterEach(async () => {
-        sandbox.restore();
     });
 });

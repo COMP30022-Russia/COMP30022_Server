@@ -6,20 +6,19 @@ import { createNavigationSession } from '../helpers/navigation';
 describe('Navigation session', () => {
     const agent = request.agent(app);
 
-    // Tokens
     let carerToken: string;
-    let APToken: string;
+    let apToken: string;
     let navSessionID: number;
 
     before(async () => {
         // Register as carers/APs and get login token
         carerToken = (await createCarer('nav_get_route_carer')).token;
-        APToken = (await createAP('nav_get_route_ap')).token;
+        apToken = (await createAP('nav_get_route_ap')).token;
         // Associate AP with carer
-        const association = await createAssociation(carerToken, APToken);
+        const association = await createAssociation(carerToken, apToken);
         // Create navigation session for association
         const navSession = await createNavigationSession(
-            APToken,
+            apToken,
             association.id
         );
         navSessionID = navSession.id;
@@ -28,7 +27,7 @@ describe('Navigation session', () => {
     it('Get empty route', async () => {
         const res = await agent
             .get(`/navigation/${navSessionID}/route`)
-            .set('Authorization', 'Bearer ' + APToken);
+            .set('Authorization', `Bearer ${apToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res.body).to.deep.equal({});
@@ -43,17 +42,18 @@ describe('Navigation session', () => {
         await agent
             .post(`/navigation/${navSessionID}/location`)
             .send(location)
-            .set('Authorization', 'Bearer ' + APToken);
+            .set('Authorization', `Bearer ${apToken}`);
 
         // Set destination
         await agent
             .post(`/navigation/${navSessionID}/destination`)
             .send({ name: 'A', placeID: 'ChIJSyUHXNRC1moRbf8lt-Jjy-o' })
-            .set('Authorization', 'Bearer ' + APToken);
+            .set('Authorization', `Bearer ${apToken}`);
 
+        // Get route
         const res = await agent
             .get(`/navigation/${navSessionID}/route`)
-            .set('Authorization', 'Bearer ' + APToken);
+            .set('Authorization', `Bearer ${apToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res.body).to.have.property('isWalking');

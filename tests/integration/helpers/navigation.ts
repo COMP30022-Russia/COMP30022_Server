@@ -5,9 +5,9 @@ const agent = request.agent(app);
 /**
  * Creates a navigation session for the given association, initiated by the
  * given user.
- * @param {string} token Token of initiator user.
- * @param {number} associationID Association ID.
- * @return {Promise} Promise for navigation session.
+ * @param token Token of initiator user.
+ * @param associationID Association ID.
+ * @return Promise for navigation session.
  */
 export const createNavigationSession = async (
     token: string,
@@ -15,15 +15,15 @@ export const createNavigationSession = async (
 ): Promise<any> => {
     const res = await agent
         .post(`/associations/${associationID}/navigation`)
-        .set('Authorization', 'Bearer ' + token);
+        .set('Authorization', `Bearer ${token}`);
     return res.body;
 };
 
 /**
  * Starts a navigation call, initiated by the given user.
- * @param {string} token Token of initiator user.
- * @param {number} navSessionID ID of session.
- * @return {Promise} Promise for call.
+ * @param token Token of initiator user.
+ * @param navSessionID ID of session.
+ * @return Promise for call.
  */
 export const startNavigationCall = async (
     token: string,
@@ -31,6 +31,6 @@ export const startNavigationCall = async (
 ): Promise<any> => {
     const res = await agent
         .post(`/navigation/${navSessionID}/call`)
-        .set('Authorization', 'Bearer ' + token);
+        .set('Authorization', `Bearer ${token}`);
     return res.body;
 };

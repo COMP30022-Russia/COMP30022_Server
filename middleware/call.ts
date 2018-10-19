@@ -4,7 +4,7 @@ import models from '../models';
 
 /**
  * Retrieves the specified voice/video call.
- * @param {boolean} [allowTerminated] Allow requests when call is terminated.
+ * @param [allowTerminated] Allow requests when call is terminated.
  * @return Express middleware
  */
 export let retrieveCall = (allowTerminated = false) => {

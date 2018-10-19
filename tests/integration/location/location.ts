@@ -7,38 +7,39 @@ describe('Location', () => {
 
     // Tokens
     let carerToken: string;
-    let APToken: string;
+    let apToken: string;
     let maliciousCarerToken: string;
-    let freshAPToken: string;
+    let freshapToken: string;
 
     before(async () => {
         // Register as carers/APs and get login token
         carerToken = (await createCarer('lc1')).token;
-        APToken = (await createAP('lap1')).token;
+        apToken = (await createAP('lap1')).token;
         maliciousCarerToken = (await createCarer('lmc1')).token;
-        freshAPToken = (await createAP('lap2')).token;
+        freshapToken = (await createAP('lap2')).token;
+
         // Associate AP with carer
-        await createAssociation(carerToken, APToken);
+        await createAssociation(carerToken, apToken);
     });
 
-    it('Set location as type: AP user', async () => {
-        const r = await agent
+    it('Set location as AP', async () => {
+        const res = await agent
             .post('/me/location')
             .send({ lat: 1.23, lon: 9.87 })
-            .set('Authorization', 'Bearer ' + APToken);
-        expect(r).to.be.json;
-        expect(r).to.have.status(200);
-        expect(r.body).to.have.property('status');
-        expect(r.body.status).to.equal('success');
+            .set('Authorization', `Bearer ${apToken}`);
+        expect(res).to.be.json;
+        expect(res).to.have.status(200);
+        expect(res.body).to.have.property('status');
+        expect(res.body.status).to.equal('success');
     });
 
-    it('Try to set location as type: carer user', async () => {
-        const r = await agent
+    it('Try to set location as carer', async () => {
+        const res = await agent
             .post('/me/location')
             .send({ lat: 1.23, lon: 9.87 })
-            .set('Authorization', 'Bearer ' + carerToken);
-        expect(r).to.be.json;
-        expect(r).to.have.status(400);
+            .set('Authorization', `Bearer ${carerToken}`);
+        expect(res).to.be.json;
+        expect(res).to.have.status(400);
     });
 
     it('Get AP location', async () => {
@@ -46,32 +47,32 @@ describe('Location', () => {
         const newLocation = { lat: 3.45, lon: 2.43 };
 
         // Make query to update location as AP
-        const updateQuery = await agent
+        const updateQueryRes = await agent
             .post('/me/location')
             .send(newLocation)
-            .set('Authorization', 'Bearer ' + APToken);
-        expect(updateQuery).to.be.json;
-        expect(updateQuery).to.have.status(200);
-        expect(updateQuery.body).to.have.property('status');
-        expect(updateQuery.body.status).to.equal('success');
+            .set('Authorization', `Bearer ${apToken}`);
+        expect(updateQueryRes).to.be.json;
+        expect(updateQueryRes).to.have.status(200);
+        expect(updateQueryRes.body).to.have.property('status');
+        expect(updateQueryRes.body.status).to.equal('success');
 
         // Perform get query to get location which was set
         // Note: Sequelize returns numeric types as strings
-        const getQuery = await agent
+        const getQueryRes = await agent
             .get('/me/location')
-            .set('Authorization', 'Bearer ' + APToken);
-        expect(getQuery).to.be.json;
-        expect(getQuery).to.have.status(200);
-        expect(getQuery.body).to.have.property('lon');
-        expect(getQuery.body).to.have.property('lat');
-        expect(getQuery.body.lon).to.equal(String(newLocation.lon));
-        expect(getQuery.body.lat).to.equal(String(newLocation.lat));
+            .set('Authorization', `Bearer ${apToken}`);
+        expect(getQueryRes).to.be.json;
+        expect(getQueryRes).to.have.status(200);
+        expect(getQueryRes.body).to.have.property('lon');
+        expect(getQueryRes.body).to.have.property('lat');
+        expect(getQueryRes.body.lon).to.equal(String(newLocation.lon));
+        expect(getQueryRes.body.lat).to.equal(String(newLocation.lat));
     });
 
     it('Get location of AP who has not submitted a location', async () => {
         const res = await agent
             .get('/me/location')
-            .set('Authorization', 'Bearer ' + freshAPToken);
+            .set('Authorization', `Bearer ${freshapToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(400);
     });
@@ -80,21 +81,21 @@ describe('Location', () => {
         // First, get associations of carer
         const associations = await agent
             .get('/me/associations')
-            .set('Authorization', 'Bearer ' + carerToken);
+            .set('Authorization', `Bearer ${carerToken}`);
         const associatedAPID = associations.body[0].APId;
 
-        // Arbitrarily define a location
+        // Arbitrarily define a new location
         const newLocation = { lat: 101.3, lon: 91.2 };
         // Make query to update location of AP again
-        const updateQuery = await agent
+        await agent
             .post('/me/location')
             .send(newLocation)
-            .set('Authorization', 'Bearer ' + APToken);
+            .set('Authorization', `Bearer ${apToken}`);
 
         // As carer, get location of AP
         const res = await agent
-            .get('/users/' + String(associatedAPID) + '/location')
-            .set('Authorization', 'Bearer ' + carerToken);
+            .get(`/users/${associatedAPID}/location`)
+            .set('Authorization', `Bearer ${carerToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res.body).to.have.property('lon');
@@ -108,13 +109,13 @@ describe('Location', () => {
         // (we assume that the malicious carer has gained it somehow)
         const associations = await agent
             .get('/me/associations')
-            .set('Authorization', 'Bearer ' + carerToken);
+            .set('Authorization', `Bearer ${carerToken}`);
         const associatedAPID = associations.body[0].APId;
 
         // As malicious carer, try to get location of AP
         const res = await agent
-            .get('/users/' + String(associatedAPID) + '/location')
-            .set('Authorization', 'Bearer ' + maliciousCarerToken);
+            .get(`/users/${associatedAPID}/location`)
+            .set('Authorization', `Bearer ${maliciousCarerToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(403);
         expect(res.body.message).to.equal('User is not party of association');

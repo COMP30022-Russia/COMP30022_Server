@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { jwt_sign } from '../helpers/jwt';
+import { jwtSign } from '../helpers/jwt';
 import models from '../models';
 
 // User registration
@@ -83,7 +83,7 @@ export const login = async (
         if (await user.verifyPassword(password)) {
             return res.json({
                 ...user.toJSON(),
-                token: await jwt_sign({ id: user.id })
+                token: await jwtSign({ id: user.id })
             });
         } else {
             throw new Error('Username/password incorrect');

@@ -22,7 +22,7 @@ app.use(helmet());
 app.use('/', router);
 
 // Catch 404 and forward to error handler
-app.use(function(req: Request, res: Response, next: NextFunction) {
+app.use((req: Request, res: Response, next: NextFunction) => {
     const err = new Error('Not Found');
     res.status(404);
     next(err);
@@ -30,7 +30,7 @@ app.use(function(req: Request, res: Response, next: NextFunction) {
 
 // Error handler
 // Adapted from express-generator - Licensed under MIT
-app.use(function(err: Error, req: Request, res: Response, next: NextFunction) {
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     // Only provide stack trace in development
     const response: { message?: string; stack?: string } = {};
     response.message = err.message;

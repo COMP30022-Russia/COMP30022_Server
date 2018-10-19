@@ -12,8 +12,8 @@ import { terminateCall } from './call';
 /**
  * Returns value indicating whether indicated user is in an active
  * navigation session.
- * @param {number} userID ID of user.
- * @return {Promise<number|boolean>} ID of active session or 'false'.
+ * @param userID ID of user.
+ * @return ID of active session or 'false'.
  */
 const isInSession = async (userID: number): Promise<number | boolean> => {
     const session = await models.Session.findOne({
@@ -217,7 +217,7 @@ const NAVIGATION_SESSION_IDLE_TIMEOUT: number = 24 * 60 * 60 * 1000;
  * Performs navigation call cleanup by terminating idle calls.
  */
 export const cleanUpNavigationCalls = async () => {
-    return await models.Session.update(
+    return models.Session.update(
         { active: false },
         {
             where: {

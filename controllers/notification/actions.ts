@@ -53,8 +53,8 @@ export const getFirebaseTokens = async (
 
 /**
  * Retrieves the Firebase tokens of the specified user as an array.
- * @param {number} userID ID of user.
- * @returns {Promise} Promise for Firebase tokens of specified user.
+ * @param userID ID of user.
+ * @return Promise for Firebase tokens of specified user.
  */
 export const getFirebaseTokensHelper = async (
     userID: number
@@ -69,9 +69,9 @@ export const getFirebaseTokensHelper = async (
 
 /**
  * Replaces an old token with a new token.
- * @param {string} oldToken The old token.
- * @param {string} newToken The new token.
- * @returns {Promise} Promise for completion.
+ * @param oldToken The old token.
+ * @param newToken The new token.
+ * @return Promise for completion.
  */
 export const replaceFirebaseToken = async (
     oldToken: string,
@@ -83,8 +83,8 @@ export const replaceFirebaseToken = async (
 
 /**
  * Removes a Firebase token.
- * @param {string} token The token.
- * @returns {Promise} Promise for completion.
+ * @param token The token.
+ * @return Promise for completion.
  */
 export const removeFirebaseToken = async (token: string): Promise<void> => {
     await models.FirebaseToken.destroy({ where: { token } });

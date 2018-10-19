@@ -6,11 +6,11 @@ import {
 
 /**
  * Builds and sends an emergency data and notification message.
- * @param {eventID} eventID ID of emergency event.
- * @param {string} senderID ID of sender.
- * @param {string} senderName Name of sender.
- * @param {string} mobileNumber Mobile number of sender.
- * @param {[number]} targetIDs ID of targets.
+ * @param eventID ID of emergency event.
+ * @param senderID ID of sender.
+ * @param senderName Name of sender.
+ * @param mobileNumber Mobile number of sender.
+ * @param targetIDs ID of targets.
  */
 export const sendEmergencyMessage = async (
     eventID: number,
@@ -19,29 +19,29 @@ export const sendEmergencyMessage = async (
     mobileNumber: string,
     targetIDs: [number]
 ) => {
-    const data_payload = { eventID, senderID, mobileNumber, senderName };
+    const dataPayload = { eventID, senderID, mobileNumber, senderName };
     const notificationMessage = buildAndroidNotificationMessage(
         `Emergency event`,
         `${senderName} has raised an emergency`
     );
-    const dataMessage = buildDataMessage('emergency_started', data_payload);
+    const dataMessage = buildDataMessage('emergency_started', dataPayload);
     await sendMessage({ ...dataMessage, ...notificationMessage }, targetIDs);
 };
 
 /**
  * Sends an emergency event handled message.
- * @param {eventID} eventID ID of emergency event.
- * @param {[number]} targetIDs ID of targets.
+ * @param eventID ID of emergency event.
+ * @param targetIDs ID of targets.
  */
 export const sendEmergencyHandledMessage = async (
     eventID: number,
     targetIDs: [number]
 ) => {
-    const data_payload = { eventID };
+    const dataPayload = { eventID };
     const notificationMessage = buildAndroidNotificationMessage(
         `Emergency handled`,
         `Emergency event has been handled`
     );
-    const dataMessage = buildDataMessage('emergency_handled', data_payload);
+    const dataMessage = buildDataMessage('emergency_handled', dataPayload);
     await sendMessage({ ...dataMessage, ...notificationMessage }, targetIDs);
 };

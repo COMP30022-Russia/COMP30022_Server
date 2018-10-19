@@ -9,20 +9,19 @@ import {
 describe('Navigation call', () => {
     const agent = request.agent(app);
 
-    // Tokens
     let carerToken: string;
-    let APToken: string;
+    let apToken: string;
     let callID: number;
     let navSessionID: number;
 
     before(async () => {
         // Register as carers/APs and get login token
         carerToken = (await createCarer('nav_call_failure_carer')).token;
-        APToken = (await createAP('nav_call_failure_ap')).token;
+        apToken = (await createAP('nav_call_failure_ap')).token;
         // Associate AP with carer
-        const association = await createAssociation(carerToken, APToken);
+        const association = await createAssociation(carerToken, apToken);
         // Create navigation session for association
-        const session = await createNavigationSession(APToken, association.id);
+        const session = await createNavigationSession(apToken, association.id);
         navSessionID = session.id;
 
         // Create call
@@ -34,29 +33,30 @@ describe('Navigation call', () => {
         // Note that default threshold is currently 5
         // Trigger failure 4 times
         // Call should still be active
-        for (const i in [...Array(4).keys()]) {
-            const res = await agent
+        for (const _ of Array(4).keys()) {
+            const failRes = await agent
                 .post(`/call/${callID}/failure`)
-                .set('Authorization', 'Bearer ' + APToken);
-            expect(res.body).have.property('status');
-            expect(res.body.status).to.equal('success');
+                .set('Authorization', `Bearer ${apToken}`);
+            expect(failRes.body).have.property('status');
+            expect(failRes.body.status).to.equal('success');
         }
-        const r1 = await agent
-            .get(`/call/${callID}`)
-            .set('Authorization', 'Bearer ' + APToken);
-        expect(r1.body).to.have.property('state');
-        expect(r1.body.state).to.equal('Pending');
-
-        // Call should be terminated after 5th call
         const res = await agent
-            .post(`/call/${callID}/failure`)
-            .set('Authorization', 'Bearer ' + APToken);
-        expect(res.body).have.property('status');
-        expect(res.body.status).to.equal('success');
-        const r2 = await agent
             .get(`/call/${callID}`)
-            .set('Authorization', 'Bearer ' + APToken);
-        expect(r2.body).to.have.property('state');
-        expect(r2.body.state).to.equal('Terminated');
+            .set('Authorization', `Bearer ${apToken}`);
+        expect(res.body).to.have.property('state');
+        expect(res.body.state).to.equal('Pending');
+
+        // Terminate one more time
+        const fifthTerminateRes = await agent
+            .post(`/call/${callID}/failure`)
+            .set('Authorization', `Bearer ${apToken}`);
+        expect(fifthTerminateRes.body).have.property('status');
+        expect(fifthTerminateRes.body.status).to.equal('success');
+        // Call should be terminated now
+        const afterTerminateRes = await agent
+            .get(`/call/${callID}`)
+            .set('Authorization', `Bearer ${apToken}`);
+        expect(afterTerminateRes.body).to.have.property('state');
+        expect(afterTerminateRes.body.state).to.equal('Terminated');
     });
 });

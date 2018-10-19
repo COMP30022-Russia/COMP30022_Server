@@ -1,7 +1,12 @@
 // Taken from https://github.com/Microsoft/TypeScript-Node-Starter
 // Licensed under MIT
 {
-    "rules": {
+      "linterOptions": {
+          "exclude": [
+              "node_modules/**"
+          ]
+      },
+      "rules": {
         "class-name": true,
         "comment-format": [
             true,
@@ -58,6 +63,27 @@
         "no-trailing-whitespace": true,
         "no-null-keyword": true,
         "prefer-const": true,
-        "jsdoc-format": true
+        "jsdoc-format": true,
+        "only-arrow-functions": [true, "allow-declarations", "allow-named-functions"],
+        "radix": true,
+        "triple-equals": [true, "allow-null-check"],
+        "object-literal-shorthand": true,
+        "no-inferrable-types": true,
+        "no-angle-bracket-type-assertion": true,
+        "curly": true,
+        "no-empty": [true],
+        "no-unnecessary-callback-wrapper": true,
+        "one-variable-per-declaration": true,
+        "max-line-length": [true, 90],
+        "no-return-await": true,
+        "prefer-object-spread": true,
+        "no-console": [true, "debug", "log", "time", "timeEnd", "trace"],
+        "no-shadowed-variable": true,
+        "no-redundant-jsdoc": true,
+        "jsdoc-format": true,
+        "prefer-template": true,
+        "no-invalid-this": true,
+        "forin": true,
+        "variable-name": true
     }
 }

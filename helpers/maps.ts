@@ -2,14 +2,16 @@ import https from 'https';
 
 // Key for Google Maps Directions API
 const KEY = process.env.DIRECTIONS_API_KEY;
+// URL prefix for API
+const API_URL = 'https://maps.googleapis.com/maps/api/directions/json?';
 
 /**
  * Retrieves a route from Google Maps Directions API.
- * @param {boolean} isWalking Is walking mode.
- * @param {string} placeID Google Maps Place ID.
- * @param {number} lat Latitude of current location.
- * @param {number} lon Longitude of current location.
- * @return {Promise} Promise for query result.
+ * @param isWalking Is walking mode.
+ * @param placeID Google Maps Place ID.
+ * @param lat Latitude of current location.
+ * @param lon Longitude of current location.
+ * @return Promise for query result.
  */
 export default (
     isWalking: boolean,
@@ -18,7 +20,7 @@ export default (
     lon: number
 ) => {
     // Convert mode to form accepted by API
-    const mode = isWalking ? 'walking' : 'transit';
+    const apiMode = isWalking ? 'walking' : 'transit';
 
     // If not in production, return fake response (as API calls are expensive)
     if (process.env.NODE_ENV !== 'production') {
@@ -33,28 +35,31 @@ export default (
     }
 
     return new Promise((resolve, reject) => {
+        // Build query URL
+        const origin = `origin=${lat},${lon}`;
+        const destination = `destination=place_id:${placeID}`;
+        const mode = `mode=${apiMode}`;
+        const query = `${API_URL}&${origin}&${destination}&${mode}&key=${KEY}`;
+
         https
-            .get(
-                `https://maps.googleapis.com/maps/api/directions/json?origin=${lat},${lon}&destination=place_id:${placeID}&mode=${mode}&key=${KEY}`,
-                res => {
-                    let data = '';
+            .get(query, res => {
+                let data = '';
 
-                    // Receive data
-                    res.on('data', (chunk: any) => {
-                        data += chunk;
-                    });
+                // Receive data
+                res.on('data', (chunk: any) => {
+                    data += chunk;
+                });
 
-                    // Whole response received, parse JSON and return
-                    res.on('end', () => {
-                        // Ensure status code is 200
-                        if (res.statusCode != 200) {
-                            reject(new Error('Maps API error'));
-                        }
+                // Whole response received, parse JSON and return
+                res.on('end', () => {
+                    // Ensure status code is 200
+                    if (res.statusCode !== 200) {
+                        reject(new Error('Maps API error'));
+                    }
 
-                        resolve(JSON.parse(data));
-                    });
-                }
-            )
+                    resolve(JSON.parse(data));
+                });
+            })
             .on('error', err => {
                 reject(err);
             });

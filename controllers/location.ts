@@ -3,8 +3,8 @@ import models from '../models';
 
 /**
  * Retrieves the most recent location of the specified user
- * @param {number} userID ID of user.
- * @return {Promise} Promise for the location of the user.
+ * @param userID ID of user.
+ * @return Promise for the location of the user.
  */
 const getLocation = async (userID: number): Promise<any> => {
     // Get specified user

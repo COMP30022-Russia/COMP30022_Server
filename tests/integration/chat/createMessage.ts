@@ -2,26 +2,28 @@ import { expect, request } from 'chai';
 import app from '../../';
 import { createAP, createCarer, createAssociation } from '../helpers/user';
 
-describe('Chat - Create Message', () => {
+describe('Chat', () => {
     const agent = request.agent(app);
-    let APToken: string, carerToken: string;
+
+    let apToken: string;
+    let carerToken: string;
     let associationID: number;
 
     before(async () => {
         // Create AP, carer
-        APToken = (await createAP('ca1')).token;
+        apToken = (await createAP('ca1')).token;
         carerToken = (await createCarer('cc1')).token;
 
         // Create association
-        const association = await createAssociation(APToken, carerToken);
+        const association = await createAssociation(apToken, carerToken);
         associationID = association.id;
     });
 
     it('Carer creates message', async () => {
         const payload = { content: 'Hello world' };
         const res = await agent
-            .post('/associations/' + associationID + '/chat')
-            .set('Authorization', 'Bearer ' + carerToken)
+            .post(`/associations/${associationID}` + '/chat')
+            .set('Authorization', `Bearer ${carerToken}`)
             .send(payload);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
@@ -32,8 +34,8 @@ describe('Chat - Create Message', () => {
     it('AP creates message', async () => {
         const payload = { content: 'Hello world back' };
         const res = await agent
-            .post('/associations/' + associationID + '/chat')
-            .set('Authorization', 'Bearer ' + APToken)
+            .post(`/associations/${associationID}` + '/chat')
+            .set('Authorization', `Bearer ${apToken}`)
             .send(payload);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
@@ -44,8 +46,8 @@ describe('Chat - Create Message', () => {
     it('Message without payload', async () => {
         const payload = { content: '' };
         const res = await agent
-            .post('/associations/' + associationID + '/chat')
-            .set('Authorization', 'Bearer ' + APToken)
+            .post(`/associations/${associationID}` + '/chat')
+            .set('Authorization', `Bearer ${apToken}`)
             .send(payload);
         expect(res).to.be.json;
         expect(res).to.have.status(400);

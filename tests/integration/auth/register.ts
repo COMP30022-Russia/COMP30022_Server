@@ -1,7 +1,7 @@
 import { expect, request } from 'chai';
 import app from '../../';
 
-describe('User register', () => {
+describe('Auth', () => {
     const agent = request.agent(app);
 
     it('Register as Carer', async () => {
@@ -138,7 +138,7 @@ describe('User register', () => {
         expect(res).to.have.status(200);
 
         // Same username
-        const res2 = await agent.post('/users/register').send({
+        const resFail1 = await agent.post('/users/register').send({
             name: 'Carer 1',
             username: 'carer_sameusername',
             password: 'cool',
@@ -146,13 +146,13 @@ describe('User register', () => {
             type: 'Carer',
             mobileNumber: '0'
         });
-        expect(res2).to.be.json;
-        expect(res2).to.have.status(422);
-        expect(res2.body).to.have.property('message');
-        expect(res2.body.message).equal('Username is taken');
+        expect(resFail1).to.be.json;
+        expect(resFail1).to.have.status(422);
+        expect(resFail1.body).to.have.property('message');
+        expect(resFail1.body.message).equal('Username is taken');
 
         // Same username, but with uppercase letter
-        const res3 = await agent.post('/users/register').send({
+        const resFail2 = await agent.post('/users/register').send({
             name: 'Carer 1',
             username: 'carer_sameusernamE',
             password: 'cool',
@@ -160,9 +160,9 @@ describe('User register', () => {
             type: 'Carer',
             mobileNumber: '0'
         });
-        expect(res3).to.be.json;
-        expect(res3).to.have.status(422);
-        expect(res3.body).to.have.property('message');
-        expect(res3.body.message).equal('Username is taken');
+        expect(resFail2).to.be.json;
+        expect(resFail2).to.have.status(422);
+        expect(resFail2.body).to.have.property('message');
+        expect(resFail2.body.message).equal('Username is taken');
     });
 });

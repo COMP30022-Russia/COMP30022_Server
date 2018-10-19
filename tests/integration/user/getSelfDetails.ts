@@ -1,9 +1,10 @@
 import { expect, request } from 'chai';
 import app from '../../';
-import { createAP, createCarer, createAssociation } from '../helpers/user';
+import { createAP } from '../helpers/user';
 
 describe('User details', () => {
     const agent = request.agent(app);
+
     let userToken: string;
 
     before(async () => {
@@ -12,10 +13,10 @@ describe('User details', () => {
     });
 
     // Get profile information of current authenticated user
-    it('Get profile', async () => {
+    it('Get my profile', async () => {
         const res = await agent
             .get('/me/profile')
-            .set('Authorization', 'Bearer ' + userToken);
+            .set('Authorization', `Bearer ${userToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
         expect(res.body).to.have.property('id');
