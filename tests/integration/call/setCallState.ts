@@ -30,14 +30,14 @@ describe('Navigation call', () => {
 
         // Accept call
         await agent
-            .post(`/call/${callID}/accept`)
+            .post(`/calls/${callID}/accept`)
             .set('Authorization', `Bearer ${apToken}`);
     });
 
     it('Set state', async () => {
         const newState = 'OngoingCamera';
         const res = await agent
-            .post(`/call/${callID}/state`)
+            .post(`/calls/${callID}/state`)
             .send({ state: newState })
             .set('Authorization', `Bearer ${apToken}`);
         expect(res).to.be.json;
@@ -52,7 +52,7 @@ describe('Navigation call', () => {
     it('Set state to terminated', async () => {
         const newState = 'Terminated';
         const res = await agent
-            .post(`/call/${callID}/state`)
+            .post(`/calls/${callID}/state`)
             .send({ state: newState })
             .set('Authorization', `Bearer ${apToken}`);
         expect(res).to.be.json;
@@ -62,7 +62,7 @@ describe('Navigation call', () => {
     it('Set invalid state', async () => {
         const newState = 'Invalid';
         const res = await agent
-            .post(`/call/${callID}/state`)
+            .post(`/calls/${callID}/state`)
             .send({ state: newState })
             .set('Authorization', `Bearer ${apToken}`);
         expect(res).to.be.json;

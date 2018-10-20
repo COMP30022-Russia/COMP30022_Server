@@ -48,12 +48,12 @@ router.use(
     navigationRouter
 );
 router.use(
-    '/emergency/:eventID',
+    '/emergencies/:eventID',
     authenticate,
     verifyIDParam('eventID'),
     retrieveEmergencyEvent,
     emergencyRouter
 );
-router.use('/call/:callID', authenticate, verifyIDParam('callID'), callRouter);
+router.use('/calls/:callID', authenticate, verifyIDParam('callID'), callRouter);
 
 export default router;

@@ -31,7 +31,7 @@ describe('Navigation call', () => {
 
     it('End call', async () => {
         const res = await agent
-            .post(`/call/${callID}/end`)
+            .post(`/calls/${callID}/end`)
             .set('Authorization', `Bearer ${apToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
@@ -41,7 +41,7 @@ describe('Navigation call', () => {
 
     it('End already terminated call', async () => {
         const res = await agent
-            .post(`/call/${callID}/end`)
+            .post(`/calls/${callID}/end`)
             .set('Authorization', `Bearer ${apToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(400);

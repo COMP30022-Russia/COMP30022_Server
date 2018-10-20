@@ -32,7 +32,7 @@ describe('Navigation call', () => {
     it('Get call', async () => {
         // Get as AP
         const res1 = await agent
-            .get(`/call/${callID}`)
+            .get(`/calls/${callID}`)
             .set('Authorization', `Bearer ${apToken}`);
         expect(res1).to.be.json;
         expect(res1).to.have.status(200);
@@ -48,7 +48,7 @@ describe('Navigation call', () => {
 
         // Get as carer
         const res2 = await agent
-            .get(`/call/${callID}`)
+            .get(`/calls/${callID}`)
             .set('Authorization', `Bearer ${carerToken}`);
         expect(res2).to.be.json;
         expect(res2).to.have.status(200);

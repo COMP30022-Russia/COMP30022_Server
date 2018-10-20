@@ -73,7 +73,7 @@ describe('Chat - Create Picture message', () => {
 
         // Replace query for name
         const name = 'foo';
-        sandbox.replace(models.User, 'scope', (scope: string) =>  {
+        sandbox.replace(models.User, 'scope', (scope: string) => {
             return {
                 findById: (_: number) => {
                     return { name };

@@ -31,7 +31,7 @@ describe('Navigation call', () => {
         const callInitial = await startNavigationCall(carerToken, navSessionID);
         const callInitialID = callInitial.id;
         await agent
-            .post(`/call/${callInitialID}/end`)
+            .post(`/calls/${callInitialID}/end`)
             .set('Authorization', `Bearer ${apToken}`);
         // Create call again
         const call = await startNavigationCall(apToken, navSessionID);
@@ -82,7 +82,7 @@ describe('Navigation call', () => {
 
         // Get call information
         const res = await agent
-            .get(`/call/${callID}`)
+            .get(`/calls/${callID}`)
             .set('Authorization', `Bearer ${apToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);

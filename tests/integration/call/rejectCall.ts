@@ -34,7 +34,7 @@ describe('Navigation call', () => {
 
         // Reject call
         const res1 = await agent
-            .post(`/call/${callID}/reject`)
+            .post(`/calls/${callID}/reject`)
             .set('Authorization', `Bearer ${carerToken}`);
         expect(res1).to.be.json;
         expect(res1).to.have.status(200);
@@ -47,7 +47,7 @@ describe('Navigation call', () => {
 
         // Reject call
         const res2 = await agent
-            .post(`/call/${callID2}/reject`)
+            .post(`/calls/${callID2}/reject`)
             .set('Authorization', `Bearer ${apToken}`);
         expect(res2).to.be.json;
         expect(res2).to.have.status(200);
@@ -62,7 +62,7 @@ describe('Navigation call', () => {
 
         // Reject call
         const res1 = await agent
-            .post(`/call/${callID}/reject`)
+            .post(`/calls/${callID}/reject`)
             .set('Authorization', `Bearer ${apToken}`);
         expect(res1).to.be.json;
         expect(res1).to.have.status(200);
@@ -75,7 +75,7 @@ describe('Navigation call', () => {
 
         // Reject call
         const res2 = await agent
-            .post(`/call/${callID2}/reject`)
+            .post(`/calls/${callID2}/reject`)
             .set('Authorization', `Bearer ${carerToken}`);
         expect(res2).to.be.json;
         expect(res2).to.have.status(200);

@@ -29,7 +29,7 @@ describe('Emergency', () => {
 
     it('Handle emergency event as carer', async () => {
         const res = await agent
-            .post(`/emergency/${eventID}`)
+            .post(`/emergencies/${eventID}`)
             .set('Authorization', `Bearer ${carerToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
@@ -43,7 +43,7 @@ describe('Emergency', () => {
 
     it('Try to handle handled emergency event', async () => {
         const res = await agent
-            .post(`/emergency/${eventID}`)
+            .post(`/emergencies/${eventID}`)
             .set('Authorization', `Bearer ${carerToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(400);

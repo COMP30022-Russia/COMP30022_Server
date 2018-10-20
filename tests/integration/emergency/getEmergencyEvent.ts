@@ -32,7 +32,7 @@ describe('Emergency', () => {
 
     it('Get emergency event as AP/Carer', async () => {
         const res1 = await agent
-            .get(`/emergency/${eventID}`)
+            .get(`/emergencies/${eventID}`)
             .set('Authorization', `Bearer ${carerToken}`);
         expect(res1).to.be.json;
         expect(res1).to.have.status(200);
@@ -41,7 +41,7 @@ describe('Emergency', () => {
         expect(res1.body).to.have.property('APId');
 
         const res2 = await agent
-            .get(`/emergency/${eventID}`)
+            .get(`/emergencies/${eventID}`)
             .set('Authorization', `Bearer ${apToken}`);
         expect(res2).to.be.json;
         expect(res2).to.have.status(200);
@@ -53,7 +53,7 @@ describe('Emergency', () => {
 
     it('Get invalid emergency event', async () => {
         const res = await agent
-            .get(`/emergency/1000`)
+            .get(`/emergencies/1000`)
             .set('Authorization', `Bearer ${carerToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(404);
@@ -61,13 +61,13 @@ describe('Emergency', () => {
 
     it('Access emergency event as malicious users', async () => {
         const res1 = await agent
-            .get(`/emergency/${eventID}`)
+            .get(`/emergencies/${eventID}`)
             .set('Authorization', `Bearer ${maliciousCarerToken}`);
         expect(res1).to.be.json;
         expect(res1).to.have.status(403);
 
         const res2 = await agent
-            .get(`/emergency/${eventID}`)
+            .get(`/emergencies/${eventID}`)
             .set('Authorization', `Bearer ${maliciousAPToken}`);
         expect(res2).to.be.json;
         expect(res2).to.have.status(403);

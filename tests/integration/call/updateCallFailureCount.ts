@@ -35,26 +35,26 @@ describe('Navigation call', () => {
         // Call should still be active
         for (const _ of Array(4).keys()) {
             const failRes = await agent
-                .post(`/call/${callID}/failure`)
+                .post(`/calls/${callID}/failure`)
                 .set('Authorization', `Bearer ${apToken}`);
             expect(failRes.body).have.property('status');
             expect(failRes.body.status).to.equal('success');
         }
         const res = await agent
-            .get(`/call/${callID}`)
+            .get(`/calls/${callID}`)
             .set('Authorization', `Bearer ${apToken}`);
         expect(res.body).to.have.property('state');
         expect(res.body.state).to.equal('Pending');
 
         // Terminate one more time
         const fifthTerminateRes = await agent
-            .post(`/call/${callID}/failure`)
+            .post(`/calls/${callID}/failure`)
             .set('Authorization', `Bearer ${apToken}`);
         expect(fifthTerminateRes.body).have.property('status');
         expect(fifthTerminateRes.body.status).to.equal('success');
         // Call should be terminated now
         const afterTerminateRes = await agent
-            .get(`/call/${callID}`)
+            .get(`/calls/${callID}`)
             .set('Authorization', `Bearer ${apToken}`);
         expect(afterTerminateRes.body).to.have.property('state');
         expect(afterTerminateRes.body.state).to.equal('Terminated');

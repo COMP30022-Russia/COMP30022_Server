@@ -34,7 +34,7 @@ describe('Navigation call', () => {
 
     it('Accept call as initiator (Bad)', async () => {
         const res = await agent
-            .post(`/call/${callID}/accept`)
+            .post(`/calls/${callID}/accept`)
             .set('Authorization', `Bearer ${carerToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(400);
@@ -42,7 +42,7 @@ describe('Navigation call', () => {
 
     it('Accept call as receiver', async () => {
         const res = await agent
-            .post(`/call/${callID}/accept`)
+            .post(`/calls/${callID}/accept`)
             .set('Authorization', `Bearer ${apToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
