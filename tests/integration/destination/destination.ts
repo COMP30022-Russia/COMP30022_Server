@@ -49,7 +49,7 @@ describe('Destination', () => {
 
     it('Get destinations', async () => {
         const res = await agent
-            .get(`/users/${APID}/destination`)
+            .get(`/users/${APID}/destinations`)
             .set('Authorization', `Bearer ${apToken}`);
         destinationID = res.body.recents[0].id;
         expect(res).to.be.json;
@@ -66,7 +66,7 @@ describe('Destination', () => {
 
     it('Favourite bad destination', async () => {
         const res = await agent
-            .post(`/users/${APID}/destination/5000`)
+            .post(`/users/${APID}/destinations/5000`)
             .set('Authorization', `Bearer ${apToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(404);
@@ -74,7 +74,7 @@ describe('Destination', () => {
 
     it('Favourite destination and check favourites', async () => {
         const res = await agent
-            .post(`/users/${APID}/destination/${destinationID}`)
+            .post(`/users/${APID}/destinations/${destinationID}`)
             .set('Authorization', `Bearer ${apToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
@@ -82,7 +82,7 @@ describe('Destination', () => {
         expect(res.body.status).to.equal('success');
 
         const checkRes = await agent
-            .get(`/users/${APID}/destination`)
+            .get(`/users/${APID}/destinations`)
             .set('Authorization', `Bearer ${apToken}`);
         expect(checkRes).to.be.json;
         expect(checkRes).to.have.status(200);
@@ -100,7 +100,7 @@ describe('Destination', () => {
 
     it('Unset favourite destination and check', async () => {
         const res = await agent
-            .post(`/users/${APID}/destination/${destinationID}?favourite=false`)
+            .post(`/users/${APID}/destinations/${destinationID}?favourite=false`)
             .set('Authorization', `Bearer ${apToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);
@@ -108,7 +108,7 @@ describe('Destination', () => {
         expect(res.body.status).to.equal('success');
 
         const checkRes = await agent
-            .get(`/users/${APID}/destination`)
+            .get(`/users/${APID}/destinations`)
             .set('Authorization', `Bearer ${apToken}`);
         expect(checkRes).to.be.json;
         expect(checkRes).to.have.status(200);

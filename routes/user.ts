@@ -17,6 +17,6 @@ router.get('/', getAssociatedUserDetails);
 router.get('/picture', getProfilePicture);
 
 // Destination routes
-router.use('/destination', destinationRouter);
+router.use('/destinations', destinationRouter);
 
 export default router;
