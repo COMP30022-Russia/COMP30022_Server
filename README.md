@@ -1,6 +1,11 @@
 # Russia Server
 Server repository for Team Russia.
 
+Please note that this repository was made for educational purposes,
+as part of assessment for the subject
+[IT Project (COMP30022)](https://handbook.unimelb.edu.au/subjects/comp30022). 
+It has not been tested and is **not** intended for use in production environments.
+
 ## Local development
 ### Preparation
 - Install `Node.JS` and `npm`
