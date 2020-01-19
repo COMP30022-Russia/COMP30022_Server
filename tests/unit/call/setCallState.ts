@@ -40,7 +40,7 @@ describe('Navigation call', () => {
                 carerId: 4,
                 sessionId: 5,
                 failureCount: 4,
-                updateAttributes: sinon.stub().throws('Bad')
+                update: sinon.stub().throws('Bad')
             },
             body: { state: 'Bad' }
         };

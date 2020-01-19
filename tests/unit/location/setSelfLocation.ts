@@ -33,7 +33,7 @@ describe('Location - Set Location', () => {
         // Fake get user call
         sandbox.replace(models.User, 'scope', (scopeName: string) => {
             return {
-                findById: sinon.fake.returns({
+                findByPk: sinon.fake.returns({
                     id: 1,
                     type: 'AP',
                     setCurrentLocation: setLocationSpy
@@ -60,7 +60,7 @@ describe('Location - Set Location', () => {
         // Fake get user call
         sandbox.replace(models.User, 'scope', (scopeName: string) => {
             return {
-                findById: sinon.fake.returns({
+                findByPk: sinon.fake.returns({
                     id: 1,
                     type: 'Carer'
                 })
@@ -79,7 +79,7 @@ describe('Location - Set Location', () => {
         // Fake get user call
         sandbox.replace(models.User, 'scope', (scopeName: string) => {
             return {
-                findById: sinon.fake.returns({
+                findByPk: sinon.fake.returns({
                     id: 1,
                     type: 'AP'
                 })

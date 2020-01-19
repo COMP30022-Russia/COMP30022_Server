@@ -24,7 +24,7 @@ export const updateFirebaseToken = async (
         });
 
         // Add created token to user
-        const user = await models.User.scope('id').findById(userID);
+        const user = await models.User.scope('id').findByPk(userID);
         await user.addFirebaseToken(createdToken);
 
         return res.json({ status: 'success' });
@@ -60,7 +60,7 @@ export const getFirebaseTokensHelper = async (
     userID: number
 ): Promise<[string]> => {
     // Query for user
-    const user = await models.User.scope('id').findById(userID);
+    const user = await models.User.scope('id').findByPk(userID);
     // Query for user's associated tokens
     const tokenObjects = await user.getFirebaseTokens();
     // Extract tokens from objects
@@ -78,7 +78,7 @@ export const replaceFirebaseToken = async (
     newToken: string
 ): Promise<void> => {
     const token = await models.FirebaseToken.findOne({ token: oldToken });
-    await token.updateAttributes({ token: newToken });
+    await token.update({ token: newToken });
 };
 
 /**

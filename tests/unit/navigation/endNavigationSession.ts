@@ -41,7 +41,7 @@ describe('Navigation - End navigation session', () => {
             APId: 2,
             carerId: 3,
             active: true,
-            updateAttributes: updateSpy,
+            update: updateSpy,
             Call: undefined,
             sync
         };
@@ -60,6 +60,7 @@ describe('Navigation - End navigation session', () => {
 
         // Check update
         expect(
+            // @ts-ignore next
             updateSpy.calledWithExactly({ active: false, sync: sync + 1 })
         ).to.equal(true);
 
@@ -79,14 +80,14 @@ describe('Navigation - End navigation session', () => {
     });
 
     it('End session with call', async () => {
-        const updateSpy = sinon.spy(() => session.sync++);
+        const updateSpy: any = sinon.spy(() => session.sync++);
         const sync = 1;
         const session = {
             id: 1,
             APId: 2,
             carerId: 3,
             active: true,
-            updateAttributes: updateSpy,
+            update: updateSpy,
             Call: { state: 'Ongoing' },
             sync
         };

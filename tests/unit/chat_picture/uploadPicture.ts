@@ -45,7 +45,7 @@ describe('Chat - Upload message picture', () => {
             id: 3,
             status: 'Sending'
         };
-        picture.updateAttributes = (attributes: any) =>
+        picture.update = (attributes: any) =>
             wrapToJSON({ ...picture, ...attributes });
         sandbox.replace(
             models.ChatPicture,

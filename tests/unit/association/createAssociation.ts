@@ -42,7 +42,7 @@ describe('Association - Create association', () => {
 
     beforeEach(async () => {
         // Fake association find
-        sandbox.replace(models.Association, 'find', sinon.fake());
+        sandbox.replace(models.Association, 'findOne', sinon.fake());
 
         // Replace association creation function
         sandbox.replace(
@@ -70,7 +70,7 @@ describe('Association - Create association', () => {
         dbFindTypeFake.onCall(0).returns({ type: 'AP' });
         dbFindTypeFake.onCall(1).returns({ type: 'Carer' });
         sandbox.replace(models.User, 'scope', (scopeName: string) => {
-            return { findById: dbFindTypeFake };
+            return { findByPk: dbFindTypeFake };
         });
 
         // Create association
@@ -96,7 +96,7 @@ describe('Association - Create association', () => {
         dbFindTypeFake.onCall(0).returns({ type: 'Carer' });
         dbFindTypeFake.onCall(1).returns({ type: 'AP' });
         sandbox.replace(models.User, 'scope', (scopeName: string) => {
-            return { findById: dbFindTypeFake };
+            return { findByPk: dbFindTypeFake };
         });
 
         // Create association
@@ -119,7 +119,7 @@ describe('Association - Create association', () => {
         dbFindTypeFake.onCall(0).returns({ type: 'AP' });
         dbFindTypeFake.onCall(1).returns({ type: 'AP' });
         sandbox.replace(models.User, 'scope', (scopeName: string) => {
-            return { findById: dbFindTypeFake };
+            return { findByPk: dbFindTypeFake };
         });
 
         const result = await association.createAssociation(req, res, next);

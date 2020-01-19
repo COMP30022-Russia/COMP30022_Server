@@ -32,6 +32,6 @@ export default class ChatPicture extends Sequelize.Model {
      * @param sequelize Sequelize instance.
      */
     static init(sequelize: Sequelize.Sequelize) {
-        return super.init(chatPictureSchema, { sequelize });
+        return super.init.call(this, chatPictureSchema, { sequelize });
     }
 }

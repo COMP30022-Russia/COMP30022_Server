@@ -27,6 +27,6 @@ export default class ProfilePicture extends Sequelize.Model {
      * @param sequelize Sequelize instance.
      */
     static init(sequelize: Sequelize.Sequelize) {
-        return super.init(profilePictureSchema, { sequelize });
+        return super.init.call(this, profilePictureSchema, { sequelize });
     }
 }

@@ -24,7 +24,7 @@ describe('Notification - Update Firebase token', () => {
 
         // Fake get user call
         sandbox.replace(models.User, 'scope', (scopeName: string) => {
-            return { findById: sinon.fake.returns(fakeUser) };
+            return { findByPk: sinon.fake.returns(fakeUser) };
         });
 
         // Fake token create call

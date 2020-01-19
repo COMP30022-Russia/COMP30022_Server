@@ -69,7 +69,7 @@ export const login = async (
 
     try {
         // Get user with given username
-        const user = await models.User.scope('withPassword').find({
+        const user = await models.User.scope('withPassword').findOne({
             where: {
                 username: username.toLowerCase()
             }

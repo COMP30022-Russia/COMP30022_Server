@@ -8,7 +8,7 @@ import models from '../models';
  */
 const getLocation = async (userID: number): Promise<any> => {
     // Get specified user
-    const user = await models.User.scope('location').findById(userID);
+    const user = await models.User.scope('location').findByPk(userID);
     // Ensure that only APs' locations are accessed
     if (user.type !== 'AP') {
         throw new Error("Only APs' locations can be accessed");
@@ -46,7 +46,7 @@ export const getUserLocation = async (
 ) => {
     try {
         // Get and return location of specified user
-        const location = await getLocation(req.params.userID);
+        const location = await getLocation(Number(req.params.userID));
         return res.json(location.toJSON());
     } catch (err) {
         res.status(400);
@@ -66,7 +66,7 @@ export const setSelfLocation = async (
 
     try {
         // Check type of user (only APs are able to set location)
-        const user = await models.User.scope('location').findById(userID);
+        const user = await models.User.scope('location').findByPk(userID);
         if (user.type !== 'AP') {
             res.status(400);
             return next(

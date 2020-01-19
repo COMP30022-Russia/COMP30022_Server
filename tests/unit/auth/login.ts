@@ -44,7 +44,7 @@ describe('User - Login', () => {
             ...wrapToJSON(dbReturnValue)
         });
         sandbox.replace(models.User, 'scope', (scopeName: string) => {
-            return { find: dbFake };
+            return { findOne: dbFake };
         });
 
         // @ts-ignore
@@ -65,7 +65,7 @@ describe('User - Login', () => {
 
         // Fake DB call to return null user object
         sandbox.replace(models.User, 'scope', (scopeName: string) => {
-            return { find: sinon.fake.returns(undefined) };
+            return { findOne: sinon.fake.returns(undefined) };
         });
 
         // @ts-ignore
@@ -86,7 +86,7 @@ describe('User - Login', () => {
         sandbox.replace(models.User, 'scope', (scopeName: string) => {
             return {
                 // Return a verifyPassword function which always returns false
-                find: () => {
+                findOne: () => {
                     return { verifyPassword: sinon.stub().returns(false) };
                 }
             };

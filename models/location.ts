@@ -7,8 +7,8 @@ const locationSchema = {
         primaryKey: true,
         autoIncrement: true
     },
-    lat: { type: Sequelize.NUMERIC, allowNull: false },
-    lon: { type: Sequelize.NUMERIC, allowNull: false }
+    lat: { type: Sequelize.DECIMAL, allowNull: false },
+    lon: { type: Sequelize.DECIMAL, allowNull: false }
 };
 
 /**
@@ -21,6 +21,6 @@ export default class Location extends Sequelize.Model {
      * @param sequelize Sequelize instance.
      */
     static init(sequelize: Sequelize.Sequelize) {
-        return super.init(locationSchema, { sequelize });
+        return super.init.call(this, locationSchema, { sequelize });
     }
 }

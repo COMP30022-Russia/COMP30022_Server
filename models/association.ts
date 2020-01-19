@@ -24,7 +24,7 @@ export default class Association extends Sequelize.Model {
      * @param sequelize Sequelize instance.
      */
     static init(sequelize: Sequelize.Sequelize) {
-        return super.init(associationSchema, { sequelize });
+        return super.init.call(this, associationSchema, { sequelize });
     }
 
     /**

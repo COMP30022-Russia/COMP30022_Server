@@ -20,7 +20,7 @@ describe('User Details', () => {
         // Replace database query
         sandbox.replace(
             models.User,
-            'findById',
+            'findByPk',
             sinon.fake.returns(wrapToJSON(user))
         );
 

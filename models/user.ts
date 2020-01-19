@@ -32,13 +32,14 @@ export default class User extends Sequelize.Model {
      * @param sequelize Sequelize instance.
      */
     static init(sequelize: Sequelize.Sequelize) {
-        return super.init(userSchema, {
+        return super.init.call(this, userSchema, {
             sequelize,
             indexes: [
                 // Ensure that usernames are unique
                 {
                     name: 'unique_username',
                     unique: true,
+                    // @ts-ignore
                     fields: [sequelize.fn('lower', sequelize.col('username'))]
                 }
             ],
@@ -49,7 +50,7 @@ export default class User extends Sequelize.Model {
                         const hash = await hashPassword(user.password);
                         user.password = hash;
                     } catch (err) {
-                        return sequelize.Promise.reject(err);
+                        return Promise.reject(err);
                     }
                 },
                 // Hash password before update
@@ -63,7 +64,7 @@ export default class User extends Sequelize.Model {
                         const hash = await hashPassword(user.password);
                         user.password = hash;
                     } catch (err) {
-                        return sequelize.Promise.reject(err);
+                        return Promise.reject(err);
                     }
                 }
             },

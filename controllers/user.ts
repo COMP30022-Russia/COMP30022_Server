@@ -11,7 +11,7 @@ export const getAssociatedUserDetails = async (
 
     try {
         // Get user info
-        const user = await models.User.scope('withLocation').findById(userID);
+        const user = await models.User.scope('withLocation').findByPk(userID);
 
         // Get location if user is AP
         if (user.type === 'AP') {
@@ -36,7 +36,7 @@ export const getSelfDetails = async (
     const userID = req.userID;
 
     try {
-        const user = await models.User.findById(userID);
+        const user = await models.User.findByPk(userID);
         return res.json(user.toJSON());
     } catch (err) {
         return next(err);
@@ -72,7 +72,7 @@ export const updateUserDetails = async (
 
     try {
         // Get current user
-        const user = await models.User.findById(userID);
+        const user = await models.User.findByPk(userID);
         if (user.type === 'AP') {
             if (
                 ('emergencyContactName' in modifications &&
@@ -86,7 +86,7 @@ export const updateUserDetails = async (
         }
 
         // Update attributes and return
-        const modified = await user.updateAttributes(modifications);
+        const modified = await user.update(modifications);
         return res.json(modified.toJSON());
     } catch (err) {
         next(err);

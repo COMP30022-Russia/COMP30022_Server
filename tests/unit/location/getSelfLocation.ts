@@ -26,7 +26,7 @@ describe('Location - Get Self Location', () => {
         // Fake DB call
         sandbox.replace(models.User, 'scope', (scopeName: string) => {
             return {
-                findById: sinon.fake.returns({
+                findByPk: sinon.fake.returns({
                     id: 1,
                     type: 'AP',
                     getCurrentLocation: () => wrapToJSON(location)
@@ -47,7 +47,7 @@ describe('Location - Get Self Location', () => {
         // Fake DB call
         sandbox.replace(models.User, 'scope', (scopeName: string) => {
             return {
-                findById: sinon.fake.returns({
+                findByPk: sinon.fake.returns({
                     id: 1,
                     type: 'Carer'
                 })

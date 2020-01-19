@@ -29,6 +29,6 @@ export default class FirebaseToken extends Sequelize.Model {
      * @param sequelize Sequelize instance.
      */
     static init(sequelize: Sequelize.Sequelize) {
-        return super.init(firebaseTokenSchema, { sequelize });
+        return super.init.call(this, firebaseTokenSchema, { sequelize });
     }
 }

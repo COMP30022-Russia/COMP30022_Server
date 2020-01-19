@@ -11,8 +11,8 @@ describe('Middleware - Retrieve specified emergency session', () => {
     const BAD_ID = 0;
 
     beforeEach(async () => {
-        // Replace findById
-        sandbox.replace(models.Emergency, 'findById', (id: number) => {
+        // Replace findByPk
+        sandbox.replace(models.Emergency, 'findByPk', (id: number) => {
             if (id === BAD_ID) {
                 // tslint:disable:no-null-keyword / DB will return null here
                 return null;

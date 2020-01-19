@@ -25,7 +25,7 @@ describe('Navigation - Start navigation session', () => {
         // Fake name query
         sandbox.replace(models.User, 'scope', (scope: any) => {
             return {
-                findById: (id: number) => {
+                findByPk: (id: number) => {
                     return { name: 'A name' };
                 }
             };

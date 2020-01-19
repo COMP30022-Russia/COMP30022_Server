@@ -92,7 +92,7 @@ describe('Navigation', () => {
 
     it('Set destination - first time, walking', async () => {
         // Update attribute spy
-        const updateSpy = sinon.spy(() => req.session.sync++);
+        const updateSpy: any = sinon.spy(() => req.session.sync++);
         const setDestinationSpy = sinon.spy();
 
         // tslint:disable:no-null-keyword / DB will return null here
@@ -106,7 +106,7 @@ describe('Navigation', () => {
                 id: 10,
                 APId: 1,
                 carerId: 2,
-                updateAttributes: updateSpy,
+                update: updateSpy,
                 setDestination: setDestinationSpy,
                 getDestination: sinon.stub().returns(null),
                 sync
@@ -158,7 +158,7 @@ describe('Navigation', () => {
 
     it('Set destination - subsequent times, public transport', async () => {
         // Attribute update spies
-        const updateSessionSpy = sinon.spy(() => req.session.sync++);
+        const updateSessionSpy: any = sinon.spy(() => req.session.sync++);
         const updateDestinationSpy = sinon.spy();
 
         // tslint:disable:no-null-keyword / DB will return null here
@@ -172,10 +172,10 @@ describe('Navigation', () => {
                 id: 10,
                 APId: 1,
                 carerId: 2,
-                updateAttributes: updateSessionSpy,
+                update: updateSessionSpy,
                 getDestination: () => {
                     return {
-                        updateAttributes: updateDestinationSpy
+                        update: updateDestinationSpy
                     };
                 },
                 sync

@@ -48,9 +48,7 @@ describe('Chat', () => {
         // Upload pictures
         const res1 = await agent
             .post(
-                `/associations/${associationID}/chat/picture/${
-                    res.body.pictures[0].id
-                }`
+                `/associations/${associationID}/chat/picture/${res.body.pictures[0].id}`
             )
             .set('Content-Type', 'multipart/formdata')
             .set('Authorization', `Bearer ${carerToken}`)
@@ -71,9 +69,7 @@ describe('Chat', () => {
 
         const res2 = await agent
             .post(
-                `/associations/${associationID}/chat/picture/${
-                    res.body.pictures[1].id
-                }`
+                `/associations/${associationID}/chat/picture/${res.body.pictures[1].id}`
             )
             .set('Content-Type', 'multipart/formdata')
             .set('Authorization', `Bearer ${carerToken}`)

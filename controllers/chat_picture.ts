@@ -13,7 +13,7 @@ export const createPictureMessage = async (
     next: NextFunction
 ) => {
     // Get association ID and number of pictures in this message
-    const associationID = req.params.associationID;
+    const associationID = Number(req.params.associationID);
     const count: number = Number(req.body.count);
     const userID = req.userID;
     const association = req.association;
@@ -45,7 +45,7 @@ export const createPictureMessage = async (
 
         // Get ID and name of target user
         const targetID = await association.getPartnerID(userID);
-        const sender = await models.User.scope('name').findById(userID);
+        const sender = await models.User.scope('name').findByPk(userID);
 
         // Send notification
         await sendChatMessage(
@@ -77,7 +77,7 @@ export const uploadPicture = async (
     // Extract IDs and information about uploaded file
     const userID = req.userID;
     const pictureID = req.params.pictureID;
-    const associationID = req.params.associationID;
+    const associationID = Number(req.params.associationID);
     const association = req.association;
     const file = req.file;
 
@@ -100,7 +100,7 @@ export const uploadPicture = async (
         }
 
         // Set fields of picture with values of file and return
-        const saved = await picture.updateAttributes({
+        const saved = await picture.update({
             filename: file.filename,
             mime: file.mimetype,
             status: 'Received'

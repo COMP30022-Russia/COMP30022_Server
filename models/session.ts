@@ -50,6 +50,6 @@ export default class Session extends Sequelize.Model {
      * @param sequelize Sequelize instance.
      */
     static init(sequelize: Sequelize.Sequelize) {
-        return super.init(sessionSchema, { sequelize });
+        return super.init.call(this, sessionSchema, { sequelize });
     }
 }

@@ -8,10 +8,9 @@ const SERVER_URL = `http://localhost:${process.env.PORT}/socket`;
 
 describe('Socket', () => {
     it('Receive message', done => {
-        const socket = io.connect(
-            SERVER_URL,
-            { query: { firebase_token: 'foo:bar', auth_token: 'secret' } }
-        );
+        const socket = io.connect(SERVER_URL, {
+            query: { firebase_token: 'foo:bar', auth_token: 'secret' }
+        });
 
         socket.on('connect', async () => {
             // Send message
@@ -28,10 +27,9 @@ describe('Socket', () => {
     });
 
     it('Should not receive message of other users', done => {
-        const socket = io.connect(
-            SERVER_URL,
-            { query: { firebase_token: 'foo:bar', auth_token: 'secret' } }
-        );
+        const socket = io.connect(SERVER_URL, {
+            query: { firebase_token: 'foo:bar', auth_token: 'secret' }
+        });
 
         socket.on('connect', async () => {
             // Send message for other user
@@ -51,10 +49,9 @@ describe('Socket', () => {
 
     it('Bad connection (missing auth)', done => {
         // Connect with missing auth token
-        const socket = io.connect(
-            SERVER_URL,
-            { query: { firebase_token: 'foo:bar' } }
-        );
+        const socket = io.connect(SERVER_URL, {
+            query: { firebase_token: 'foo:bar' }
+        });
         socket.on('error', () => {
             done();
         });

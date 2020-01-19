@@ -30,7 +30,7 @@ describe('Association - Get specific association', () => {
 
         // Fake query for finding type of user
         sandbox.replace(models.User, 'scope', (scopeName: string) => {
-            return { findById: dbFakeAP };
+            return { findByPk: dbFakeAP };
         });
 
         // Fake query for retrieving association
@@ -64,7 +64,7 @@ describe('Association - Get specific association', () => {
 
         // Fake query for finding type of user
         sandbox.replace(models.User, 'scope', (scopeName: string) => {
-            return { findById: dbFakeCarer };
+            return { findByPk: dbFakeCarer };
         });
 
         // Fake query for retrieving association
@@ -98,7 +98,7 @@ describe('Association - Get specific association', () => {
 
         // Fake query for finding type of user
         sandbox.replace(models.User, 'scope', (scopeName: string) => {
-            return { findById: dbFakeCarer };
+            return { findByPk: dbFakeCarer };
         });
 
         // Fake query for retrieving association

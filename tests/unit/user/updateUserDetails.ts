@@ -15,10 +15,10 @@ describe('User Details', () => {
         };
 
         // Fake DB call to return properties
-        sandbox.replace(models.User, 'findById', (id: number) => {
+        sandbox.replace(models.User, 'findByPk', (id: number) => {
             return {
                 ...wrapToJSON(user),
-                updateAttributes: (attributes: any) => {
+                update: (attributes: any) => {
                     return wrapToJSON(attributes);
                 }
             };

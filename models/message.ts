@@ -28,6 +28,6 @@ export default class Message extends Sequelize.Model {
      * @param sequelize Sequelize instance.
      */
     static init(sequelize: Sequelize.Sequelize) {
-        return super.init(messageSchema, { sequelize });
+        return super.init.call(this, messageSchema, { sequelize });
     }
 }

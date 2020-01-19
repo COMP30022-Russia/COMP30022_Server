@@ -39,7 +39,7 @@ describe('User Details', () => {
             ...wrapToJSON(userInfo)
         });
         sandbox.replace(models.User, 'scope', (scopeName: string) => {
-            return { findById: dbFake };
+            return { findByPk: dbFake };
         });
 
         // @ts-ignore
@@ -67,7 +67,7 @@ describe('User Details', () => {
         };
         // Fake DB call to return the fake info
         sandbox.replace(models.User, 'scope', (scopeName: string) => {
-            return { findById: sinon.fake.returns(wrapToJSON(userInfo)) };
+            return { findByPk: sinon.fake.returns(wrapToJSON(userInfo)) };
         });
 
         // @ts-ignore

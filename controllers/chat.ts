@@ -66,7 +66,7 @@ export const createMessage = async (
 ) => {
     // Extract message content from body and IDs
     const { content } = req.body;
-    const associationID = req.params.associationID;
+    const associationID = Number(req.params.associationID);
     const userID = req.userID;
     const association = req.association;
 
@@ -86,7 +86,7 @@ export const createMessage = async (
 
         // Get ID of associated user and name of sender
         const targetID = await association.getPartnerID(userID);
-        const sender = await models.User.scope('name').findById(userID);
+        const sender = await models.User.scope('name').findByPk(userID);
         // Send notification to target user
         await sendChatMessage(sender.name, targetID, associationID, content);
 

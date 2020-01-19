@@ -27,7 +27,7 @@ describe('Navigation', () => {
         // Replace find name call
         sandbox.replace(models.User, 'scope', (_: string) => {
             return {
-                findById: (__: number) => {
+                findByPk: (__: number) => {
                     return { name: AP_NAME };
                 }
             };
@@ -64,7 +64,7 @@ describe('Navigation', () => {
     });
 
     it('Off-track notification', async () => {
-        const updateSpy = sinon.spy(() => req.session.sync++);
+        const updateSpy: any = sinon.spy(() => req.session.sync++);
         const sync = 8;
         const req = {
             userID: 2,
@@ -77,7 +77,7 @@ describe('Navigation', () => {
                 carerId: 3,
                 carerHasControl: true,
                 sync,
-                updateAttributes: updateSpy
+                update: updateSpy
             }
         };
 

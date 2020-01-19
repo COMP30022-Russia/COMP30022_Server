@@ -75,7 +75,7 @@ describe('Chat - Create Picture message', () => {
         const name = 'foo';
         sandbox.replace(models.User, 'scope', (scope: string) => {
             return {
-                findById: (_: number) => {
+                findByPk: (_: number) => {
                     return { name };
                 }
             };

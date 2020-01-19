@@ -55,7 +55,7 @@ export const updateAPLocation = async (
     next: NextFunction
 ) => {
     // Extract IDs and lat/lon
-    const sessionID = req.params.sessionID;
+    const sessionID = Number(req.params.sessionID);
     const userID = req.userID;
     const { lat, lon } = req.body;
     if (!lat || !lon) {
@@ -185,7 +185,7 @@ export const setDestination = async (
 
     try {
         // Set route of navigation session
-        await session.updateAttributes({
+        await session.update({
             route,
             transportMode: mode,
             state: 'Started',
@@ -196,7 +196,7 @@ export const setDestination = async (
         let destination = await session.getDestination();
         if (destination) {
             // If destination for session already exists, update it
-            await destination.updateAttributes({ name, placeID });
+            await destination.update({ name, placeID });
         } else {
             // If not, create and set
             destination = await models.Destination.create({
@@ -243,10 +243,10 @@ export const sendOffTrackNotification = async (
         }
 
         // Increment sync
-        await session.updateAttributes({ sync: session.sync + 1 });
+        await session.update({ sync: session.sync + 1 });
 
         // Send notification
-        const user = await models.User.scope('name').findById(session.APId);
+        const user = await models.User.scope('name').findByPk(session.APId);
         await sendOffTrackMessage(
             session.carerId,
             session.id,

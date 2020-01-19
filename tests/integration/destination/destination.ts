@@ -100,7 +100,9 @@ describe('Destination', () => {
 
     it('Unset favourite destination and check', async () => {
         const res = await agent
-            .post(`/users/${APID}/destinations/${destinationID}?favourite=false`)
+            .post(
+                `/users/${APID}/destinations/${destinationID}?favourite=false`
+            )
             .set('Authorization', `Bearer ${apToken}`);
         expect(res).to.be.json;
         expect(res).to.have.status(200);

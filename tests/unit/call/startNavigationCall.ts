@@ -32,7 +32,7 @@ describe('Navigation call', () => {
         // Replace name call
         sandbox.replace(models.User, 'scope', (_: any) => {
             return {
-                findById: (__: number) => {
+                findByPk: (__: number) => {
                     return { name: 'foo' };
                 }
             };

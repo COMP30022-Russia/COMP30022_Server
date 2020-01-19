@@ -35,6 +35,6 @@ export default class Destination extends Sequelize.Model {
      * @param sequelize Sequelize instance.
      */
     static init(sequelize: Sequelize.Sequelize) {
-        return super.init(destinationSchema, { sequelize });
+        return super.init.call(this, destinationSchema, { sequelize });
     }
 }

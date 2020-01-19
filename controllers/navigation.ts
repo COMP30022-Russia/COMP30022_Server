@@ -55,7 +55,7 @@ export const startNavigationSession = async (
             APId: association.APId,
             carerHasControl: req.userID === req.association.carerId
         });
-        const sender = await models.User.scope('name').findById(userID);
+        const sender = await models.User.scope('name').findByPk(userID);
 
         // Send notification to opposite party
         await sendNavigationStartMessage(
@@ -137,7 +137,7 @@ export const endNavigationSession = async (
         }
 
         // Make session inactive
-        await session.updateAttributes({
+        await session.update({
             active: false,
             sync: session.sync + 1
         });
@@ -195,7 +195,7 @@ export const startNavigationCall = async (
 
         // Send data/notification message
         const targetID = userID === APId ? carerId : APId;
-        const user = await models.User.scope('name').findById(userID);
+        const user = await models.User.scope('name').findByPk(userID);
         await sendNavigationCallRequestStartMessage(
             call.id,
             sessionID,

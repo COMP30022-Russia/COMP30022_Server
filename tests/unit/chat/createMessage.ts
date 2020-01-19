@@ -29,10 +29,10 @@ describe('Chat - Create message', () => {
             return wrapToJSON({ ...input, id: createdMessageID });
         });
 
-        // Replace findById function also (as it's used to get user name)
+        // Replace findByPk function also (as it's used to get user name)
         sandbox.replace(models.User, 'scope', (scopeName: string) => {
             return {
-                findById: () => {
+                findByPk: () => {
                     return { id: 2, name: 'Example' };
                 }
             };

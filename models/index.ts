@@ -1,4 +1,4 @@
-import Sequelize, { Op } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
 
 // Import defined schemas
 import userModel from './user';
@@ -14,14 +14,13 @@ import emergencyModel from './emergency';
 import callModel from './call';
 
 // Initiate sequelize instance
-const sequelize: Sequelize.Sequelize = new Sequelize(
+const sequelize: Sequelize = new Sequelize(
     process.env.POSTGRES_DB,
     process.env.POSTGRES_USER,
     process.env.POSTGRES_PASSWORD,
     {
         host: process.env.DB_HOST,
         dialect: 'postgres',
-        operatorsAliases: Op as any,
         logging: process.env.NODE_ENV === 'development' ? true : false
     }
 );

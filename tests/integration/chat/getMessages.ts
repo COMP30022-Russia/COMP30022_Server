@@ -94,9 +94,7 @@ describe('Chat', () => {
     it('Get messages with limit, before and after', async () => {
         const res = await agent
             .get(
-                `/associations/${associationID}/chat?limit=15&before=${
-                    messages[14].id
-                }&after=${messages[0].id}`
+                `/associations/${associationID}/chat?limit=15&before=${messages[14].id}&after=${messages[0].id}`
             )
             .set('Authorization', `Bearer ${apToken}`);
         expect(res).to.be.json;

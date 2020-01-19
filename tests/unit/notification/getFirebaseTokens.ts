@@ -16,10 +16,13 @@ describe('Notification - Get Firebase token', () => {
         const req: any = { userID: 1 };
 
         // Fake DB call
-        const tokens = [{ id: 1, token: 'a' }, { id: 2, token: 'b' }];
+        const tokens = [
+            { id: 1, token: 'a' },
+            { id: 2, token: 'b' }
+        ];
         sandbox.replace(models.User, 'scope', (scopeName: string) => {
             return {
-                findById: sinon.fake.returns({
+                findByPk: sinon.fake.returns({
                     id: 1,
                     getFirebaseTokens: () => tokens
                 })

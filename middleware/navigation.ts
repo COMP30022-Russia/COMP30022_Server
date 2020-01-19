@@ -16,7 +16,7 @@ export let retrieveNavigationSession = (
 ) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         const userID: number = req.userID;
-        const sessionID: number = req.params.sessionID;
+        const sessionID: number = Number(req.params.sessionID);
 
         try {
             // Define query options

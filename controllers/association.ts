@@ -66,8 +66,8 @@ export const createAssociation = async (
 
     try {
         // Get types of initiator and target users
-        const initiator = await models.User.scope('type').findById(initiatorID);
-        const target = await models.User.scope('type').findById(targetID);
+        const initiator = await models.User.scope('type').findByPk(initiatorID);
+        const target = await models.User.scope('type').findByPk(targetID);
 
         // Ensure that accounts of the same type are not associated
         if (initiator.type === target.type) {
@@ -79,7 +79,7 @@ export const createAssociation = async (
         const carerId = initiator.type === 'Carer' ? initiatorID : targetID;
 
         // If an existing association exists
-        const existing = await models.Association.find({
+        const existing = await models.Association.findOne({
             where: { carerId, APId: apId }
         });
         if (existing) {
@@ -115,7 +115,7 @@ export const createAssociation = async (
  * @return Promise for the opposite type as a string.
  */
 const findOppositeUserType = async (id: number): Promise<string> => {
-    const type = (await models.User.scope('type').findById(id)).type;
+    const type = (await models.User.scope('type').findByPk(id)).type;
     return type === 'AP' ? 'Carer' : 'AP';
 };
 

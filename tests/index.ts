@@ -23,6 +23,5 @@ import './integration';
 
 // Stop server
 after(done => {
-    app.listen(process.env.PORT).close();
     done();
 });

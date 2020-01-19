@@ -13,7 +13,7 @@ export const retrieveEmergencyEvent = async (
 
     try {
         // Get event
-        const event = await models.Emergency.findById(eventID);
+        const event = await models.Emergency.findByPk(eventID);
         if (!event) {
             res.status(404);
             return next(new Error('Emergency event does not exist'));
